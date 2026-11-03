@@ -28,22 +28,22 @@ Catppuccin or CachyOS teams.
 
 ## Install
 
-- **A release archive**, the simplest: download `teal-icons.tar.gz` from the
+- **A clone of the repository**: the installer builds the themes first, from Adwair and
+  Papirus, which it then needs (`sudo pacman -S papirus-icon-theme`).
+
+  ```bash
+  git clone https://github.com/elomkdn/teal-icons.git
+  cd teal-icons
+  ./install.sh --set
+  ```
+
+- **A release archive**: download `teal-icons.tar.gz` from the
   [releases](https://github.com/elomkdn/teal-icons/releases), extract it, run the installer.
   The themes are built, Papirus's system icons included: it installs offline, with nothing
   else.
 
   ```bash
   tar -xzf teal-icons.tar.gz
-  cd teal-icons
-  ./install.sh --set
-  ```
-
-- **A clone of the repository**: the installer builds the themes first, from Adwair and
-  Papirus, which it then needs (`sudo pacman -S papirus-icon-theme`).
-
-  ```bash
-  git clone https://github.com/elomkdn/teal-icons.git
   cd teal-icons
   ./install.sh --set
   ```
