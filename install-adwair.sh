@@ -19,19 +19,14 @@
 #   -f, --folder-icons   After install, assign folder icons BY NAME.
 #                        Requires gio. Cannot be combined with -r.
 #   -r, --remove,
-#   -u, --uninstall      Uninstall (remove) the theme PATH/NAME and its
-#                        dark variant PATH/NAME-dark.
+#   -u, --uninstall      Uninstall (remove) the theme PATH/NAME.
 #                        Respects -p and -n;
 #   -F, --folder-name    Only with -r/-u: after removing the theme, also reset
 #                        the folder icons set by -f.
 #   -h, --help           Show this help message
 #
 # Symlinks are taken from ./links (same layout as src) and copied into the
-# theme; broken symlinks are removed afterwards. The dark theme only gets
-# links/apps/scalable.
-#
-# Dark app icons are installed as a separate theme (NAME-dark) that
-# inherits the base theme.
+# theme; broken symlinks are removed afterwards.
 
 set -euo pipefail
 
@@ -41,7 +36,6 @@ LINKS_DIR="$SCRIPT_DIR/links"
 MAKE_DIR="$SCRIPT_DIR/make"
 COLORS_DIR="$MAKE_DIR/generator/colors"
 APPS_COLORS_DIR="$MAKE_DIR/generator/apps"
-DARK_DIR="$MAKE_DIR/generator/dark"
 
 AVAILABLE_COLORS=(blue green orange pink purple red slate teal yellow mocha-teal)
 
@@ -248,23 +242,16 @@ INSTALL_PATH="${INSTALL_PATH%/}"
     || die "Invalid theme name '$THEME_NAME' (must be non-empty, without '/', not '.' or '..')"
 
 DEST_BASE="$INSTALL_PATH/$THEME_NAME"
-DARK_THEME_NAME="${THEME_NAME}-dark"
-DARK_BASE="$INSTALL_PATH/$DARK_THEME_NAME"
 
 uninstall() {
-    local dir
-
-    if [[ ! -d "$DEST_BASE" && ! -d "$DARK_BASE" ]]; then
+    if [[ ! -d "$DEST_BASE" ]]; then
         DONE_MSG="Nothing to uninstall: '$DEST_BASE' does not exist"
         return 0
     fi
 
     spinner_start "Uninstalling theme from $DEST_BASE"
-    for dir in "$DEST_BASE" "$DARK_BASE"; do
-        [[ -d "$dir" ]] || continue
-        rm -rf -- "$dir" \
-            || die "Cannot remove $dir (permission denied? try sudo for system paths)"
-    done
+    rm -rf -- "$DEST_BASE" \
+        || die "Cannot remove $DEST_BASE (permission denied? try sudo for system paths)"
     spinner_stop
     DONE_MSG="Theme uninstalled from $DEST_BASE"
 }
@@ -470,7 +457,6 @@ fi
 
 [[ -d "$SRC_DIR" ]] || die "Source directory not found: $SRC_DIR"
 [[ -d "$LINKS_DIR" ]] || die "Links directory not found: $LINKS_DIR"
-[[ -d "$DARK_DIR" ]] || die "Dark icons directory not found: $DARK_DIR"
 
 RESOLVED_COLOR="$(resolve_color "${COLOR:-blue}")"
 [[ -d "$COLORS_DIR/$RESOLVED_COLOR" ]] \
@@ -551,55 +537,8 @@ if [[ "$INSTALL_APPS" -eq 1 ]]; then
     done
 fi
 
-mkdir -p "$DARK_BASE/apps/scalable" 2>/dev/null \
-    || die "Cannot create $DARK_BASE (permission denied? try sudo for system paths)"
-
-cat > "$DARK_BASE/index.theme" <<EOF
-[Icon Theme]
-Name=$DARK_THEME_NAME
-Comment=Dark app icons for $THEME_NAME. Inherits the base theme.
-Inherits=$THEME_NAME
-Example=folder
-FollowsColorScheme=true
-KDE-Extensions=.svg
-
-Directories=apps/scalable
-
-[apps/scalable]
-Size=64
-Context=Applications
-Type=Scalable
-MinSize=16
-MaxSize=512
-EOF
-
-DARK_APPS="$DARK_BASE/apps/scalable"
-
-if [[ -d "$LINKS_DIR/apps/scalable" ]]; then
-    cp -a --remove-destination "$LINKS_DIR/apps/scalable/." "$DARK_APPS/"
-else
-    warn "$LINKS_DIR/apps/scalable not found — no alias symlinks for dark theme."
-fi
-
-dark_files=()
-while IFS= read -r -d '' f; do
-    dark_files+=("$f")
-done < <(find "$DARK_DIR" -maxdepth 1 \( -type f -o -type l \) \
-              \( -name '*.svg' -o -name '*.svgz' \) -print0)
-
-dark_count=${#dark_files[@]}
-[[ "$dark_count" -gt 0 ]] || die "No icons found in $DARK_DIR"
-cp -a --remove-destination -t "$DARK_APPS/" "${dark_files[@]}"
-
-prune_broken_links "$DARK_BASE"
-
 if command -v gtk-update-icon-cache >/dev/null 2>&1; then
-    gtk-update-icon-cache -f -t "$DEST_BASE" >/dev/null 2>&1 &
-    pid_base=$!
-    gtk-update-icon-cache -f -t "$DARK_BASE" >/dev/null 2>&1 &
-    pid_dark=$!
-    wait "$pid_base" 2>/dev/null || true
-    wait "$pid_dark" 2>/dev/null || true
+    gtk-update-icon-cache -f -t "$DEST_BASE" >/dev/null 2>&1 || true
 fi
 
 spinner_stop

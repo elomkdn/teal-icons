@@ -15,7 +15,7 @@ dark desktop.
   gives a generic or borrowed icon get one drawn for Teal, and the apps with a logo of their
   own (KDE Connect, Gwenview, the Qt and CachyOS tools…) show that logo, in Catppuccin
   colors, on a Mocha tile. Round logos (Kate, Faugus, Micro) lose their disc, whose color becomes
-  the tile. `Teal-dark` puts every app on the Mocha tile.
+  the tile.
 - **System icons**: Papirus Dark's action, status and tray icons, in Mocha colors (Mocha text
   instead of Papirus's gray, teal instead of its blue, Catppuccin red, yellow and green for
   states).
@@ -28,7 +28,7 @@ Catppuccin or CachyOS teams.
 
 ## Install
 
-- **A clone of the repository**: the installer builds the themes first, from Adwair and
+- **A clone of the repository**: the installer builds the theme first, from Adwair and
   Papirus, which it then needs (`sudo pacman -S papirus-icon-theme`).
 
   ```bash
@@ -39,7 +39,7 @@ Catppuccin or CachyOS teams.
 
 - **A release archive**: download `teal-icons.tar.gz` from the
   [releases](https://github.com/elomkdn/teal-icons/releases), extract it, run the installer.
-  The themes are built, Papirus's system icons included: it installs offline, with nothing
+  The theme is built, Papirus's system icons included: it installs offline, with nothing
   else.
 
   ```bash
@@ -50,10 +50,9 @@ Catppuccin or CachyOS teams.
 
 | Command | Effect |
 |---|---|
-| `./install.sh` | installs `Teal` and `Teal-dark` into `~/.local/share/icons` |
-| `./install.sh --set` | and selects `Teal`: each app on its own tile (recommended) |
-| `./install.sh --set dark` | and selects `Teal-dark`: every app on a Mocha tile |
-| `./install.sh --uninstall` | removes them |
+| `./install.sh` | installs `Teal` into `~/.local/share/icons` |
+| `./install.sh --set` | and selects it |
+| `./install.sh --uninstall` | removes it |
 
 Either way, with Python (there on CachyOS), Teal is made at home on your computer: the
 apps you have installed show their own logos and tray icons, and Papirus, if installed,
@@ -67,10 +66,10 @@ without it, Teal's drawings stay. Run the installer again after installing such 
   ramp from Mocha's crust to Latte's base.
 - `make/teal/draw.py` draws Teal's own icons into `make/teal/apps`, on Adwair's grid (a
   56 px tile with 13 px corners on a 64 px canvas, lit from above).
-- `make/catppuccin-theme.py` builds the themes from an Adwair install (`install-adwair.sh`,
+- `make/catppuccin-theme.py` builds the theme from an Adwair install (`install-adwair.sh`,
   Adwair's own installer): recolors it, places the drawn icons, copies Papirus's system
   icons. `dist.sh` makes the release archive with them.
-- `make/localize.py` makes them at home on each computer: the apps' logos (read from the
+- `make/localize.py` makes it at home on each computer: the apps' logos (read from the
   system, never copied into this repository), their tray icons, Papirus as the fallback.
 
 ## Credits

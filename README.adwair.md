@@ -7,7 +7,7 @@ A refined icon theme blending the polished look of WhiteSur with the clean, nati
 <br clear="left">
 
 > This is Adwair's own README, kept in [Teal](README.md), the theme made from it. Here, its
-> installer is `install-adwair.sh`; the original is at
+> installer is `install-adwair.sh`, without the dark variant; the original is at
 > [kusaida/Adwair](https://github.com/kusaida/Adwair).
 
 ![Adwair Preview](preview/preview.png)

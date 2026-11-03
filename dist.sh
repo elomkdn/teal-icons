@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
-# dist.sh — builds the release archive, dist/teal-icons.tar.gz: the themes built,
-# Papirus's system icons included, and what installs them and makes them at home on each
+# dist.sh — builds the release archive, dist/teal-icons.tar.gz: the theme built,
+# Papirus's system icons included, and what installs it and makes it at home on each
 # computer. It installs with ./install.sh, offline, with nothing else needed.
 
 set -euo pipefail

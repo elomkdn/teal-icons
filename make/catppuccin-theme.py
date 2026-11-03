@@ -21,10 +21,9 @@
   apps keep their own (Discord, Steam, KeePassXC…), except those in TRAY_PAPIRUS; localize.py
   links them, and Papirus as the fallback, on each computer.
 
-The themes built need nothing installed: Papirus's system icons are copied into them.
+The theme built needs nothing installed: Papirus's system icons are copied into it.
 
 usage: catppuccin-theme.py <installed theme folder> <name>
-       (the -dark theme next to it, dark app tiles, is processed too)
 """
 import configparser
 import os
@@ -121,13 +120,6 @@ def copy_papirus(theme, dirs):
                     f.write_text(papirus_recolor(target.read_text(errors="ignore")))
 
 
-def link_dirs(theme, base, dirs):
-    """The -dark theme shares the base theme's copies."""
-    for d in dirs:
-        (theme / d).parent.mkdir(parents=True, exist_ok=True)
-        (theme / d).symlink_to(os.path.relpath(base / d, (theme / d).parent))
-
-
 def system_names(dirs):
     """Names of actions and statuses; Papirus's symbolic app, device and file type icons
     (firefox-symbolic…) do not make the full-color ones system icons."""
@@ -146,10 +138,6 @@ def drop_system_names(theme, names):
     return dropped
 
 
-# Adwair's dark tiles, top and bottom of their gradient -> the Mocha tile of Teal's own icons
-DARK_TILE = {"#525252": "#313244", "#363636": "#1e1e2e"}
-
-
 def fit_in_tile(text, scale):
     """Everything drawn after the tile (its last rounded rect), scaled around the center."""
     end = list(re.finditer(r'<rect\b[^>]*\brx="[^"]+"[^>]*/>', text))[-1].end()
@@ -158,7 +146,7 @@ def fit_in_tile(text, scale):
             f'{text[end:close]}</g>{text[close:]}')
 
 
-def recolor_tree(folder, dark=False):
+def recolor_tree(folder):
     count = 0
     for f in folder.rglob("*.svg"):
         if f.is_symlink() or not f.is_file():
@@ -167,20 +155,16 @@ def recolor_tree(folder, dark=False):
         text = f.read_text(errors="ignore")
         if f.name in FIT_IN_TILE:
             text = fit_in_tile(text, FIT_IN_TILE[f.name])
-        if dark:
-            text = catppuccin.HEX.sub(lambda m: DARK_TILE.get(m.group(0).lower(), m.group(0)), text)
         f.write_text(catppuccin.recolor_svg(text, everything=True, family=family))
         count += 1
     return count
 
 
-def place_drawn(folder, only_replace=False, drawn=DRAWN):
+def place_drawn(folder, drawn=DRAWN):
     """In place of Adwair's files or links, never through them (gwenview links to shotwell).
     Adwair's own aliases link to the base names, and follow."""
     for f in sorted(drawn.iterdir(), key=lambda f: f.is_symlink()):
         out = folder / f.name
-        if only_replace and not (out.exists() or out.is_symlink()):
-            continue
         if out.exists() or out.is_symlink():
             out.unlink()
         if f.is_symlink():
@@ -225,7 +209,6 @@ def rewrite_index(theme, name, inherits, extra):
 
 def main():
     theme, name = Path(sys.argv[1]), sys.argv[2]
-    dark = theme.with_name(f"{theme.name}-dark")
     dirs = papirus_system_dirs()
     names = system_names(dirs)
     prune(theme)
@@ -239,16 +222,6 @@ def main():
         (theme / d).mkdir(parents=True)
     dirs |= OWN
     rewrite_index(theme, name, INHERITS.format(papirus=f"{name}-Papirus"), dirs)
-    if dark.is_dir():
-        for cache in dark.glob("icon-theme.cache"):
-            cache.unlink()
-        drop_system_names(dark, names)
-        n += recolor_tree(dark, dark=True)
-        place_drawn(dark / "apps/scalable", only_replace=True)
-        place_drawn(dark / "places/scalable", only_replace=True, drawn=DRAWN_PLACES)
-        place_drawn(dark / "devices/scalable", only_replace=True, drawn=DRAWN_DEVICES)
-        link_dirs(dark, theme, dirs)
-        rewrite_index(dark, f"{name}-dark", theme.name, dirs)
     print(f"{name}: {n} icons recolored, {len(dirs) - len(OWN)} Papirus system folders")
 
 

@@ -8,20 +8,17 @@
 #
 # Options:
 #   -p, --path PATH      Base installation path (default: ~/.local/share/icons)
-#   -s, --set [VARIANT]  After install, make it the icon theme: light (the apps' own tiles,
-#                        the default) or dark (every app on a Mocha tile). KDE Plasma and GNOME.
-#   -u, --uninstall      Remove PATH/Teal, PATH/Teal-dark and PATH/Teal-Papirus.
+#   -s, --set            After install, make it the icon theme. KDE Plasma and GNOME.
+#   -u, --uninstall      Remove PATH/Teal and PATH/Teal-Papirus.
 #   -h, --help           Show this help message
 #
 # Apps whose .desktop file names a picture instead of an icon (Nuvio) get a local copy of
 # it naming the icon, in ~/.local/share/applications; --uninstall removes them.
 #
-# Two themes are installed: Teal (the apps' own tiles) and Teal-dark (every app on a Mocha
-# tile, inherits Teal). From a release archive, nothing else is needed. From a clone of the
-# repository, they are built first, which needs Papirus (papirus-icon-theme) and python3.
-# With python3, they are made at home on this computer: the apps' own logos and tray icons,
-# and, if Papirus is installed, Teal-Papirus, hidden: Papirus Dark without its tray icons,
-# for the icons Teal does not have.
+# From a release archive, nothing else is needed. From a clone of the repository, Teal is
+# built first, which needs Papirus (papirus-icon-theme) and python3. With python3, it is made
+# at home on this computer: the apps' own logos and tray icons, and, if Papirus is installed,
+# Teal-Papirus, hidden: Papirus Dark without its tray icons, for the icons Teal does not have.
 
 set -euo pipefail
 
@@ -29,7 +26,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 DEST="${XDG_DATA_HOME:-$HOME/.local/share}/icons"
 NAME="Teal"
 PAPIRUS="/usr/share/icons/Papirus-Dark"
-VARIANT=""
+SET=0
 UNINSTALL=0
 
 # .desktop file -> icon name, for apps that name a picture
@@ -43,9 +40,7 @@ usage() {
 while [[ $# -gt 0 ]]; do
   case "$1" in
     -p|--path) DEST="${2:?--path needs a folder}"; shift 2 ;;
-    -s|--set)
-      if [[ "${2:-}" == light || "${2:-}" == dark ]]; then VARIANT="$2"; shift 2
-      else VARIANT=light; shift; fi ;;
+    -s|--set) SET=1; shift ;;
     -u|--uninstall|-r|--remove) UNINSTALL=1; shift ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown option: $1" >&2; usage >&2; exit 1 ;;
@@ -77,10 +72,10 @@ unname_icons() {
 }
 
 if [[ $UNINSTALL -eq 1 ]]; then
-  rm -rf "${DEST:?}/$NAME" "${DEST:?}/$NAME-dark" "${DEST:?}/$NAME-Papirus"
+  rm -rf "${DEST:?}/$NAME" "${DEST:?}/$NAME-Papirus"
   unname_icons
   refresh
-  echo "Removed $DEST/$NAME and $DEST/$NAME-dark. Pick another icon theme if Teal was in use."
+  echo "Removed $DEST/$NAME. Pick another icon theme if Teal was in use."
   exit 0
 fi
 
@@ -88,10 +83,10 @@ STAGE="$(mktemp -d)"
 trap 'rm -rf "$STAGE"' EXIT
 
 if [[ -d "$SCRIPT_DIR/share/icons/$NAME" ]]; then
-  # a release archive: the themes are built, Papirus's system icons included
-  cp -a "$SCRIPT_DIR/share/icons/$NAME" "$SCRIPT_DIR/share/icons/$NAME-dark" "$STAGE/"
+  # a release archive: the theme is built, Papirus's system icons included
+  cp -a "$SCRIPT_DIR/share/icons/$NAME" "$STAGE/"
 else
-  # a clone of the repository: build them, from Adwair and Papirus
+  # a clone of the repository: build it, from Adwair and Papirus
   if [[ ! -f "$PAPIRUS/index.theme" ]]; then
     echo "Building Teal needs Papirus: sudo pacman -S papirus-icon-theme" >&2
     echo "(or install it from a release archive, which needs nothing)" >&2
@@ -114,7 +109,7 @@ fi
 
 # the old version stays in place until the new one is complete
 mkdir -p "$DEST"
-for t in "$NAME" "$NAME-dark" "$NAME-Papirus"; do
+for t in "$NAME" "$NAME-Papirus"; do
   rm -rf "${DEST:?}/$t"
   [[ -d "$STAGE/$t" ]] || continue
   mv "$STAGE/$t" "$DEST/$t"
@@ -124,10 +119,10 @@ for t in "$NAME" "$NAME-dark" "$NAME-Papirus"; do
 done
 name_icons
 refresh
-echo "Installed $DEST/$NAME and $DEST/$NAME-dark."
+echo "Installed $DEST/$NAME."
 
-if [[ -n "$VARIANT" ]]; then
-  theme="$NAME"; [[ "$VARIANT" == dark ]] && theme="$NAME-dark"
+if [[ $SET -eq 1 ]]; then
+  theme="$NAME"
   # Plasma's tool applies it to the running session; without a session (a TTY), the setting
   # is written for the next one
   changeicons=$(command -v /usr/lib/plasma-changeicons /usr/libexec/plasma-changeicons | head -n 1)

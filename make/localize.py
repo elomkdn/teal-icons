@@ -10,7 +10,7 @@
 
 Nothing here is needed: without it, Teal shows its drawings and falls back to Adwaita.
 
-usage: localize.py <folder holding the themes> <name>
+usage: localize.py <folder holding the theme> <name>
 """
 import configparser
 import glob
@@ -60,18 +60,16 @@ def link_own_icons(theme):
     return count
 
 
-def place_logos(folder, only_replace=False):
+def place_logos(folder):
     """Where the app is installed, its own logo on our tile, in place of our drawing."""
     count, missing_pillow = 0, set()
     for name, candidates in draw.LOGOS.items():
         out = folder / name
-        # Teal-dark (only_replace) keeps every app on the Mocha tile, its discs too
-        disc = None if only_replace else draw.ROUND_LOGOS.get(name)
         logo = draw.find_logo(candidates)
-        if logo is None or (only_replace and not (out.exists() or out.is_symlink())):
+        if logo is None:
             continue
         try:
-            svg = draw.logo_tile(logo, disc=disc)
+            svg = draw.logo_tile(logo, disc=draw.ROUND_LOGOS.get(name))
         except ImportError:  # a PNG logo, without Pillow
             missing_pillow.add(name)
             continue
@@ -82,7 +80,7 @@ def place_logos(folder, only_replace=False):
             out.unlink()
         out.write_text(svg)
         count += 1
-    if missing_pillow and not only_replace:
+    if missing_pillow:
         print(f"{len(missing_pillow)} logos are pictures: they need python-pillow, Teal's drawings stay")
     return count
 
@@ -114,10 +112,8 @@ def papirus_without_tray(folder):
 
 def main():
     root, name = Path(sys.argv[1]), sys.argv[2]
-    theme, dark = root / name, root / f"{name}-dark"
+    theme = root / name
     logos = place_logos(theme / "apps/scalable")
-    if dark.is_dir():
-        place_logos(dark / "apps/scalable", only_replace=True)
     own = link_own_icons(theme)
     papirus = root / f"{name}-Papirus"
     shutil.rmtree(papirus, ignore_errors=True)
