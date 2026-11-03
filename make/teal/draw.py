@@ -296,15 +296,9 @@ def menu_list(c, a):
             f'<rect x="18" y="25.5" width="28" height="7" rx="2" fill="{a}" fill-opacity=".3"/>' + rows)
 
 
-def page_magnifier(c):
-    return (lines(c, (16, 12, 16), 18)
-            + f'<circle cx="31" cy="38" r="5.5" fill="none" stroke="{c}" stroke-width="2.6"/>'
-            f'<path d="M35 42 39.5 46.5" {ROUND} stroke="{c}" stroke-width="3.2"/>')
-
-
 def partitions(c, a):
     """The partition manager: its disk as a pie of colored partitions."""
-    return "".join(f'<path d="{d}" fill="{LATTE[f] if c != CRUST else CRUST}"/>' for d, f in PARTITIONS) + \
+    return "".join(f'<path d="{d}" fill="{MOCHA[f] if c != CRUST else CRUST}"/>' for d, f in PARTITIONS) + \
         f'<circle cx="32" cy="32" r="5" fill="{SURFACE0 if c != CRUST else CRUST}"/>'
 
 
@@ -440,7 +434,7 @@ def circuit(c, a):
 
 def kvantum_logo():
     """Kvantum: its Kv, in the Catppuccin rainbow, on the Mocha tile of the system's tools."""
-    stops = "".join(f'<stop offset="{i / 4:g}" stop-color="{LATTE[f]}"/>'
+    stops = "".join(f'<stop offset="{i / 4:g}" stop-color="{MOCHA[f]}"/>'
                     for i, f in enumerate(("red", "peach", "green", "blue", "mauve")))
     letters = "M19 19v26M19 33.5 31 19M24 28.5 32.5 45M36 29l5 16 5-16"
     return icon(mocha_tile()
@@ -534,6 +528,18 @@ def penguin(c, a):
             f'l-1.4 2.5c-.8 1.3-1.7 2.1-3.2 2.1-2 0-3.8-1.6-3.4-4.2l.6-3.6c.7-4.2 2.9-7 6.9-7Z" fill="{c}" stroke="{a}" stroke-width="1.2"/>'
             f'<path d="M22.5 40h5M25 37.5v5" {ROUND} stroke="{a}" stroke-width="1.8"/>'
             f'<circle cx="38.5" cy="38.6" r="1.4" fill="{a}"/><circle cx="41.6" cy="41.4" r="1.4" fill="{a}"/>')
+
+
+def okular():
+    """Okular: the wave and the reading glasses of its logo, on the light Latte tile."""
+    wave = ("M42 11.5c-9.6 2.2-17.4 12-18.6 23.2-.9 8.6 3.9 14.6 10.9 14.6 6 0 11-4 13.9-9.8-3.2 2.8-6.8 4.3-10.1 4.3"
+            "-5.1 0-7.8-4-7.1-10 .8-8.2 4.9-16 11-22.3Z")
+    lens = f'y="30" width="16" height="11" rx="5" fill="{MOCHA["sky"]}" fill-opacity=".75" stroke="{SURFACE0}" stroke-width="2.4"'
+    return icon(vertical("tile", PAPER, PAPER_SHADE) + vertical("wave", MOCHA["sky"], LATTE["blue"], 11, 50),
+                f'<rect {TILE} fill="url(#tile)"/><path d="{wave}" fill="url(#wave)"/>'
+                f'<g transform="rotate(-13 32 34)"><rect x="13.5" {lens}/><rect x="34.5" {lens}/>'
+                f'<path d="M29.5 34c1.6-1.2 3.4-1.2 5 0M13.5 33.5 8.5 32M50.5 33.5 55.5 32" {ROUND} '
+                f'stroke="{SURFACE0}" stroke-width="2.4"/></g>')
 
 
 # --- tray icons, in the text color like the system's beside them -----------------------------
@@ -712,7 +718,7 @@ DESIGNS.update({
     "kvantum.svg": (kvantum_logo, ["kvantummanager"]),
     "kwalletmanager.svg": (lambda: on_color(wallet, "peach"), ["kwalletmanager2", "org.kde.kwalletmanager5",
                                                             "org.kde.kwalletmanager", "kwallet"]),
-    "okular.svg": (lambda: page(page_magnifier, "maroon"), kde("okular")[1:]),
+    "okular.svg": (okular, kde("okular")[1:]),
     "qbittorrent.svg": lambda: on_color(qb, "blue"),
     "multimedia-volume-control.svg": (lambda: on_color(knob, "lavender"),
                                       ["org.pulseaudio.pavucontrol", "pavucontrol", "pavucontrol-qt"]),
