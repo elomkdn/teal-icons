@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs>
+    <filter id="shadow" x="-.1" y="-.1" width="1.2" height="1.2" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation=".8"/>
+    </filter>
+    <linearGradient id="band" gradientUnits="userSpaceOnUse" x1="8" y1="4" x2="48" y2="30">
+      <stop offset="0" stop-color="#e66100"/>
+      <stop offset="1" stop-color="#ed333b"/>
+    </linearGradient>
+    <clipPath id="page">
+      <path d="M13 4c-2.77 0-5 2.23-5 5v46c0 2.77 2.23 5 5 5h38c2.77 0 5-2.23 5-5V16L44 4z"/>
+    </clipPath>
+  </defs>
+
+  <!-- shadow -->
+  <path d="M13 4c-2.77 0-5 2.23-5 5v46c0 2.77 2.23 5 5 5h38c2.77 0 5-2.23 5-5V16L44 4z" transform="translate(0 1)" fill="#000000" opacity=".15" filter="url(#shadow)"/>
+
+  <!-- page -->
+  <path d="M13 4c-2.77 0-5 2.23-5 5v46c0 2.77 2.23 5 5 5h38c2.77 0 5-2.23 5-5V16L44 4z" fill="#f4f4f4"/>
+
+  <!-- header band -->
+  <g clip-path="url(#page)">
+    <rect x="8" y="4" width="48" height="26" fill="url(#band)"/>
+  </g>
+  <rect x="16" y="16.5" width="19" height="3" rx="1.5" fill="#ffffff" fill-opacity=".8"/>
+  <rect x="16" y="24" width="9" height="2" rx="1" fill="#faa197"/>
+
+  <!-- folded corner -->
+  <path d="M44 4v7a5 5 0 0 0 5 5h7z" fill="#c0bfbc"/>
+
+  <!-- text lines -->
+  <g fill="#c0bfbc">
+    <rect x="16" y="33" width="30" height="2" rx="1"/>
+    <rect x="16" y="38" width="30" height="2" rx="1"/>
+    <rect x="16" y="43" width="30" height="2" rx="1"/>
+    <rect x="16" y="48" width="30" height="2" rx="1"/>
+    <rect x="16" y="53" width="30" height="2" rx="1"/>
+  </g>
+
+  <!-- reading glasses -->
+  <g fill="none" stroke="#241f31" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="25" cy="46" r="5.5" fill="#f4f4f4"/>
+    <circle cx="39" cy="46" r="5.5" fill="#f4f4f4"/>
+    <path d="M30.5 45c.9-.9 2.1-.9 3 0"/>
+    <path d="M19.7 44.2 15 41.5"/>
+    <path d="M44.3 44.2 49 41.5"/>
+  </g>
+</svg>

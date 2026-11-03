@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="64" height="64" viewBox="0 0 64 64" version="1.1"><defs>
+    <linearGradient id="plate" x1="7.937" x2="7.937" y1="15.081" y2="1.852" gradientTransform="scale(3.7796)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#565664"/><stop offset="1" stop-color="#80748c"/></linearGradient>
+    <linearGradient id="glyph" x1="0" x2="0" y1="50.2" y2="14" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#dfdee3"/></linearGradient>
+    <filter id="tile-shadow" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="1.4"/></filter>
+    <filter id="glyph-shadow" filterUnits="userSpaceOnUse" x="0" y="0" width="64" height="64" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="1.14"/><feOffset dy="1.25" result="b"/><feFlood flood-color="#27272d" flood-opacity=".35"/><feComposite in2="b" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect x="4.7" y="5.7" width="54.6" height="54.6" rx="12.3" ry="12.3" fill="#000000" opacity=".25" filter="url(#tile-shadow)"/>
+  <defs><linearGradient id="tpl-bg-0" gradientUnits="userSpaceOnUse" x1="32.0" x2="32.0" y1="57.0" y2="7.0"><stop offset="0" stop-color="#363636"/><stop offset="1" stop-color="#525252"/></linearGradient></defs><rect fill="url(#tpl-bg-0)" x="4" y="4" width="56" height="56" rx="13" ry="13"/>
+  <path filter="url(#glyph-shadow)" fill="url(#glyph)" d="M16 14c65 15 3.527 28.25 3.527 28.25-1.217.195-2.05.833-2.789 1.792-.738.958-.778 2.464-.316 3.572C17 49 17.828 49.516 19 50c1.31.463 3 0 3 0s31-10 30.853-19.446C52.783 25.998 43 17 16 14"/>
+</svg>

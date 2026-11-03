@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="64" height="64" viewBox="0 0 64 64" version="1.1">
+  <defs>
+    <linearGradient id="veracrypt-a" x1="7.937" x2="7.937" y1="15.081" y2="1.852" gradientTransform="scale(3.7796)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#31343b"/>
+      <stop offset="1" stop-color="#5f6979"/>
+    </linearGradient>
+  </defs>
+  <defs><filter id="tile-shadow-blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.4"/></filter></defs><path fill-rule="evenodd" fill="#000000" opacity=".25" filter="url(#tile-shadow-blur)" d="m17 5.7h30c6.79 0 12.3 5.51 12.3 12.3v30c0 6.79-5.51 12.3-12.3 12.3h-30c-6.79 0-12.3-5.51-12.3-12.3v-30c0-6.79 5.51-12.3 12.3-12.3z"/>
+  <defs><linearGradient id="tpl-bg-0" gradientUnits="userSpaceOnUse" x1="32.0" x2="32.0" y1="57.0" y2="7.0"><stop offset="0" stop-color="#363636"/><stop offset="1" stop-color="#525252"/></linearGradient></defs><rect fill="url(#tpl-bg-0)" width="56" height="56" x="4" y="4" rx="13" ry="13"/>
+  <circle cx="32.02" cy="32.044" r="30.001" fill="none"/>
+  <image xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAAmCAYAAACRWlj1AAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAA5xJREFUaIHNWOHOozAMM4zd+7/vBrsft0zG2KHbt5O+SBVbgThu0iRlwu+TaeCZxzeVjTzzFuigbncvYUTsUYDuOVU+QlT1TWH+DPNh5lognVNgfV6BTgGN/in8dsI4DwzgLkGRAs4NcAKbFAx+wWbCSiQdsY7kS5SgrmYNNYIVbgS0NSQ73TMyjhLbzJWf2y2s86Bb3Rl7Q1jhRgPwJFm3EpsBXAxGWsgNwPq8v8m9gzDBZEiB17XmeUUZ1JFk/UXuYgaTrGcTzkoYuiAvL6Y9qKusRrCylUDvpINDp0S9dgFwfV4XIVlSBNenzknma87t+RiiGkpsQBlRJDR079iHleqdSdf1ORYaaRvMpJs9qvv1lKAjWySYZIGv2HuOMxuw34vsvasM9qB6qcJxw36buDIzXCaUqIZWKXMrnghyJCyBIBvKXgIaTxlcAJ5g14lo9gP2CUVrE+vjxeGQ5BDVvVdXLQ2pFh6ECVb2ccaqIq1ZrKNWXQsw72X1HO893mMrjbtcGSctagxR7RzcyhVR3o+LuV8hxgR5dJn5TmMFcBPSaTFf0oWoFnFWqvWNSXYE077jcC+smxBUD7ItMUwvZs5lJm2ltOi7JODKTBH7g2NiKYLquRuOxLoQHcqi3A0U6CwA2nHM9C7P1f8uPPHUyXhMyJE7TTCJoJKrMGOSdyJYHuUw5DaPCVb9Y4KMWb+1e+HRJb+hPchEQSSLIJPToQWYwblE1FV716+L24MlWgLU+LPjDhPX0FzkPeDYgqnHQM91Nr9FMP125Nzxipv0Ra6uqdaCfkaI37XSESwyTIrnkrfUo9zDuvNeGZgShsvqXcu2u3dGUF9gcgroDsduqE4lpTU2lSLn4cMCvUuQ/6e9qMkmkep6SyWjiUsJvVXonbiEo8BaE3VhNIlosU5fARhLCaUy8cIePS4xKB8y6ySfvqXwfDKu209l7Ix8Fmz35CjBElcbJ/yrjUpuw/F8l444aY9pRu3EhfBbBLXbqJByGbFCMBFko11WVlzX7Lv6+FYnk8R5Ue8XOfcVrvPg2RnTEW09/EmIchhoi8Whmb6jPsx7HcHCcZ48bbo/9WDqIfX0MVrQu8TBi8n6U/PN73xEkI2dcPwm47Idg44QBPLCuE/3MUTPUnQnqT/t0nfqL7uWUN/rxkH3Twjq+2dGOmP1vTO7HFGe198/Juj0fCsqOhnqQ39qzP/W13l/dP7rBL8hIzaNdDYAgL8YX/R6kggEswAAAABJRU5ErkJggg==" width="56" height="38" x="2.769" y="16.664" image-rendering="optimizeQuality" preserveAspectRatio="none"/>
+  <path fill="#2bac8f" d="M50 43h-6.333v-3.606l3.167-1.599z"/>
+  <path fill="#2e997c" d="M46.833 37.795H40.5l.633 2.8L43.666 43z"/>
+  <path fill="#278768" d="M43.668 43h-6.334l1.267-3.606 1.9-1.599z"/>
+  <path fill="#21674f" d="m37.333 32.589-2.533-1.61-3.8 1.61 3.166 5.203z"/>
+  <path fill="#2a8d70" d="m40.502 37.795-3.167-.805-3.166.805L37.335 43z"/>
+  <path fill="#2f9f81" d="M40.502 37.791h-6.333l1.556-2.558 1.61-2.645z"/>
+  <path fill="#96cfba" d="M50 22.171h-6.333v2.79l3.167 2.413z"/>
+  <path fill="#85c8b1" d="M46.833 27.374H40.5l.633-3.616 2.533-1.587z"/>
+  <path fill="#6bbfa4" d="M43.668 22.171h-6.333v2.79l3.166 2.413z"/>
+  <path fill="#52b99b" d="m40.502 27.375-3.167 1.19-3.166-1.19 3.166-5.203z"/>
+  <path fill="#44b799" d="M40.502 27.38h-6.333l.633 2.391 2.533 2.812z"/>
+  <path fill="#33b394" d="M37.333 32.584H31l3.167-5.203z"/>
+  <path fill="#2da4ad" d="M34.166 37.791 31 39.39l-3.167-1.599L31 32.588z"/>
+  <path fill="#2f98af" d="M34.167 37.795h-6.333l.1 3.386L31 42.999z"/>
+  <path fill="#0d657a" d="M30.998 43h-6.333v-3.606l3.167-1.599 1.56 2.565z"/>
+  <path fill="#2a69b1" d="m27.833 37.795-3.166-.805-3.167.805L24.666 43"/>
+  <path fill="#2077bc" d="M27.833 37.791H21.5l.634-3.208 2.533-1.995z"/>
+  <path fill="#2886c7" d="m24.666 32.589-3.8-1.61-2.533 1.61 3.167 5.203"/>
+  <path fill="#238dcd" d="M24.667 32.584h-6.334l.001-4.014 3.166-1.19z"/>
+  <path fill="#1a9cd1" d="m21.518 27.364-3.185-1.213-3.167 1.213 3.176 5.219"/>
+  <path fill="#0ea6d3" d="M21.5 27.374h-6.333l.634-2.414 2.532-2.789z"/>
+  <path fill="#08abd8" d="M18.333 22.171h-6.332l3.166 5.203z"/>
+</svg>

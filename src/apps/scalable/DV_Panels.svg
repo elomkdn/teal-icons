@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="64" height="64" viewBox="0 0 64 64" version="1.1"><defs>
+    <linearGradient id="plate" x1="7.937" x2="7.937" y1="15.081" y2="1.852" gradientTransform="scale(3.7796)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#363636"/><stop offset="1" stop-color="#525252"/></linearGradient>
+    <linearGradient id="screen" x1="0" x2="0" y1="58" y2="6" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#282828"/><stop offset="1" stop-color="#3e3e3e"/></linearGradient>
+    <linearGradient id="DV_Panels-b" x1="31.9981" x2="31.9981" y1="10.9986" y2="53.0013" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#25be2c"/>
+      <stop offset=".457" stop-color="#1fbca7"/>
+      <stop offset="1" stop-color="#234ccd"/>
+    </linearGradient>
+    <radialGradient id="DV_Panels-c" cx="53.0013" cy="31.9981" r="20.9995" gradientTransform="rotate(-48.505 -41.220317 10.446814)scale(1 1.65298)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#c8090f"/>
+      <stop offset=".577" stop-color="#8409c1"/>
+      <stop offset=".991" stop-color="#5700ff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="DV_Panels-d" cx="53.0013" cy="31.9981" r="20.9995" gradientTransform="rotate(-26.253 30.644996 37.213941)scale(1 1.32575)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#c8090f"/>
+      <stop offset=".595" stop-color="#ffff00" stop-opacity=".56"/>
+      <stop offset=".991" stop-color="#ffff00" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="tile-shadow" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="1.4"/></filter>
+    <filter id="glyph-shadow" filterUnits="userSpaceOnUse" x="0" y="0" width="64" height="64" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="1.14"/><feOffset dy="1.25" result="b"/><feFlood flood-color="#181818" flood-opacity=".35"/><feComposite in2="b" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect x="4.7" y="5.7" width="54.6" height="54.6" rx="12.3" ry="12.3" fill="#000000" opacity=".25" filter="url(#tile-shadow)"/>
+  <defs><linearGradient id="tpl-bg-0" gradientUnits="userSpaceOnUse" x1="32.0" x2="32.0" y1="57.0" y2="7.0"><stop offset="0" stop-color="#363636"/><stop offset="1" stop-color="#525252"/></linearGradient></defs><rect fill="url(#tpl-bg-0)" x="4" y="4" width="56" height="56" rx="13" ry="13"/>
+  <defs><linearGradient id="tpl-bg-1" gradientUnits="userSpaceOnUse" x1="32.0" x2="32.0" y1="55.1550375" y2="8.7806625"><stop offset="0" stop-color="#363636"/><stop offset="1" stop-color="#525252"/></linearGradient></defs><rect fill="url(#tpl-bg-1)" x="6.002" y="5.9982" width="51.996" height="51.9393" rx="10.9986" ry="10.9986"/>
+  <g filter="url(#glyph-shadow)">
+  <circle cx="31.9981" cy="31.9981" r="20.9995" fill="url(#DV_Panels-b)"/>
+  <circle cx="31.9981" cy="-31.9981" r="20.9995" fill="url(#DV_Panels-c)" transform="scale(1 -1)"/>
+  <circle cx="31.9981" cy="31.9981" r="20.9995" fill="url(#DV_Panels-d)"/>
+  <circle cx="31.9981" cy="31.9981" r="19"/>
+  <circle cx="31.9981" cy="31.9981" r="15.999" fill="#46464b"/>
+  <circle cx="31.9981" cy="31.9981" r="8.9992" fill="#1b1b1f"/>
+  <circle cx="31.9981" cy="31.9981" r="6.9998" fill="#2a2b2f"/>
+  </g>
+</svg>

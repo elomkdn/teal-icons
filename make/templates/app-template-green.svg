@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg id="svg1" width="128" height="128" version="1.1" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs id="defs1">
+    <linearGradient id="e" x1="7.937" x2="7.937" y1="15.081" y2="1.852" gradientTransform="matrix(7.5589 0 0 7.5589 .00028597 .062284)" gradientUnits="userSpaceOnUse">
+      <stop id="stop11" stop-color="#f1efeb" offset="0" style="stop-color:#26a16a;stop-opacity:1;"/>
+      <stop id="stop12" stop-color="#f7f6f4" offset="1" style="stop-color:#33d17a;stop-opacity:1;"/>
+    </linearGradient>
+    <filter id="filter2" x="-0.048" y="-0.048" width="1.096" height="1.096" color-interpolation-filters="sRGB">
+      <feGaussianBlur id="feGaussianBlur2" stdDeviation="2.24"/>
+    </filter>
+  </defs>
+  <rect id="rect12-7" x="8" y="10.624" width="112" height="112" rx="26" ry="26" filter="url(#filter2)" opacity=".25" stroke-width="1.9999"/>
+  <rect id="rect12" x="8" y="8" width="112" height="112" rx="26" ry="26" fill="url(#e)" stroke-width="1.9999"/>
+</svg>

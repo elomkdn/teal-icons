@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="64" height="64" viewBox="0 0 64 64" version="1.1">
+  <defs>
+    <linearGradient id="green-recorder-e" x1="47" x2="47" y1="17" y2="19" gradientTransform="translate(2 -2)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#35c559"/>
+      <stop offset=".5" stop-color="#71c581"/>
+      <stop offset="1" stop-color="#46a255"/>
+    </linearGradient>
+    <linearGradient id="green-recorder-d" x1="47" x2="47" y1="17" y2="19" gradientTransform="translate(-21.899 -11.153)scale(1.5085)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#606060"/>
+      <stop offset=".02" stop-color="#414141"/>
+      <stop offset="1" stop-color="#1e1e1e"/>
+    </linearGradient>
+    <linearGradient id="green-recorder-c" x1="7.937" x2="7.937" y1="5.861" y2="1.852" gradientTransform="scale(3.7796)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#bbbbbb"/>
+      <stop offset="1" stop-color="#ececec"/>
+    </linearGradient>
+    <linearGradient id="green-recorder-b" x1="29.073" x2="29.073" y1="51.829" y2="19.863" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#35c559"/>
+      <stop offset=".762" stop-color="#71c581"/>
+      <stop offset=".86" stop-color="#67bd77"/>
+      <stop offset="1" stop-color="#46a255"/>
+    </linearGradient>
+    <linearGradient id="green-recorder-bg" x1="7.9373" x2="7.9373" y1="15.081" y2="1.852" gradientTransform="scale(3.7796)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#363636"/>
+      <stop offset="1" stop-color="#525252"/>
+    </linearGradient>
+  </defs>
+  <defs><filter id="tile-shadow-blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.4"/></filter></defs><path fill-rule="evenodd" fill="#000000" opacity=".25" filter="url(#tile-shadow-blur)" d="m17 5.7h30c6.79 0 12.3 5.51 12.3 12.3v30c0 6.79-5.51 12.3-12.3 12.3h-30c-6.79 0-12.3-5.51-12.3-12.3v-30c0-6.79 5.51-12.3 12.3-12.3z"/>
+  <rect x="4" y="4" width="56" height="56" rx="13" ry="13" fill="url(#green-recorder-bg)"/>
+  <rect width="51.996" height="51.939" x="6.002" y="6" fill="#333333" rx="11" ry="11"/>
+  <rect width="46.002" height="46.002" x="9" y="9" fill="url(#green-recorder-b)" rx="8" ry="8"/>
+  <path fill="url(#green-recorder-c)" d="M17.002 3.969A12.973 12.973 0 0 0 4 16.97V19h56.002v-2.03A12.973 12.973 0 0 0 47 3.969z"/>
+  <circle cx="48.999" cy="16" r="1.508" fill="url(#green-recorder-d)" fill-rule="evenodd" style="paint-order:fill markers stroke"/>
+  <circle cx="49" cy="16" r="1" fill="url(#green-recorder-e)" fill-rule="evenodd" style="paint-order:fill markers stroke"/>
+  <image xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAcCAYAAAAN3M1lAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAmJJREFUWIW1l9tywjAMRDcJl/7/z3aAOOkDWrNeZBI6oBmNodjysayLO+CzMsjn9VOG/rtu6Iyr6at9nw6xBbYFQB1tBIAFQBFdZd0YSqjFD3DowGSbO4B/VuVmNwAXAQWAKfY9xPo55il8A6abj2Hg1eaqCs1DFdl8je8jgCOAUygAXAWcc5/Aplh4jN8I55srhHuXwjn03hz2zqGH+E29Rq9WMEKdAPzEeOwAZJLNGcP+EsrDnmLklRe0t9N4jGBnAfOrYXAuogTwa6VNwnHDSSCQrK/CRQRjUE4JFK/jFqOCHdBev3pOQdyzvEp3QuMxzzZdXPDIsEuAFQNj7JzsYPV68BwOnlh1flYuXAh2AfCLexYVPDzG4NXvXtO24tPDoGaGxo9WYa1H19DZ5qlHWGYY3HskvUpdzID2VsIKziKYwdOrMx7XvKdXeqJUOG0LmnG+cUEL65Kt39vECdVkq/crh/q09IC99TWVvwfHUpJlmRvOslqB3G52lQAwbIGpm4+4x48nyas6qFJkPed7KFVxsCwztfGydnm5YDvTVqbCBLrinkR6kFGgabPWsVUMaPByA7YrgmYFln1We6wemGAXsa09kx3l6XXRy0yeTj97S9JXSVa/snIyiPfolFpmejG2yN80hjiqVzUOe02f3uBrlvaLza+jtySejHB6es26V/VMoTW22GN9bVqeHIyGeDp/jqjRrEN4KNDWDRZDW5LFGE9IIH3AZXG47FBtZW+DEW7GI3P4utQncqbusZ5nd0v2HNFg9ifvFoCO/vkt6b2Tsn80vgLwLlhvzjcbfCN/9DM6cK1kXSQAAAAASUVORK5CYII=" width="38" height="28" x="13" y="24.19" image-rendering="optimizeQuality" preserveAspectRatio="none"/>
+  <path fill="#ffffff" d="M34.546 25.7a3.866 3.866 0 0 1 3.677 3.231l.26 1.54.165-.137 4.48-3.696c.229-.191.502-.322.794-.38a1.8 1.8 0 0 1 2.128 1.47l.962 5.727.962 5.727c.231 1.369-1.106 2.473-2.406 1.988l-5.441-2.03-.202-.076.258 1.541a3.865 3.865 0 0 1-3.178 4.463l-14.528 2.44a3.865 3.865 0 0 1-4.461-3.18l-1.961-11.674a3.866 3.866 0 0 1 3.179-4.462l14.527-2.44q.398-.066.785-.052M28.245 31a5.632 5.632 0 1 0 5.495 5.284c-.019-.435-.07-.695-.199-1.155A5.63 5.63 0 0 0 28.244 31z"/>
+</svg>

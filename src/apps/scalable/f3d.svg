@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" version="1.1"><defs>
+  <linearGradient id="plate" x1="7.9373" x2="7.9373" y1="15.081" y2="1.852" gradientTransform="scale(3.7796)" gradientUnits="userSpaceOnUse">
+   <stop offset="0" stop-color="#f1efeb"/>
+   <stop offset="1" stop-color="#fdfcfc"/>
+  </linearGradient>
+  <filter id="tile-shadow" x="0" y="0" width="64" height="64" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+   <feGaussianBlur stdDeviation="1.4"/>
+  </filter>
+  <filter id="glyph-shadow" x="0" y="0" width="64" height="64" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+   <feGaussianBlur stdDeviation="1.2"/>
+  </filter>
+ <linearGradient id="whiteTileBg" x1="0" y1="0.945" x2="0" y2="0.054"><stop offset="0" stop-color="#f1efeb"/><stop offset="1" stop-color="#fdfcfc"/></linearGradient></defs>
+ <rect x="4.7" y="5.7" width="54.6" height="54.6" rx="12.3" ry="12.3" fill="#000" opacity=".25" filter="url(#tile-shadow)"/>
+ <rect x="4" y="4" width="56" height="56" rx="13" ry="13" fill="url(#whiteTileBg)" style="fill:url(#whiteTileBg)"/>
+ <g transform="translate(0 1.4) translate(32 32) scale(.42) translate(-64.1 -58.21)" fill="#000" opacity=".3" filter="url(#glyph-shadow)">
+  <path d="M 36.12 63.30 L 64.30 5.00 L 87.65 5.00 Z"/>
+  <path d="M 60.30 65.00 L 36.42 65.00 L 88.45 6.70 Z"/>
+  <path d="M 39.59 111.42 L 68.71 51.10 L 92.08 51.10 Z"/>
+ </g>
+ <g transform="translate(32 32) scale(.42) translate(-64.1 -58.21)">
+  <path d="M 36.12 63.30 L 64.30 5.00 L 87.65 5.00 Z" fill="#c0202a"/>
+  <path d="M 60.30 65.00 L 36.42 65.00 L 88.45 6.70 Z" fill="#209949"/>
+  <path d="M 39.59 111.42 L 68.71 51.10 L 92.08 51.10 Z" fill="#074e8e"/>
+ </g>
+</svg>

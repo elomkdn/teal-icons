@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64"><defs>
+    <filter x="-50%" y="-50%" width="200%" height="200%" id="tile-blur">
+      <feGaussianBlur stdDeviation="1.4"/>
+    </filter>
+    <filter x="-50%" y="-50%" width="200%" height="200%" id="brush-blur">
+      <feGaussianBlur stdDeviation="1.14"/>
+    </filter>
+    <linearGradient id="plate" x2="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(0,-50,50,0,30,57)">
+      <stop offset="0" stop-color="#171d25"/>
+      <stop offset="1" stop-color="#2a475e"/>
+    </linearGradient>
+    <linearGradient id="handle" x1="2" x2="40" y1="87" y2="87" gradientTransform="rotate(-16.6 15.819 -31.316) scale(.11277)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#3584e4"/>
+      <stop offset="1" stop-color="#33d17a"/>
+    </linearGradient>
+    <linearGradient id="ferrule" x1="2" x2="40" y1="52" y2="52" gradientTransform="rotate(-16.6 15.819 -31.316) scale(.11277)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#9a9996"/>
+      <stop offset="0.646" stop-color="#c0bfbc"/>
+      <stop offset="1" stop-color="#77767b"/>
+    </linearGradient>
+    <g id="brush-shape" transform="scale(3.7796)">
+      <path d="m10.745 5.461 3.674-1.095a.225.225 0 0 1 .28.152l.71 2.377a.225.225 0 0 1-.152.28l-3.675 1.096a.225.225 0 0 1-.28-.152l-.709-2.377a.225.225 0 0 1 .152-.28z"/>
+      <path d="m11.302 8.12 4.106-1.225.387 1.297-4.107 1.224z"/>
+      <path d="m11.56 8.984.128.432c.04.133.15.231.287.255l.601.106c.409.072.742.368.86.765l.858 4.093a1.15 1.15 0 0 0 1.454.867 1.14 1.14 0 0 0 .724-1.516l-1.523-3.895a1.095 1.095 0 0 1 .3-1.11l.446-.419a.364.364 0 0 0 .1-.37l-.129-.432z"/>
+    </g>
+  </defs>
+  <path id="tile-shadow-shape" fill-rule="evenodd" fill="#000" opacity=".25" filter="url(#tile-blur)" d="m17 5.7h30c6.79 0 12.3 5.51 12.3 12.3v30c0 6.79-5.51 12.3-12.3 12.3h-30c-6.79 0-12.3-5.51-12.3-12.3v-30c0-6.79 5.51-12.3 12.3-12.3z"/>
+  <path id="plate-tile" fill-rule="evenodd" fill="url(#plate)" d="m17 4h30c7.18 0 13 5.82 13 13v30c0 7.18-5.82 13-13 13h-30c-7.18 0-13-5.82-13-13v-30c0-7.18 5.82-13 13-13z"/>
+  <g id="window">
+    <rect x="6.2" y="39.1" width="51.6" height="9.5" rx="1" ry=".7" fill="#fff" opacity=".2"/>
+    <rect x="20.1" y="9.4" width="15.9" height="6.4" rx="1.5" ry="1.6" fill="#fff" opacity=".2"/>
+    <rect x="22.1" y="11.5" width="11.9" height="2.1" rx="1.05" fill="#fff" opacity=".4"/>
+    <rect x="8.1" y="11.5" width="9" height="2.1" rx="1.05" fill="#fff" opacity=".4"/>
+    <rect x="38.9" y="11.5" width="9" height="2.1" rx="1.05" fill="#fff" opacity=".4"/>
+    <path fill="#fff" opacity=".2" transform="translate(50.2 10) scale(.6625 .625) translate(-112 -34)" d="m112 34v2l2 2-2 2v2h2l2-2 2 2h2v-2l-2-2 2-2v-2h-2l-2 2-2-2z"/>
+    <rect x="6.2" y="20.6" width="51.6" height="17.5" rx="1" ry="1.1" fill="#fff" opacity=".2"/>
+    <rect x="7.5" y="40.4" width="23.5" height="7.2" rx="1" ry=".85" fill="#fff" opacity=".2"/>
+    <rect x="33" y="40.4" width="23.5" height="7.2" rx="1" ry=".85" fill="#fff" opacity=".2"/>
+    <rect x="40.5" y="42.8" width="13.3" height="2.4" rx="1" ry=".7" fill="#637d9e"/>
+    <rect x="4.2" y="16.8" width="55.6" height="1.2" fill="#000" opacity=".2"/>
+    <path fill="#000" opacity=".149" transform="matrix(.4959 0 0 .63347 -2.7138 -13.6104)" d="m106.02 84-16.02-16h16v-10h10l-10 10h10v10l-10-10z"/>
+  </g>
+  <g id="brush-shadow" fill="#02060b" opacity=".35" filter="url(#brush-blur)">
+    <g transform="matrix(3.779599905014038, 0, 0, 3.779599905014038, 0, 1.25)">
+      <path d="m10.745 5.461 3.674-1.095a.225.225 0 0 1 .28.152l.71 2.377a.225.225 0 0 1-.152.28l-3.675 1.096a.225.225 0 0 1-.28-.152l-.709-2.377a.225.225 0 0 1 .152-.28z"/>
+      <path d="m11.302 8.12 4.106-1.225.387 1.297-4.107 1.224z"/>
+      <path d="m11.56 8.984.128.432c.04.133.15.231.287.255l.601.106c.409.072.742.368.86.765l.858 4.093a1.15 1.15 0 0 0 1.454.867 1.14 1.14 0 0 0 .724-1.516l-1.523-3.895a1.095 1.095 0 0 1 .3-1.11l.446-.419a.364.364 0 0 0 .1-.37l-.129-.432z"/>
+    </g>
+  </g>
+  <g id="brush">
+    <g transform="scale(3.7796)">
+      <path fill="#deddda" d="m10.745 5.461 3.674-1.095a.225.225 0 0 1 .28.152l.71 2.377a.225.225 0 0 1-.152.28l-3.675 1.096a.225.225 0 0 1-.28-.152l-.709-2.377a.225.225 0 0 1 .152-.28z"/>
+      <path fill="#000" opacity=".102" d="m10.745 5.461.752 2.13-.536-2.194zm.865-.258.839 1.633-.407-1.761zm2.377-.708.688 1.913-.472-1.978zm-1.297.386.817 2.346-.385-2.474z"/>
+      <path fill="url(#handle)" d="m11.56 8.984.128.432c.04.133.15.231.287.255l.601.106c.409.072.742.368.86.765l.858 4.093a1.15 1.15 0 0 0 1.454.867 1.14 1.14 0 0 0 .724-1.516l-1.523-3.895a1.095 1.095 0 0 1 .3-1.11l.446-.419a.364.364 0 0 0 .1-.37l-.129-.432z"/>
+      <path fill="url(#ferrule)" d="m11.302 8.12 4.106-1.225.387 1.297-4.107 1.224z"/>
+      <path fill="#fff" opacity=".2" d="m11.656 9.308.032.108 4.107-1.224-.032-.108zm-.354-1.188.032.107 4.107-1.224-.033-.108z"/>
+      <path fill="#000" opacity=".149" d="M15.849 14.295a.45.45 0 1 1-.864.258.45.45 0 0 1 .864-.258z"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="64" height="64" viewBox="0 0 64 64" version="1.1"><defs>
+  <linearGradient id="plate" x1="7.9373" x2="7.9373" y1="15.081" y2="1.852" gradientTransform="scale(3.7796)" gradientUnits="userSpaceOnUse">
+   <stop offset="0" stop-color="#f1efeb"/>
+   <stop offset="1" stop-color="#fdfcfc"/>
+  </linearGradient>
+  <filter id="tile-shadow" x="0" y="0" width="64" height="64" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+   <feGaussianBlur stdDeviation="1.4"/>
+  </filter>
+  <linearGradient id="scan-glow" gradientUnits="userSpaceOnUse" x1="0" x2="0" y1="42.000" y2="25.636">
+   <stop offset="0" stop-color="#ed333b" stop-opacity=".4"/>
+   <stop offset="1" stop-color="#ed333b" stop-opacity="0"/>
+  </linearGradient>
+ <clipPath id="tile-clip"><rect x="4" y="4" width="56" height="56" rx="13" ry="13"/></clipPath>
+ <linearGradient id="whiteTileBg" x1="0" y1="0.945" x2="0" y2="0.054"><stop offset="0" stop-color="#f1efeb"/><stop offset="1" stop-color="#fdfcfc"/></linearGradient></defs>
+ <rect id="tile-shadow-shape" x="4.7" y="5.7" width="54.6" height="54.6" rx="12.3" ry="12.3" fill="#000" opacity=".25" filter="url(#tile-shadow)" inkscape:label="Layer"/>
+ <rect id="plate-tile" x="4" y="4" width="56" height="56" rx="13" ry="13" fill="url(#whiteTileBg)" inkscape:label="Layer" style="fill:url(#whiteTileBg)"/>
+ <g id="glyph" transform="translate(2.9091 3.8182) scale(0.454545)">
+  <g fill="#3d3846">
+   <path fill-rule="evenodd" d="M20 20h32v32h-32zM28 28h16v16h-16z"/>
+   <path fill-rule="evenodd" d="M76 20h32v32h-32zM84 28h16v16h-16z"/>
+   <path fill-rule="evenodd" d="M20 72h32v32h-32zM28 80h16v16h-16z"/>
+   <path d="M32 32h8v8h-8z"/>
+   <path d="M88 32h8v8h-8z"/>
+   <path d="M32 84h8v8h-8z"/>
+
+    <path d="m 20 56 h 4 v 4 h -4 z m 0 0"/>
+    <path d="m 24 60 h 8 v 8 h -8 z m 0 0"/>
+    <path d="m 32 56 h 8 v 4 h -8 z m 0 0"/>
+    <path d="m 44 60 h 8 v 8 h -8 z m 0 0"/>
+    <path d="m 56 60 h 20 v 8 h -20 z m 0 0"/>
+    <path d="m 36 64 h 4 v 4 h -4 z m 0 0"/>
+    <path d="m 40 60 h 4 v 4 h -4 z m 0 0"/>
+    <path d="m 52 60 h 4 v 4 h -4 z m 0 0"/>
+    <path d="m 56 56 h 4 v 4 h -4 z m 0 0"/>
+    <path d="m 60 52 h 4 v 4 h -4 z m 0 0"/>
+    <path d="m 64 56 h 8 v 4 h -8 z m 0 0"/>
+    <path d="m 56 44 h 16 v 8 h -16 z m 0 0"/>
+    <path d="m 60 72 h 12 v 4 h -12 z m 0 0"/>
+    <path d="m 56 100 h 16 v 4 h -16 z m 0 0"/>
+    <path d="m 56 76 h 8 v 12 h -8 z m 0 0"/>
+    <path d="m 64 20 h 8 v 12 h -8 z m 0 0"/>
+    <path d="m 60 32 h 4 v 4 h -4 z m 0 0"/>
+    <path d="m 64 36 h 4 v 4 h -4 z m 0 0"/>
+    <path d="m 56 40 h 4 v 4 h -4 z m 0 0"/>
+    <path d="m 56 24 h 12 v 4 h -12 z m 0 0"/>
+    <path d="m 80 64 h 12 v -4 h -12 z m 0 0"/>
+    <path d="m 84 60 h 4 v -4 h -4 z m 0 0"/>
+    <path d="m 88 76 h 12 v -4 h -12 z m 0 0"/>
+    <path d="m 80 68 h 4 v -4 h -4 z m 0 0"/>
+    <path d="m 76 60 h 4 v -4 h -4 z m 0 0"/>
+    <path d="m 96 56 h 8 v 8 h -8 z m 0 0"/>
+    <path d="m 72 76 h 16 v 4 h -16 z m 0 0"/>
+    <path d="m 80 76 h 4 v -4 h -4 z m 0 0"/>
+    <path d="m 76 72 h 4 v -4 h -4 z m 0 0"/>
+    <path d="m 80 84 h 12 v 12 h -12 z m 0 0"/>
+    <path d="m 72 96 h 4 v 4 h -4 z m 0 0"/>
+    <path d="m 68 92 h 4 v -4 h -4 z m 0 0"/>
+    <path d="m 64 88 h 4 v -4 h -4 z m 0 0"/>
+    <path d="m 56 92 h 4 v 4 h -4 z m 0 0"/>
+    <path d="m 62 96 h 4 v 4 h -4 z m 0 0"/>
+    <path d="m 80 100 h 8 v 4 h -8 z m 0 0"/>
+    <path d="m 56 68 h 4 v 4 h -4 z m 0 0"/>
+    <path d="m 104 80 h 4 v -4 h -4 z m 0 0"/>
+    <path d="m 104 72 h 4 v -4 h -4 z m 0 0"/>
+    <path d="m 92 96 h 4 v -4 h -4 z m 0 0"/>
+    <path d="m 96 92 h 4 v -4 h -4 z m 0 0"/>
+    <path d="m 88 84 h 4 v 16 h -4 z m 0 0"/>
+    <path d="m 96 96 h 12 v 8 h -12 z m 0 0"/>
+    <path d="m 104 96 h 4 v -4 h -4 z m 0 0"/>
+    <path d="m 92 88 h 4 v -8 h -4 z m 0 0"/>
+    <path d="m 100 88 h 4 v -12 h -4 z m 0 0"/>
+    <path d="m 92 104 h 4 v -4 h -4 z m 0 0"/>
+  </g>
+ </g>
+ <g id="scan" clip-path="url(#tile-clip)">
+  <rect x="4" y="25.636" width="56" height="16.364" fill="url(#scan-glow)"/>
+  <rect x="4" y="40.182" width="56" height="1.818" fill="#ed333b"/>
+ </g>
+</svg>

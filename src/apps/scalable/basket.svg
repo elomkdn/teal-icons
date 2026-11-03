@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" version="1.1">
+  <defs>
+    <linearGradient id="plate" x1="7.9373" x2="7.9373" y1="15.081" y2="1.852" gradientTransform="scale(3.7796)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f1efeb"/>
+      <stop offset="1" stop-color="#fdfcfc"/>
+    </linearGradient>
+    <filter id="tile-shadow" x="0" y="0" width="64" height="64" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="1.4"/>
+    </filter>
+    <clipPath id="plate-clip">
+      <rect x="4" y="4" width="56" height="56" rx="13" ry="13"/>
+    </clipPath>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="32" y1="4" x2="32" y2="22" id="gradient-0" gradientTransform="matrix(0.999651, -0.026415, 0.030066, 1.137854, -0.024811, 0.185026)">
+      <stop offset="0" style="stop-color: rgb(18, 115, 222)"/>
+      <stop offset="1" style="stop-color: rgb(0, 141, 255);"/>
+    </linearGradient>
+  <linearGradient id="whiteTileBg" x1="0" y1="0.945" x2="0" y2="0.054"><stop offset="0" stop-color="#f1efeb"/><stop offset="1" stop-color="#fdfcfc"/></linearGradient></defs>
+  <rect id="tile-shadow-shape" x="4.7" y="5.7" width="54.6" height="54.6" rx="12.3" ry="12.3" fill="#000" opacity=".25" filter="url(#tile-shadow)"/>
+  <rect id="plate-tile" x="4" y="4" width="56" height="56" rx="13" ry="13" fill="url(#whiteTileBg)" style="fill:url(#whiteTileBg)"/>
+  <g id="notes-icon">
+    <g clip-path="url(#plate-clip)">
+      <rect x="4" y="4" width="56" height="18" style="fill: url(&quot;#gradient-0&quot;);"/>
+    </g>
+    <g fill="#cfd2d6">
+      <circle cx="12" cy="22.8" r="0.85"/>
+      <circle cx="16.0" cy="22.8" r=".85"/>
+      <circle cx="20.0" cy="22.8" r=".85"/>
+      <circle cx="24.0" cy="22.8" r=".85"/>
+      <circle cx="28.0" cy="22.8" r=".85"/>
+      <circle cx="32.0" cy="22.8" r=".85"/>
+      <circle cx="36.0" cy="22.8" r=".85"/>
+      <circle cx="40.0" cy="22.8" r=".85"/>
+      <circle cx="44.0" cy="22.8" r=".85"/>
+      <circle cx="48.0" cy="22.8" r=".85"/>
+      <circle cx="52.0" cy="22.8" r=".85"/>
+    </g>
+    <g fill="#dedede">
+      <rect x="12" y="36.1" width="40" height="2.8" rx="1.4"/>
+      <rect x="19" y="29.1" width="26" height="2.8" rx="1.4"/>
+      <rect x="14.5" y="50.1" width="35" height="2.8" rx="1.4"/>
+      <rect x="22.5" y="43.1" width="19" height="2.8" rx="1.4"/>
+    </g>
+  </g>
+</svg>

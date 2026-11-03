@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="64" height="64" viewBox="0 0 64 64" version="1.1"><defs>
+  <linearGradient id="floppy-alt-linearGradient894" x1="109.8377" x2="109.8377" y1="59.1528" y2="215.8278" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#f3f2f1" offset="0"/>
+   <stop stop-color="#d5d6d7" offset="1"/>
+  </linearGradient>
+ <linearGradient id="floppy-alt-bg" x1="7.9373" x2="7.9373" y1="15.081" y2="1.852" gradientTransform="scale(3.7796)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#363636"/><stop offset="1" stop-color="#525252"/></linearGradient></defs>
+ <defs><filter id="tile-shadow-blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.4"/></filter></defs><path fill-rule="evenodd" fill="#000000" opacity=".25" filter="url(#tile-shadow-blur)" d="m17 5.7h30c6.79 0 12.3 5.51 12.3 12.3v30c0 6.79-5.51 12.3-12.3 12.3h-30c-6.79 0-12.3-5.51-12.3-12.3v-30c0-6.79 5.51-12.3 12.3-12.3z"/><rect x="4" y="4" width="56" height="56" rx="13" ry="13" fill="url(#floppy-alt-bg)"/><g stroke-linejoin="round">
+  <path transform="scale(0.26458)" d="m58.7938 18.0669v56.2936h54.8196c5.5507 0 10.0208 -4.47 10.0208 -10.0208v-46.2723z" fill-opacity=".26911" stroke-linecap="square" stroke-width="21.4278"/>
+  <path transform="scale(0.26458)" d="m92.76 18.0669v56.2936h69.6107c5.5507 0 10.0208 -4.47 10.0208 -10.0208v-46.2723h-79.632zm-30.0961 124.4019c-8.878 0 -16.0222 7.148 -16.0222 16.026v63.8186c5.4427 2.2535 11.4144 3.5026 17.6905 3.5026h115.6259c6.2772 0 12.2508 -1.2484 17.6943 -3.5026v-63.8186c0 -8.878 -7.148 -16.026 -16.026 -16.026h-118.9613zm-30.7348 32.5546c-3.1024 0 -5.6027 2.4967 -5.6027 5.5991v11.2018c0 3.1024 2.5003 5.5991 5.6027 5.5991s5.5991 -2.4967 5.5991 -5.5991v-11.2018c0 -3.1024 -2.4967 -5.5991 -5.5991 -5.5991zm179.9604 0c-3.1024 0 -5.5991 2.4967 -5.5991 5.5991v11.2018c0 3.1024 2.4967 5.5991 5.5991 5.5991s5.5991 -2.4967 5.5991 -5.5991v-11.2018c0 -3.1024 -2.4967 -5.5991 -5.5991 -5.5991z" fill="url(#floppy-alt-linearGradient894)" stroke-linecap="square" stroke-width="21.4278"/>
+  <rect x="38.6283" y="8.5384" width="4.0873" height="8.6163" rx="0" ry="0" fill="#545658" stroke-linecap="square" stroke-width="5.6692"/>
+ </g>
+</svg>

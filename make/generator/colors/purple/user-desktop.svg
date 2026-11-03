@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="128px" viewBox="0 0 128 128" width="128px"><linearGradient id="a" gradientUnits="userSpaceOnUse" x1="8" x2="120" y1="0" y2="0">
+        <stop offset="0" stop-color="#a360ba"/>
+        <stop offset="0.0576991" stop-color="#bd97cf"/>
+        <stop offset="0.122204" stop-color="#a360ba"/>
+        <stop offset="0.873306" stop-color="#a360ba"/>
+        <stop offset="0.955997" stop-color="#c19dd1"/>
+        <stop offset="1" stop-color="#a360ba"/>
+    </linearGradient>
+    <clipPath id="body">
+        <rect x="8" y="18" width="112" height="92" rx="10"/>
+    </clipPath>
+    <!-- тонкая нижняя кромка (градиент шаблона, 1 px) -->
+    <rect x="8" y="19" width="112" height="92" rx="10" fill="url(#a)"/>
+    <!-- корпус -->
+    <rect x="8" y="18" width="112" height="92" rx="10" fill="#b185c6"/>
+    <!-- нижняя полоса рабочего стола -->
+    <rect x="8" y="94" width="112" height="16" fill="#9141ac" clip-path="url(#body)"/>
+    <!-- светлая кромка сверху -->
+    <path d="m 18 18 c -5.52 0 -10 4.48 -10 10 v 1 c 0 -5.52 4.48 -10 10 -10 h 92 c 5.52 0 10 4.48 10 10 v -1 c 0 -5.52 -4.48 -10 -10 -10 z" fill="#ffffff" opacity="0.5"/>
+</svg>

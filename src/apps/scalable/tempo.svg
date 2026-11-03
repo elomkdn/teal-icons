@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="64" height="64" viewBox="0 0 64 64" version="1.1"><defs>
+    <linearGradient id="plate" x1="7.937" x2="7.937" y1="15.081" y2="1.852" gradientTransform="scale(3.7796)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#4e35b8"/><stop offset="1" stop-color="#ab56de"/></linearGradient>
+    <linearGradient id="screen" x1="0" x2="0" y1="55.2" y2="8.7" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#131118"/><stop offset="1" stop-color="#272132"/></linearGradient>
+    <filter id="tile-shadow" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="1.4"/></filter>
+    <filter id="glyph-shadow" filterUnits="userSpaceOnUse" x="0" y="0" width="64" height="64" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="1.14"/><feOffset dy="1.25" result="b"/><feFlood flood-color="#271853" flood-opacity=".35"/><feComposite in2="b" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect x="4.7" y="5.7" width="54.6" height="54.6" rx="12.3" ry="12.3" fill="#000000" opacity=".25" filter="url(#tile-shadow)"/>
+  <rect x="4" y="4" width="56" height="56" rx="13" ry="13" fill="url(#plate)"/>
+  <rect x="8.88" y="8.69" width="46.22" height="46.49" rx="8.7" ry="8.7" fill="url(#screen)"/>
+  <g filter="url(#glyph-shadow)">
+    <g transform="scale(3.7796)">
+      <g transform="translate(-0.4494 -3.0615) scale(0.322)">
+    <!-- шкала -->
+    <g fill="none" stroke-linecap="round">
+      <g stroke="#d9d4e3" stroke-width="2">
+        <path d="m23.136 19.534h-1.3089"/>
+        <path d="m23.136 28.716h-2.6178"/>
+        <path d="m23.136 37.898h-3.9267"/>
+        <path d="m23.136 47.08h-5.2357"/>
+      </g>
+      <g stroke="#5b5468" stroke-width="1">
+        <path d="m23.136 21.371h-1.3089m1.3089 1.8364h-1.3089m1.3089 1.8364h-1.3089m1.3089 1.8364h-1.3089"/>
+        <path d="m23.136 30.553h-1.3089m1.3089 1.8364h-1.3089m1.3089 1.8364h-1.3089m1.3089 1.8364h-1.3089"/>
+        <path d="m23.136 39.735h-1.3089m1.3089 1.8364h-1.3089m1.3089 1.8364h-1.3089m1.3089 1.8364h-1.3089"/>
+      </g>
+    </g>
+    <!-- стержень маятника -->
+    <rect x="31.323" y="19.45" width="2.4314" height="32.7" rx="1.2157" fill="#f6bb42"/>
+    <!-- груз -->
+    <path d="m37.401 42.761h-9.7257l1.2157-7.2943h7.2943z" fill="#ffce54"/>
+    <path d="m28.891 33.035h7.2943v2.4314h-7.2943z" fill="#e2a935"/>
+  </g>
+    </g>
+  </g>
+</svg>
