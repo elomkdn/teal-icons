@@ -542,6 +542,36 @@ def okular():
                 f'stroke="{SURFACE0}" stroke-width="2.4"/></g>')
 
 
+# --- settings: the system's tools have the Mocha tile, whatever Adwair draws for them ------------
+
+def window_gear(c, a):
+    """Window behavior, rules and scripts: a window, a gear on it."""
+    return (f'<rect x="14" y="16" width="36" height="32" rx="6" fill="{c}"/>'
+            f'<path d="M14 22a6 6 0 0 1 6-6h24a6 6 0 0 1 6 6v2H14Z" fill="{a}" fill-opacity=".3"/>'
+            f'<path d="{gear(32, 36.5, 9, 7, 8, 2.8)}" fill="{a}" fill-rule="evenodd"/>')
+
+
+def chip(c, a):
+    """The processor: a chip and its pins."""
+    pins = "".join(f'<path d="M{x} 13v6M{x} 45v6M13 {x}h6M45 {x}h6" {ROUND} stroke="{c}" stroke-width="2.6"/>'
+                   for x in (25, 32, 39))
+    return (pins + f'<rect x="18" y="18" width="28" height="28" rx="5" fill="{c}"/>'
+            f'<rect x="25" y="25" width="14" height="14" rx="2.5" fill="{a}"/>')
+
+
+def display(c, a):
+    """A screen on its foot."""
+    return (f'<rect x="13.5" y="15.5" width="37" height="25" rx="4" fill="{c}"/>'
+            f'<rect x="17" y="19" width="30" height="18" rx="1.5" fill="{a}"/>'
+            f'<path d="M32 41v6.5M24.5 48.5h15" {ROUND} stroke="{c}" stroke-width="3.2"/>')
+
+
+def sound_card(c, a):
+    """The sound: a speaker and its waves."""
+    return (f'<path d="M16 26.5h6.5L32 18.5v27l-9.5-8H16a1.5 1.5 0 0 1-1.5-1.5v-8a1.5 1.5 0 0 1 1.5-1.5Z" fill="{c}"/>'
+            f'<path d="M38 26a8 8 0 0 1 0 12M42.5 21a15 15 0 0 1 0 22" {ROUND} stroke="{c}" stroke-width="3.2"/>')
+
+
 # --- tray icons, in the text color like the system's beside them -----------------------------
 
 def spotify_tray():
@@ -714,6 +744,11 @@ DESIGNS.update({
     "kwrite.svg": (lambda: page(pencil_on_lines, "sky"), kde("kwrite")[1:]),
     "kdeconnect.svg": (lambda: on_color(kde_phone, "sky"), kde("kdeconnect")[1:] + ["kdeconnect-app"]),
     "klassy-settings.svg": lambda: on_mocha(traffic_window),
+    "preferences-desktop-theme-windowdecorations.svg": lambda: on_mocha(traffic_window),
+    "preferences-system-windows.svg": (lambda: on_mocha(window_gear), ["preferences-system-windows-actions"]),
+    "preferences-devices-cpu.svg": lambda: on_mocha(chip, "green"),
+    # Adwair links it here too, and the apps' folder comes first
+    "video-display.svg": lambda: on_mocha(display, "blue"),
     "kmenuedit.svg": (lambda: paper_on_mocha(menu_list_pencil), kde("kmenuedit")[1:]),
     "kvantum.svg": (kvantum_logo, ["kvantummanager"]),
     "kwalletmanager.svg": (lambda: on_color(wallet, "peach"), ["kwalletmanager2", "org.kde.kwalletmanager5",
@@ -776,6 +811,14 @@ PLACES = {
 }
 
 
+# the hardware in the Info Center, among the devices
+DEVICES = {
+    "cpu.svg": lambda: on_mocha(chip, "green"),
+    "video-display.svg": lambda: on_mocha(display, "blue"),
+    "audio-card.svg": lambda: on_mocha(sound_card, "mauve"),
+}
+
+
 def write_all(designs, out):
     shutil.rmtree(out, ignore_errors=True)
     out.mkdir()
@@ -790,6 +833,7 @@ def main():
     SHADOW.write_text(shadow())
     write_all(DESIGNS, HERE / "apps")
     write_all(PLACES, HERE / "places")
+    write_all(DEVICES, HERE / "devices")
     print(f"{len(DESIGNS)} icons in {HERE / 'apps'}, {len(PLACES)} in {HERE / 'places'}")
 
 

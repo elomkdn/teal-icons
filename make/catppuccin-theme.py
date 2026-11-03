@@ -48,6 +48,7 @@ TEAL = {"dolphin.svg", "system-file-manager.svg", "file-manager.svg", "preferenc
 # Teal's own icons, drawn by teal/draw.py, in place of Adwair's
 DRAWN = Path(__file__).resolve().parent / "teal/apps"
 DRAWN_PLACES = Path(__file__).resolve().parent / "teal/places"
+DRAWN_DEVICES = Path(__file__).resolve().parent / "teal/devices"
 # Adwair's logos that spill over their tile, brought inside it
 FIT_IN_TILE = {"krita.svg": .82, "transmission.svg": .84}
 INHERITS = "{papirus},Adwaita,AdwaitaLegacy,hicolor,breeze"
@@ -232,6 +233,7 @@ def main():
     n = sum(recolor_tree(theme / d) for d in RECOLORED if (theme / d).is_dir())
     place_drawn(theme / "apps/scalable")
     place_drawn(theme / "places/scalable", drawn=DRAWN_PLACES)
+    place_drawn(theme / "devices/scalable", drawn=DRAWN_DEVICES)
     copy_papirus(theme, dirs)
     for d in OWN:  # filled on each computer by localize.py
         (theme / d).mkdir(parents=True)
@@ -244,6 +246,7 @@ def main():
         n += recolor_tree(dark, dark=True)
         place_drawn(dark / "apps/scalable", only_replace=True)
         place_drawn(dark / "places/scalable", only_replace=True, drawn=DRAWN_PLACES)
+        place_drawn(dark / "devices/scalable", only_replace=True, drawn=DRAWN_DEVICES)
         link_dirs(dark, theme, dirs)
         rewrite_index(dark, f"{name}-dark", theme.name, dirs)
     print(f"{name}: {n} icons recolored, {len(dirs) - len(OWN)} Papirus system folders")
