@@ -317,6 +317,14 @@ def smiley(c, a):
             f'<path d="M24.5 36c4 5.5 11 5.5 15 0" {ROUND} stroke="{a}" stroke-width="3"/>')
 
 
+def zap_bubble(c, a):
+    """ZapFast: the speech bubble of its logo, its tail down on the left, and a zap in it."""
+    return (f'<path d="M25 45.8A16.65 16.65 0 1 0 17.8 38.6L15 48.8Z" fill="{c}" stroke="{c}" '
+            f'stroke-width="2" stroke-linejoin="round"/>'
+            f'<path d="M35.8 20.5 25.6 33h6.2l-2.6 9.5L39.8 29.5h-6.2Z" fill="{a}" stroke="{a}" '
+            f'stroke-width="1" stroke-linejoin="round"/>')
+
+
 def viewfinder(c, a):
     return (f'<path d="M16.5 25v-5a3.5 3.5 0 0 1 3.5-3.5h5M39 16.5h5a3.5 3.5 0 0 1 3.5 3.5v5'
             f'M47.5 39v5a3.5 3.5 0 0 1-3.5 3.5h-5M25 47.5h-5a3.5 3.5 0 0 1-3.5-3.5v-5" {ROUND} stroke="{c}" stroke-width="4.2"/>'
@@ -772,6 +780,7 @@ DESIGNS.update({
     "spotify-linux-32.svg": (spotify_tray, [f"spotify-linux-{size}" for size in (16, 22, 24, 48, 64, 128, 256, 512)]),
     # its .desktop file names a picture, not an icon: install.sh adds a local copy naming this one
     "nuvio.svg": lambda: on_color(media_library, "pink"),
+    "zapfast.svg": lambda: on_color(zap_bubble, "green"),
 })
 
 
