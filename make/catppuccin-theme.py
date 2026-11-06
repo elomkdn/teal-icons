@@ -65,6 +65,11 @@ TRAY_SYSTEM = re.compile(
     r"|appointment|clock|computer|ac|gpm|xfpm|power|night|redshift|kalarm|klipper|mail)(-|$)")
 # apps whose own tray icons are missing or poor: Papirus's instead
 TRAY_PAPIRUS = set()
+# names Papirus lacks, linked to one of its icons in every folder that has it. Without them,
+# the lookup shortens the name inside Teal and lands on a full-color icon:
+# video-display-brightness (Plasma's Brightness applet, next to the screen's slider) would
+# show the video-display tile drawn for Info Center
+SAME_AS = {"video-display-brightness.svg": "video-display-symbolic.svg"}
 
 
 def is_system_tray(name, statuses):
@@ -118,6 +123,11 @@ def copy_papirus(theme, dirs):
                 f.unlink()
                 if target.exists():
                     f.write_text(papirus_recolor(target.read_text(errors="ignore")))
+    for d in dirs:
+        for name, other in SAME_AS.items():
+            out = theme / d / name
+            if (theme / d / other).exists() and not (out.exists() or out.is_symlink()):
+                out.symlink_to(other)
 
 
 def system_names(dirs):
