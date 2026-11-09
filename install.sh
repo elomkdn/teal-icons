@@ -9,7 +9,7 @@
 # Options:
 #   -p, --path PATH      Base installation path (default: ~/.local/share/icons)
 #   -s, --set            After install, make it the icon theme. KDE Plasma and GNOME.
-#   -u, --uninstall      Remove PATH/Teal and PATH/Teal-Papirus.
+#   -u, --uninstall      Remove PATH/Teal, PATH/Teal-Papirus and PATH/Teal-Settings.
 #   -h, --help           Show this help message
 #
 # Apps whose .desktop file names a picture instead of an icon (Nuvio) get a local copy of
@@ -72,7 +72,8 @@ unname_icons() {
 }
 
 if [[ $UNINSTALL -eq 1 ]]; then
-  rm -rf "${DEST:?}/$NAME" "${DEST:?}/$NAME-Papirus"
+  rm -rf "${DEST:?}/$NAME" "${DEST:?}/$NAME-Papirus" "${DEST:?}/$NAME-Settings"
+  command -v kwriteconfig6 >/dev/null && kwriteconfig6 --file systemsettingsrc --group Icons --key Theme --delete || true
   unname_icons
   refresh
   echo "Removed $DEST/$NAME. Pick another icon theme if Teal was in use."
@@ -84,7 +85,7 @@ trap 'rm -rf "$STAGE"' EXIT
 
 if [[ -d "$SCRIPT_DIR/share/icons/$NAME" ]]; then
   # a release archive: the theme is built, Papirus's system icons included
-  cp -a "$SCRIPT_DIR/share/icons/$NAME" "$STAGE/"
+  cp -a "$SCRIPT_DIR/share/icons/$NAME" "$SCRIPT_DIR/share/icons/$NAME-Settings" "$STAGE/"
 else
   # a clone of the repository: build it, from Adwair and Papirus
   if [[ ! -f "$PAPIRUS/index.theme" ]]; then
@@ -109,7 +110,7 @@ fi
 
 # the old version stays in place until the new one is complete
 mkdir -p "$DEST"
-for t in "$NAME" "$NAME-Papirus"; do
+for t in "$NAME" "$NAME-Papirus" "$NAME-Settings"; do
   rm -rf "${DEST:?}/$t"
   [[ -d "$STAGE/$t" ]] || continue
   mv "$STAGE/$t" "$DEST/$t"
@@ -119,6 +120,10 @@ for t in "$NAME" "$NAME-Papirus"; do
 done
 name_icons
 refresh
+# System Settings alone uses the theme with its pages' tiles
+if [[ "$DEST" == "${XDG_DATA_HOME:-$HOME/.local/share}/icons" ]] && command -v kwriteconfig6 >/dev/null; then
+  kwriteconfig6 --file systemsettingsrc --group Icons --key Theme "$NAME-Settings"
+fi
 echo "Installed $DEST/$NAME."
 
 if [[ $SET -eq 1 ]]; then

@@ -7,9 +7,10 @@ They follow Adwair's grid, itself that of macOS icons: a 56 px tile with 13 px c
 Catppuccin one: the theme builder copies these icons as they are, after the recoloring.
 
 The rule that keeps them together: an app has a tile of its own color with a paper symbol;
-a tool of the system (CachyOS, desktop settings) has the Mocha tile with a symbol in its own
-color (teal for CachyOS's tools), and so do the terminal, the system's state and the apps'
-own logos. Each
+a tool of the system with its own launcher has the Mocha tile with a silver symbol, and the
+system's pages and hardware are free pastel shapes, without a tile, colored by family: the
+icons stay light and the accent gives the theme its character (see ../RULES.md); the terminal, the system's state and the apps' own logos have that
+tile too. Each
 symbol is drawn on the 64 px grid, within about 16 to 48.
 
 usage: draw.py
@@ -33,6 +34,8 @@ MOCHA = {"red": "#f38ba8", "maroon": "#eba0ac", "peach": "#fab387", "yellow": "#
          "lavender": "#b4befe", "mauve": "#cba6f7", "pink": "#f5c2e7"}
 CRUST, BASE, SURFACE0, SURFACE1, SURFACE2, TEXT = "#11111b", "#1e1e2e", "#313244", "#45475a", "#585b70", "#cdd6f4"
 PAPER, PAPER_SHADE, PAPER_EDGE = "#eff1f5", "#dce0e8", "#ccd0da"  # Latte base, crust, surface0
+SILVER_TOP, SILVER_BOTTOM = "#e6e9ef", "#9399b2"  # Latte's mantle, Mocha's overlay 2
+BOLD_LINE = 4.2  # a free shape has no thin lines next to the solid ones
 
 TILE = 'x="4" y="3.969" width="56.002" height="56.002" rx="13.002"'
 
@@ -104,7 +107,7 @@ def settings():
     """The settings: a silver gear, in Catppuccin's grays (Latte's mantle to Mocha's overlay 2)."""
     d = gear(32, 31.97, 19.5, 15.8, 12, 6.2)
     return icon(vertical("tile", SURFACE2, SURFACE0)
-                + vertical("gear", "#e6e9ef", "#9399b2", 12.5, 51.5),
+                + vertical("gear", SILVER_TOP, SILVER_BOTTOM, 12.5, 51.5),
                 f'<rect {TILE} fill="url(#tile)"/>{rim(.3)}'
                 f'<path d="{d}" transform="translate(0 .8)" fill="{CRUST}" fill-opacity=".35" fill-rule="evenodd"/>'
                 f'<path d="{d}" fill="url(#gear)" fill-rule="evenodd"/>'
@@ -176,13 +179,62 @@ def on_color(glyph, family):
                 + glyph(PAPER, LATTE[family]))
 
 
-def on_mocha(glyph, family="teal"):
-    """The system's tools: a symbol in its color (teal by default) on the Mocha tile; its
-    details in the tile's color."""
-    return icon(mocha_tile() + vertical("glyph", MOCHA[family], LATTE[family], 13, 51),
+def on_mocha(glyph, family=None):
+    """The system's tools and pages: a silver symbol on the Mocha tile, or one in a family's
+    color; its details in the tile's color."""
+    top, bottom = (MOCHA[family], LATTE[family]) if family else (SILVER_TOP, SILVER_BOTTOM)
+    return icon(mocha_tile() + vertical("glyph", top, bottom, 13, 51),
                 f'<rect {TILE} fill="url(#tile)"/>{rim(MOCHA_RIM)}'
                 f'<g opacity=".35" transform="translate(0 .9)">{glyph(CRUST, CRUST)}</g>'
                 + glyph("url(#glyph)", SURFACE0))
+
+
+def mix(a, b, t):
+    ca = [int(a[i:i + 2], 16) for i in (1, 3, 5)]
+    cb = [int(b[i:i + 2], 16) for i in (1, 3, 5)]
+    return "#" + "".join(f"{round(x + (y - x) * t):02x}" for x, y in zip(ca, cb))
+
+
+# What each color of a free shape means; a symbol missing here stops the build
+FREE_FAMILIES = {glyph: family for family, glyphs in {
+    "silver": "plain_gear two_gears info sliders autostart x_mark letter letter_down animations wallet sound_card "
+              "music_note magnifier search_bar page_search",  # the system, text, motion, sound, search
+    "mauve": "palette_brush app_window desktop_panel paint_roller icon_shapes color_circles "
+             "splash_screen landscape sparkles",  # the look
+    "pink": "media_frame",  # media
+    "lavender": "keyboard mouse touchpad arrow_cursor key_combo drawing_tablet touch_screen swipe screen_edges "
+                "virtual_keyboard gamepad hard_drive usb_stick disc phone plug chip display two_screens",  # the hardware
+    "blue": "app_grid window_gear traffic_window desktops stacked_windows activities "
+            "spelling page_check bubble bluetooth people",  # windows, apps, documents; Bluetooth; users
+    "sky": "network wifi hotspot ethernet two_arrows relay cloud globe",  # connections and the world
+    "yellow": "moon day_night bolt battery clock",  # light, energy and time
+    "green": "shield shield_check padlock",  # security
+    "peach": "person_frame accessibility leave bell",  # your session and what calls for you
+}.items() for glyph in glyphs.split()}
+
+
+def free_form(glyph):
+    """The system's pages and hardware: a pastel shape without a tile, filling the grid, in the
+    color of its family (FREE_FAMILIES). Its details are real holes (a mask: QtSvg draws them
+    since Qt 6.7), so it reads on any background; a faint dark edge keeps it apart from a
+    selection or a light background."""
+    family = FREE_FAMILIES[glyph.__name__]
+    top, bottom = (TEXT, "#bac2de") if family == "silver" else (MOCHA[family], mix(MOCHA[family], LATTE[family], .3))
+    def bold(m):
+        width = float(m.group(1))
+        return m.group(0) if width < 2 or width >= BOLD_LINE else f'stroke="#fff" stroke-width="{BOLD_LINE}"'
+
+    drawing = re.sub(r'stroke="#fff" stroke-width="([\d.]+)"', bold, glyph("#fff", "#000"))
+    scaled = f'<g transform="translate(32 32) scale(1.42) translate(-32 -32)">{drawing}</g>'
+    shape = ('<mask id="shape" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">'
+             f'<rect width="64" height="64" fill="#000"/>{scaled}</mask>')
+    full = '<rect width="64" height="64" fill="{fill}" mask="url(#shape)" {more}/>'
+    edge = "".join(full.format(fill=CRUST, more=f'opacity="{o}" transform="translate({x} {y})"')
+                   for x, y, o in ((0, 1.1, .3), (.7, 0, .16), (-.7, 0, .16), (0, -.7, .1)))
+    return ('<?xml version="1.0" encoding="utf-8"?>\n'
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">'
+            f'<defs>{vertical("tint", top, bottom, 6, 58)}{shape}</defs>'
+            f'{edge}{full.format(fill="url(#tint)", more="")}</svg>\n')
 
 
 def paper_on_mocha(glyph):
@@ -201,11 +253,11 @@ def on_latte(glyph, family="teal"):
                 + glyph("url(#glyph)", PAPER))
 
 
-def on_dark(glyph, family="teal"):
+def on_dark(glyph):
     """A glowing line drawing, like the terminal's prompt."""
     return icon(mocha_tile(),
                 f'<rect {TILE} fill="url(#tile)"/>{rim(MOCHA_RIM)}'
-                f'<g opacity=".16">{glyph(MOCHA[family], 8)}</g>{glyph(MOCHA[family], 4)}')
+                f'<g opacity=".16">{glyph(SILVER_TOP, 8)}</g>{glyph(SILVER_TOP, 4)}')
 
 
 def calculator(c, a):
@@ -580,6 +632,410 @@ def sound_card(c, a):
             f'<path d="M38 26a8 8 0 0 1 0 12M42.5 21a15 15 0 0 1 0 22" {ROUND} stroke="{c}" stroke-width="3.2"/>')
 
 
+def hard_drive(c, a):
+    """A disk drive and its light."""
+    return (f'<rect x="13.5" y="18" width="37" height="28" rx="6" fill="{c}"/>'
+            f'<path d="M14 33.5h36" stroke="{a}" stroke-opacity=".5" stroke-width="2"/>'
+            f'<rect x="19" y="38" width="12" height="3" rx="1.5" fill="{a}"/><circle cx="43.5" cy="39.5" r="2.2" fill="{a}"/>')
+
+
+def usb_stick(c, a):
+    """A USB stick."""
+    return (f'<path d="M25.5 13.5h13v12h-13Z" fill="{c}" fill-opacity=".6"/>'
+            f'<rect x="28.5" y="17" width="2.6" height="2.6" fill="{a}"/><rect x="33" y="17" width="2.6" height="2.6" fill="{a}"/>'
+            f'<rect x="20.5" y="24" width="23" height="27" rx="5" fill="{c}"/>'
+            f'<rect x="27" y="32" width="10" height="10" rx="5" fill="{a}"/>')
+
+
+def disc(c, a):
+    """A disc: its label, its hole."""
+    return (f'<circle cx="32" cy="32" r="19" fill="{c}"/>'
+            f'<circle cx="32" cy="32" r="9" fill="none" stroke="{a}" stroke-opacity=".5" stroke-width="2"/>'
+            f'<circle cx="32" cy="32" r="4.2" fill="{a}"/>')
+
+
+def phone(c, a):
+    """A phone."""
+    return (f'<rect x="21" y="13" width="22" height="38" rx="4.5" fill="{c}"/>'
+            f'<rect x="24" y="17.5" width="16" height="27" rx="1.6" fill="{a}"/>'
+            f'<rect x="29" y="46.8" width="6" height="1.8" rx=".9" fill="{a}"/>')
+
+
+def keyboard(c, a):
+    """A keyboard: three rows of keys and the space bar."""
+    keys = "".join(f'<rect x="{x}" y="{y}" width="3.2" height="3.2" rx=".8" fill="{a}"/>'
+                   for y in (26.5, 32) for x in (18.5, 24.2, 29.9, 35.6, 41.3))
+    return (f'<rect x="12.5" y="21" width="39" height="23" rx="5" fill="{c}"/>{keys}'
+            f'<rect x="23" y="38" width="18" height="2.8" rx="1.4" fill="{a}"/>')
+
+
+def mouse(c, a):
+    """A mouse and its wheel."""
+    return (f'<rect x="21" y="13.5" width="22" height="37" rx="11" fill="{c}"/>'
+            f'<rect x="30.4" y="20" width="3.2" height="8.5" rx="1.6" fill="{a}"/>')
+
+
+def palette_brush(c, a):
+    """The look of the desktop: a painter's palette."""
+    return (f'<path d="M32 14a18 18 0 1 0 0 36c3.2 0 4.2-2.4 3-4.4-1.4-2.3-.1-5.6 3-5.6h5a7 7 0 0 0 7-7c0-10.5-8.1-19-18-19Z" fill="{c}"/>'
+            f'<circle cx="24" cy="26" r="3.2" fill="{a}"/><circle cx="33" cy="22" r="3.2" fill="{a}"/>'
+            f'<circle cx="41.5" cy="27" r="3.2" fill="{a}"/><circle cx="21.5" cy="36" r="3.2" fill="{a}"/>')
+
+
+def landscape(c, a):
+    """The wallpaper: a picture of mountains under the sun."""
+    return (f'<rect x="13" y="17" width="38" height="30" rx="5" fill="{c}"/>'
+            f'<circle cx="41" cy="25.5" r="3.6" fill="{a}"/>'
+            f'<path d="M17 43.5 27 28l7 10 4-5 8.5 10.5Z" fill="{a}"/>')
+
+
+def letter(c, a):
+    """The fonts: a capital A."""
+    return (f'<path d="M18.5 49 32 15l13.5 34M23.5 38h17" {ROUND} stroke="{c}" stroke-width="5.2"/>')
+
+
+def network(c, a):
+    """The network: three linked computers."""
+    return (f'<path d="M32 26v7.5M19.5 41v-7.5h25V41" {ROUND} stroke="{c}" stroke-width="3"/>'
+            f'<rect x="24" y="14" width="16" height="12.5" rx="3" fill="{c}"/>'
+            f'<rect x="12" y="40" width="15" height="11" rx="3" fill="{c}"/><rect x="37" y="40" width="15" height="11" rx="3" fill="{c}"/>')
+
+
+def color_circles(c, a):
+    """The colors: three overlapping discs."""
+    return (f'<circle cx="32" cy="24.5" r="11.5" fill="{c}"/><circle cx="24" cy="38.5" r="11.5" fill="{c}" fill-opacity=".72"/>'
+            f'<circle cx="40" cy="38.5" r="11.5" fill="{c}" fill-opacity=".48"/>')
+
+
+def globe(c, a):
+    """The languages and regions: a globe."""
+    return (f'<circle cx="32" cy="32" r="18.5" fill="none" stroke="{c}" stroke-width="3.4"/>'
+            f'<ellipse cx="32" cy="32" rx="8" ry="18.5" fill="none" stroke="{c}" stroke-width="3"/>'
+            f'<path d="M14 26h36M14 38h36" stroke="{c}" stroke-width="3"/>')
+
+
+def people(c, a):
+    """The users: two people."""
+    return (f'<circle cx="42" cy="26" r="6.2" fill="{c}" fill-opacity=".6"/>'
+            f'<path d="M37 36.5c7.8-1.8 15 2.6 15 10.5h-9.5c0-4.2-2.2-7.7-5.5-10.5Z" fill="{c}" fill-opacity=".6"/>'
+            f'<circle cx="26" cy="25" r="8.2" fill="{c}"/>'
+            f'<path d="M12 48c0-9 6-14.5 14-14.5S40 39 40 48c0 .8-.6 1.4-1.4 1.4H13.4C12.6 49.4 12 48.8 12 48Z" fill="{c}"/>')
+
+
+def sliders(c, a):
+    """Quick settings: three sliders."""
+    rows = ((21.5, 40), (32, 23.5), (42.5, 36))
+    return ("".join(f'<path d="M15 {y}H49" {ROUND} stroke="{c}" stroke-opacity=".5" stroke-width="3.4"/>'
+                    f'<circle cx="{x}" cy="{y}" r="5.8" fill="{c}"/>' for y, x in rows))
+
+
+def spelling(c, a):
+    """The spell checker: a letter, checked."""
+    return (f'<path d="M15.5 38.5 25.5 14l10 24.5M19.5 30.5h12" {ROUND} stroke="{c}" stroke-width="4.4"/>'
+            f'<path d="M29.5 44 36.5 50.5 49.5 33" {ROUND} stroke="{c}" stroke-width="5"/>')
+
+
+def day_night(c, a):
+    """The day-night cycle: a disc, half night, the rays of the day on the other side."""
+    rays = "".join(f'M{32 + 20.5 * math.cos(math.radians(t)):.2f} {32 + 20.5 * math.sin(math.radians(t)):.2f}'
+                   f'L{32 + 25.5 * math.cos(math.radians(t)):.2f} {32 + 25.5 * math.sin(math.radians(t)):.2f}'
+                   for t in (110, 145, 180, 215, 250))
+    return (f'<circle cx="32" cy="32" r="14.5" fill="none" stroke="{c}" stroke-width="3.4"/>'
+            f'<path d="M32 17.5a14.5 14.5 0 0 1 0 29Z" fill="{c}"/>'
+            f'<path d="{rays}" {ROUND} stroke="{c}" stroke-width="3.4"/>')
+
+
+def autostart(c, a):
+    """What starts by itself: a play button."""
+    return (f'<circle cx="32" cy="32" r="19" fill="{c}"/>'
+            f'<path d="M27.5 23v18L42 32Z" fill="{a}" stroke="{a}" stroke-width="2.4" stroke-linejoin="round"/>')
+
+
+def moon(c, a):
+    """The night light: a crescent and a star."""
+    return (f'<path d="M36.5 14.5a18.5 18.5 0 1 0 13.5 29 15.5 15.5 0 0 1-13.5-29Z" fill="{c}"/>'
+            f'<path d="M45 15.5l1.4 3.6 3.6 1.4-3.6 1.4-1.4 3.6-1.4-3.6-3.6-1.4 3.6-1.4Z" fill="{c}"/>')
+
+
+def hotspot(c, a):
+    """The hotspot: waves going out on both sides."""
+    return (f'<circle cx="32" cy="32" r="4.8" fill="{c}"/>'
+            f'<path d="M22.5 21.5a14.5 14.5 0 0 0 0 21M41.5 21.5a14.5 14.5 0 0 1 0 21'
+            f'M15.5 15a24 24 0 0 0 0 34M48.5 15a24 24 0 0 1 0 34" {ROUND} stroke="{c}" stroke-width="3.6"/>')
+
+
+def key_combo(c, a):
+    """The shortcuts: two keys, pressed together."""
+    return (f'<rect x="11" y="21" width="18" height="22" rx="5" fill="{c}"/><rect x="35" y="21" width="18" height="22" rx="5" fill="{c}"/>'
+            f'<rect x="15.5" y="35.5" width="9" height="2.6" rx="1.3" fill="{a}"/><rect x="39.5" y="35.5" width="9" height="2.6" rx="1.3" fill="{a}"/>'
+            f'<path d="M32 29v6M29 32h6" {ROUND} stroke="{c}" stroke-width="2.6"/>')
+
+
+def ethernet(c, a):
+    """The wired network: its plug and cable."""
+    pins = "".join(f'<rect x="{x}" y="17" width="2.2" height="6" fill="{a}"/>' for x in (24.5, 28.5, 32.5, 36.5))
+    return (f'<path d="M20.5 16a2.5 2.5 0 0 1 2.5-2.5h18a2.5 2.5 0 0 1 2.5 2.5v15a3 3 0 0 1-3 3H38v8H26v-8h-2.5a3 3 0 0 1-3-3Z" fill="{c}"/>'
+            f'{pins}<rect x="29" y="41" width="6" height="10" fill="{c}"/>')
+
+
+def wifi(c, a):
+    """The Wi-Fi: its three arcs."""
+    return (f'<path d="M13.5 28.5a26 26 0 0 1 37 0M20.5 35.5a16 16 0 0 1 23 0M27 42a7 7 0 0 1 10 0" {ROUND} stroke="{c}" stroke-width="4.2"/>'
+            f'<circle cx="32" cy="48" r="3.4" fill="{c}"/>')
+
+
+def music_note(c, a):
+    """The system's sounds: a pair of notes."""
+    return (f'<path d="M25.5 45V20.5l21.5-5V40" {ROUND} stroke="{c}" stroke-width="3.6"/>'
+            f'<ellipse cx="20" cy="45" rx="6.8" ry="5.4" fill="{c}"/><ellipse cx="41.5" cy="40" rx="6.8" ry="5.4" fill="{c}"/>')
+
+
+def virtual_keyboard(c, a):
+    """The on-screen keyboard: a keyboard that goes away."""
+    keys = "".join(f'<rect x="{x}" y="{y}" width="3.2" height="3.2" rx=".8" fill="{a}"/>'
+                   for y in (20, 25.5) for x in (18.5, 24.2, 29.9, 35.6, 41.3))
+    return (f'<rect x="12.5" y="14.5" width="39" height="23" rx="5" fill="{c}"/>{keys}'
+            f'<rect x="23" y="31.5" width="18" height="2.8" rx="1.4" fill="{a}"/>'
+            f'<path d="M25.5 43.5 32 49l6.5-5.5" {ROUND} stroke="{c}" stroke-width="3.6"/>')
+
+
+def two_screens(c, a):
+    """The screens' layout: two screens side by side."""
+    return (f'<rect x="12" y="15" width="26" height="19" rx="4" fill="{c}" fill-opacity=".55"/>'
+            f'<rect x="26" y="29" width="26" height="19" rx="4" fill="{a}"/>'
+            f'<rect x="28" y="31" width="22" height="15" rx="2.6" fill="{c}"/>')
+
+
+def bell(c, a):
+    """The notifications: a bell."""
+    return (f'<path d="M32 13c-8 0-13.5 6-13.5 13.5v8L14 41a2 2 0 0 0 1.7 3h32.6a2 2 0 0 0 1.7-3l-4.5-6.5v-8C45.5 19 40 13 32 13Z" fill="{c}"/>'
+            f'<path d="M26.5 47.5a6 6 0 0 0 11 0Z" fill="{c}"/>')
+
+
+def leave(c, a):
+    """The desktop's session: a door, and the arrow leaving it."""
+    return (f'<rect x="14" y="13" width="23" height="38" rx="4.5" fill="{c}"/><circle cx="31.5" cy="32" r="2" fill="{a}"/>'
+            f'<path d="M41 32h12.5M47 25l7 7-7 7" {ROUND} stroke="{c}" stroke-width="4"/>')
+
+
+def shopping_bag(c, a):
+    """The software center: a bag."""
+    return (f'<path d="M17 24h30l2.6 22.5a4 4 0 0 1-4 4.5H18.4a4 4 0 0 1-4-4.5Z" fill="{c}"/>'
+            f'<path d="M24.5 30v-9a7.5 7.5 0 0 1 15 0v9" {ROUND} stroke="{a}" stroke-width="3.2"/>'
+            f'<path d="M24.5 24v-3a7.5 7.5 0 0 1 15 0v3" {ROUND} stroke="{c}" stroke-width="3.2"/>')
+
+
+def star(cx, cy, r):
+    k = .22 * r
+    return (f"M{cx} {cy - r}L{cx + k} {cy - k}L{cx + r} {cy}L{cx + k} {cy + k}L{cx} {cy + r}"
+            f"L{cx - k} {cy + k}L{cx - r} {cy}L{cx - k} {cy - k}Z")
+
+
+def accessibility(c, a):
+    return (f'<circle cx="32" cy="17.5" r="5" fill="{c}"/>'
+            f'<path d="M15.5 26c5.5 2 10.8 3 16.5 3s11-1 16.5-3M32 29v9l-7 13M32 38l7 13" {ROUND} stroke="{c}" stroke-width="4.2"/>')
+
+
+def activities(c, a):
+    return (f'<rect x="19" y="14" width="26" height="9" rx="4" fill="{c}" fill-opacity=".45"/>'
+            f'<rect x="15.5" y="26" width="33" height="10" rx="4.5" fill="{c}" fill-opacity=".72"/>'
+            f'<rect x="12" y="39" width="40" height="11" rx="5" fill="{c}"/>')
+
+
+def animations(c, a):
+    return (f'<circle cx="41.5" cy="32" r="10.5" fill="{c}"/><circle cx="25" cy="32" r="6" fill="{c}" fill-opacity=".55"/>'
+            f'<circle cx="14.5" cy="32" r="3.2" fill="{c}" fill-opacity=".3"/>')
+
+
+def app_grid(c, a):
+    return "".join(f'<rect x="{x}" y="{y}" width="16" height="16" rx="4.5" fill="{c}"/>' for x in (14, 34) for y in (14, 34))
+
+
+def page_check(c, a):
+    return (f'<path d="M18.5 13h17L46 23.5V47a4 4 0 0 1-4 4H18.5a4 4 0 0 1-4-4V17a4 4 0 0 1 4-4Z" fill="{c}"/>'
+            f'<path d="M23 35l6 6 11-13" {ROUND} stroke="{a}" stroke-width="3.6"/>')
+
+
+def bluetooth(c, a):
+    return f'<path d="M21.5 22 42.5 41 32 51V13l10.5 10-21 19" {ROUND} stroke="{c}" stroke-width="4.2"/>'
+
+
+def desktops(c, a):
+    outlines = "".join(f'<rect x="{x}" y="{y}" width="16" height="16" rx="4" fill="none" stroke="{c}" stroke-width="3"/>'
+                       for x, y in ((35, 15), (15, 35), (35, 35)))
+    return f'<rect x="13.5" y="13.5" width="19" height="19" rx="5" fill="{c}"/>{outlines}'
+
+
+def cloud(c, a):
+    return f'<path d="M21.5 47a10.5 10.5 0 0 1-1.7-20.9A13.5 13.5 0 0 1 45.6 27 10 10 0 0 1 44 47Z" fill="{c}"/>'
+
+
+def search_bar(c, a):
+    return (f'<rect x="12" y="22.5" width="40" height="19" rx="9.5" fill="{c}"/>'
+            f'<circle cx="23" cy="31" r="4.1" fill="none" stroke="{a}" stroke-width="2.6"/>'
+            f'<path d="M26 34.2 29 37.4M34 32h11" {ROUND} stroke="{a}" stroke-width="2.6"/>')
+
+
+def gamepad(c, a):
+    dots = f'<circle cx="41.5" cy="28.5" r="2.4" fill="{a}"/><circle cx="46" cy="34" r="2.4" fill="{a}"/>'
+    return (f'<path d="M21 21h22c6 0 10 5 10.6 11l1.1 9c.6 5.3-5.8 8.3-9.3 4.3L40.5 39h-17l-5.9 6.3c-3.5 4-9.9 1-9.3-4.3l1.1-9C10 26 15 21 21 21Z" fill="{c}"/>'
+            f'<path d="M20 26.5v9M15.5 31h9" {ROUND} stroke="{a}" stroke-width="3"/>{dots}')
+
+
+def clock(c, a):
+    return f'<circle cx="32" cy="32" r="19" fill="{c}"/><path d="M32 20.5V32l8 5" {ROUND} stroke="{a}" stroke-width="3.6"/>'
+
+
+def sparkles(c, a):
+    return (f'<path d="{star(27, 34, 16)}" fill="{c}"/><path d="{star(44, 21, 8)}" fill="{c}"/>'
+            f'<path d="{star(46, 44, 5)}" fill="{c}" fill-opacity=".7"/>')
+
+
+def letter_down(c, a):
+    return (f'<path d="M12.5 39 22.5 14l10 25M16.5 31h12" {ROUND} stroke="{c}" stroke-width="4.4"/>'
+            f'<path d="M43.5 17v28M35.5 37l8 8 8-8" {ROUND} stroke="{c}" stroke-width="4.4"/>')
+
+
+def icon_shapes(c, a):
+    return (f'<circle cx="22.5" cy="22.5" r="8.5" fill="{c}"/><rect x="34.5" y="14.5" width="16" height="16" rx="3.5" fill="{c}"/>'
+            f'<path d="M22.5 34.5l8.8 15.5H13.7Z" fill="{c}" stroke="{c}" stroke-width="1.6" stroke-linejoin="round"/>'
+            f'<path d="{star(42.5, 42.5, 9.5)}" fill="{c}"/>')
+
+
+def shield_check(c, a):
+    return (f'<path d="M32 12.5 49.5 19v12.5c0 10-7 17.5-17.5 21-10.5-3.5-17.5-11-17.5-21V19Z" fill="{c}"/>'
+            f'<path d="M24 32l6 6 11-13" {ROUND} stroke="{a}" stroke-width="3.8"/>')
+
+
+def touchpad(c, a):
+    return (f'<rect x="13" y="15" width="38" height="34" rx="6" fill="{c}"/>'
+            f'<path d="M13 40h38M32 40v9" stroke="{a}" stroke-width="2.4"/>')
+
+
+def arrow_cursor(c, a):
+    return f'<path d="M19 12v35l9.5-8.9 6.5 14 6.2-2.8-6.5-13.6 13.4-1.200Z" fill="{c}" stroke="{c}" stroke-width="1.6" stroke-linejoin="round"/>'
+
+
+def x_mark(c, a):
+    return f'<path d="M17 16 47 48M47 16 17 48" {ROUND} stroke="{c}" stroke-width="5.6"/>'
+
+
+def two_arrows(c, a):
+    return f'<path d="M14 24.500h34M40 16.500l8 8-8 8M50 39.500H16M24 31.500l-8 8 8 8" {ROUND} stroke="{c}" stroke-width="4.2"/>'
+
+
+def page_search(c, a):
+    return (f'<path d="M17 13h15l9 9v8.500a12 12 0 0 0-14 20H17a4 4 0 0 1-4-4V17a4 4 0 0 1 4-4Z" fill="{c}" fill-opacity=".65"/>'
+            f'<circle cx="37.5" cy="38.5" r="8" fill="none" stroke="{c}" stroke-width="3.8"/>'
+            f'<path d="M43.5 44.5 50 51" {ROUND} stroke="{c}" stroke-width="4.2"/>')
+
+
+def bubble(c, a):
+    dots = "".join(f'<circle cx="{x}" cy="28.5" r="2.6" fill="{a}"/>' for x in (23, 32, 41))
+    return (f'<path d="M17 13.500h30a5 5 0 0 1 5 5V38.500a5 5 0 0 1-5 5H31l-11 8.500v-8.500h-3a5 5 0 0 1-5-5V18.500a5 5 0 0 1 5-5Z" fill="{c}"/>{dots}')
+
+
+def relay(c, a):
+    return (f'<path d="M26 32h12" {ROUND} stroke="{c}" stroke-width="3.4"/>'
+            f'<rect x="12" y="22.5" width="15" height="19" rx="4" fill="{c}"/><rect x="37" y="22.5" width="15" height="19" rx="4" fill="{c}"/>'
+            f'<circle cx="32" cy="32" r="4.4" fill="{c}"/>')
+
+
+def two_gears(c, a):
+    return (f'<path d="{gear(25, 25, 13, 10.2, 9, 4.2)}" fill="{c}" fill-rule="evenodd"/>'
+            f'<path d="{gear(43.5, 42.5, 9.8, 7.6, 8, 3)}" fill="{c}" fill-opacity=".72" fill-rule="evenodd"/>')
+
+
+def app_window(c, a):
+    return (f'<rect x="13" y="15.5" width="38" height="33" rx="6.5" fill="{c}"/>'
+            f'<circle cx="19.5" cy="22" r="2" fill="{a}"/><circle cx="26" cy="22" r="2" fill="{a}"/>'
+            f'<rect x="18" y="28" width="28" height="15" rx="2.5" fill="{a}"/>')
+
+
+def desktop_panel(c, a):
+    return (f'<rect x="13" y="14.5" width="38" height="35" rx="6.5" fill="{c}"/>'
+            f'<rect x="18" y="41" width="28" height="4.5" rx="2.25" fill="{a}"/>')
+
+
+def stacked_windows(c, a):
+    return (f'<rect x="23" y="14" width="29" height="24" rx="5.5" fill="{c}" fill-opacity=".5"/>'
+            f'<rect x="12" y="24" width="31" height="26" rx="5.5" fill="{c}"/>')
+
+
+def drawing_tablet(c, a):
+    return (f'<rect x="14.5" y="14" width="35" height="36" rx="6" fill="{c}"/>'
+            f'<path d="M38.5 22.5 26 39" {ROUND} stroke="{a}" stroke-width="3.4"/>')
+
+
+def bolt(c, a):
+    return f'<path d="M36.5 12 18 36.500h12.500L26.5 52 46.5 27H34Z" fill="{c}" stroke="{c}" stroke-width="1.8" stroke-linejoin="round"/>'
+
+
+def paint_roller(c, a):
+    return (f'<rect x="13.5" y="14" width="32" height="13" rx="4.5" fill="{c}"/>'
+            f'<path d="M45.5 20.500h5v12.500H32v6" {ROUND} stroke="{c}" stroke-width="3.4"/>'
+            f'<rect x="27.5" y="38.5" width="9" height="13" rx="2.8" fill="{c}"/>')
+
+
+def padlock(c, a):
+    return (f'<path d="M22 29v-7a10 10 0 0 1 20 0v7" {ROUND} stroke="{c}" stroke-width="4.2"/>'
+            f'<rect x="14.5" y="28" width="35" height="24" rx="5.5" fill="{c}"/>'
+            f'<circle cx="32" cy="37.5" r="3.1" fill="{a}"/><rect x="30.5" y="38.5" width="3" height="7.5" rx="1.5" fill="{a}"/>')
+
+
+def info(c, a):
+    return (f'<circle cx="32" cy="32" r="19" fill="{c}"/><circle cx="32" cy="22.5" r="2.8" fill="{a}"/>'
+            f'<rect x="29.5" y="28.5" width="5" height="14" rx="2.5" fill="{a}"/>')
+
+
+def person_frame(c, a):
+    return (f'<rect x="13" y="13" width="38" height="38" rx="9" fill="{c}"/>'
+            f'<circle cx="32" cy="26" r="6.2" fill="{a}"/><path d="M20.5 45.500c.8-7.5 5.5-11.5 11.5-11.500s10.7 4 11.5 11.500Z" fill="{a}"/>')
+
+
+def splash_screen(c, a):
+    return (f'<rect x="13" y="15.5" width="38" height="33" rx="6.5" fill="{c}"/>'
+            f'<circle cx="32" cy="27" r="4.6" fill="{a}"/><rect x="21" y="37" width="22" height="3.6" rx="1.8" fill="{a}"/>')
+
+
+def touch_screen(c, a):
+    return (f'<rect x="15.5" y="13" width="33" height="38" rx="6" fill="{c}"/>'
+            f'<circle cx="32" cy="32" r="8" fill="none" stroke="{a}" stroke-width="2.6"/><circle cx="32" cy="32" r="3" fill="{a}"/>')
+
+
+def battery(c, a):
+    return (f'<rect x="11.5" y="21.5" width="37" height="21" rx="5.5" fill="{c}"/><rect x="49.5" y="27.5" width="3.8" height="9" rx="1.6" fill="{c}"/>'
+            f'<path d="M32 24.500l-7.5 9h5.500l-2 6.5 8-9.200h-5.500Z" fill="{a}"/>')
+
+
+def shield(c, a):
+    return f'<path d="M32 12.5 49.5 19v12.5c0 10-7 17.5-17.5 21-10.5-3.5-17.5-11-17.5-21V19Z" fill="{c}"/>'
+
+
+def plug(c, a):
+    return (f'<path d="M24 13v11M40 13v11M32 44v8" {ROUND} stroke="{c}" stroke-width="4.2"/>'
+            f'<path d="M17.5 23h29v7.5a14.5 14.5 0 0 1-29 0Z" fill="{c}" stroke="{c}" stroke-width="1.6" stroke-linejoin="round"/>')
+
+
+def media_frame(c, a):
+    return (f'<rect x="13" y="16.5" width="38" height="31" rx="6.5" fill="{c}"/>'
+            f'<path d="M27.5 24.5v15L41 32Z" fill="{a}" stroke="{a}" stroke-width="2.4" stroke-linejoin="round"/>')
+
+
+def plain_gear(c, a):
+    return f'<path d="{gear(32, 31.97, 19.5, 15.8, 12, 6.2)}" fill="{c}" fill-rule="evenodd"/>'
+
+
+def screen_edges(c, a):
+    return (f'<rect x="14.5" y="16.5" width="35" height="31" rx="5" fill="none" stroke="{c}" stroke-width="3.2"/>'
+            f'<rect x="13" y="15" width="14" height="14" rx="5" fill="{c}"/>')
+
+
+def swipe(c, a):
+    return (f'<circle cx="19" cy="32" r="8" fill="{c}"/>'
+            f'<path d="M32 32h18.5M43.5 25l7 7-7 7" {ROUND} stroke="{c}" stroke-width="4.2"/>')
+
+
 # --- tray icons, in the text color like the system's beside them -----------------------------
 
 def spotify_tray():
@@ -738,8 +1194,8 @@ DESIGNS.update({
     "org.cachyos.hello.svg": (cachyos_hello, ["cachyos-hello"]),
     "org.cachyos.KernelManager.svg": (lambda: on_mocha(kernel), ["cachyos-kernel-manager"]),
     "org.cachyos.scx-manager.svg": (lambda: on_mocha(scx_gear), ["scx-manager"]),
-    "cachy-update-blue.svg": (lambda: on_mocha(refresh), ["cachy-update", "arch-update"]),
-    "cachyos-pi.svg": (lambda: on_mocha(package), ["cachyos-package-installer"]),
+    "cachy-update-blue.svg": (lambda: on_mocha(refresh, "teal"), ["cachy-update", "arch-update"]),
+    "cachyos-pi.svg": (lambda: on_mocha(package, "teal"), ["cachyos-package-installer"]),
     "printer.svg": (lambda: on_color(printer, "lavender"),
                     ["cups", "system-config-printer", "preferences-devices-printer", "printer-settings"]),
     "elisa.svg": (elisa, kde("elisa")[1:]),
@@ -752,11 +1208,11 @@ DESIGNS.update({
     "kwrite.svg": (lambda: page(pencil_on_lines, "sky"), kde("kwrite")[1:]),
     "kdeconnect.svg": (lambda: on_color(kde_phone, "sky"), kde("kdeconnect")[1:] + ["kdeconnect-app"]),
     "klassy-settings.svg": lambda: on_mocha(traffic_window),
-    "preferences-desktop-theme-windowdecorations.svg": lambda: on_mocha(traffic_window),
-    "preferences-system-windows.svg": (lambda: on_mocha(window_gear), ["preferences-system-windows-actions"]),
-    "preferences-devices-cpu.svg": lambda: on_mocha(chip, "green"),
+    "preferences-desktop-theme-windowdecorations.svg": lambda: free_form(traffic_window),
+    "preferences-system-windows.svg": (lambda: free_form(window_gear), ["preferences-system-windows-actions"]),
+    "preferences-devices-cpu.svg": lambda: free_form(chip),
     # Adwair links it here too, and the apps' folder comes first
-    "video-display.svg": lambda: on_mocha(display, "blue"),
+    "video-display.svg": lambda: free_form(display),
     "kmenuedit.svg": (lambda: paper_on_mocha(menu_list_pencil), kde("kmenuedit")[1:]),
     "kvantum.svg": (kvantum_logo, ["kvantummanager"]),
     "kwalletmanager.svg": (lambda: on_color(wallet, "peach"), ["kwalletmanager2", "org.kde.kwalletmanager5",
@@ -797,6 +1253,18 @@ def desktop_folder():
     return re.sub(r'<g transform="translate\(22[^>]*>.*?</g>', screen, svg, flags=re.S)
 
 
+# the folders' soft shadow (generator/colors.py): stacked copies of the outline
+SHADOW_LAYERS = ((5.0, 0.06), (3.6, 0.09), (2.4, 0.12), (1.2, 0.16))
+TRASH_OUTLINE = ('<path d="M14.5 20h35l-2.7 33.1a5 5 0 0 1-5 4.6H22.2a5 5 0 0 1-5-4.6Z" {style}/>'
+                 '<rect x="11.5" y="15.5" width="41" height="7" rx="3.2" {style}/>')
+
+
+def soft_shadow(outline):
+    layers = "".join(outline.replace("{style}", f'fill-opacity="{o}" stroke-opacity="{o}" stroke-width="{w}"')
+                     for w, o in SHADOW_LAYERS)
+    return f'<g fill="#11111b" stroke="#11111b" stroke-linejoin="round" transform="translate(0 1)">{layers}</g>'
+
+
 def trash(full=False):
     """A can in the folders' colors; full, sheets of paper stick out from under its rim."""
     ribs = "".join(f'<path d="M{x} 29l{d} 18" stroke="{SURFACE0}" stroke-opacity=".75" stroke-width="2.6" '
@@ -810,7 +1278,7 @@ def trash(full=False):
                  f'<rect x="17.5" y="4.5" width="14" height="17" rx="2" fill="{PAPER}" transform="rotate(-12 24.5 13)"/>')
     return ('<?xml version="1.0" encoding="utf-8"?>\n'
             '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="128" height="128">'
-            f'<defs>{vertical("can", FOLDER_FRONT, FOLDER_BACK, 20, 57.7)}</defs>{paper}{can}{ribs}</svg>\n')
+            f'<defs>{vertical("can", FOLDER_FRONT, FOLDER_BACK, 20, 57.7)}</defs>{paper}{soft_shadow(TRASH_OUTLINE)}{can}{ribs}</svg>\n')
 
 
 PLACES = {
@@ -820,12 +1288,105 @@ PLACES = {
 }
 
 
-# the hardware in the Info Center, among the devices
+DRIVE_NAMES = ["drive-harddisk-ieee1394", "drive-harddisk-root", "drive-harddisk-scsi", "drive-harddisk-solidstate",
+               "drive-harddisk-system", "drive-harddisk-usb", "drive-partition", "harddrive"]
+# the hardware in the Info Center and in the Places panel, among the devices
 DEVICES = {
-    "cpu.svg": lambda: on_mocha(chip, "green"),
-    "video-display.svg": lambda: on_mocha(display, "blue"),
-    "audio-card.svg": lambda: on_mocha(sound_card, "mauve"),
+    "cpu.svg": lambda: free_form(chip),
+    "video-display.svg": lambda: free_form(display),
+    "audio-card.svg": lambda: free_form(sound_card),
+    "computer.svg": (lambda: free_form(display), ["gnome-dev-computer", "computer-desktop"]),
+    "drive-harddisk.svg": (lambda: free_form(hard_drive), DRIVE_NAMES),
+    "drive-removable-media.svg": (lambda: free_form(usb_stick), ["drive-removable-media-usb", "drive-removable-media-usb-pendrive",
+                                                                "drive-removable-usb", "media-removable"]),
+    "media-optical.svg": (lambda: free_form(disc), ["media-optical-audio", "media-optical-blu-ray", "media-optical-cd",
+                                                   "media-optical-cd-r", "media-optical-dvd", "media-cdrom"]),
+    "phone.svg": (lambda: free_form(phone), ["smartphone", "stock_cell-phone"]),
+    "preferences-desktop-keyboard.svg": lambda: free_form(keyboard),
+    "preferences-desktop-mouse.svg": lambda: free_form(mouse),
 }
+
+
+# System Settings' pages: the system's teal, like its tools
+SETTINGS_PAGES = {
+    "preferences-desktop-theme.svg": (lambda: free_form(palette_brush), ["theme-config"]),
+    "preferences-desktop-wallpaper.svg": lambda: free_form(landscape),
+    "preferences-desktop-font.svg": (lambda: free_form(letter), ["fonts"]),
+    "preferences-desktop-display.svg": lambda: free_form(display),
+    "preferences-desktop-sound.svg": lambda: free_form(sound_card),
+    "preferences-system-network.svg": (lambda: free_form(network), ["network-workgroup"]),
+    "preferences-desktop-color.svg": (lambda: free_form(color_circles), ["preferences-color"]),
+    "preferences-desktop-locale.svg": lambda: free_form(globe),
+    "preferences-system-users.svg": (lambda: free_form(people), ["cs-user"]),
+    "preferences-desktop.svg": lambda: free_form(sliders),
+    "tools-check-spelling.svg": lambda: free_form(spelling),
+    "lighttable.svg": lambda: free_form(day_night),
+    "system-run.svg": lambda: free_form(autostart),
+    "redshift-status-on.svg": lambda: free_form(moon),
+    "network-wireless-hotspot.svg": lambda: free_form(hotspot),
+    "preferences-web-browser-shortcuts.svg": lambda: free_form(magnifier),
+    "preferences-desktop-keyboard-shortcut.svg": lambda: free_form(key_combo),
+    "network-wired-symbolic.svg": lambda: free_form(ethernet),
+    "network-wireless-symbolic.svg": lambda: free_form(wifi),
+    "emblem-music-symbolic.svg": lambda: free_form(music_note),
+    "preferences-desktop-accessibility.svg": lambda: free_form(accessibility),
+    "preferences-desktop-activities.svg": lambda: free_form(activities),
+    "preferences-desktop-animations.svg": lambda: free_form(animations),
+    "preferences-desktop-default-applications.svg": lambda: free_form(app_grid),
+    "preferences-desktop-filetype-association.svg": lambda: free_form(page_check),
+    "preferences-system-bluetooth.svg": lambda: free_form(bluetooth),
+    "preferences-desktop-virtual.svg": lambda: free_form(desktops),
+    "preferences-online-accounts.svg": lambda: free_form(cloud),
+    "krunner.svg": lambda: free_form(search_bar),
+    "preferences-desktop-gaming.svg": lambda: free_form(gamepad),
+    "preferences-system-time.svg": lambda: free_form(clock),
+    "preferences-desktop-effects.svg": lambda: free_form(sparkles),
+    "preferences-desktop-font-installer.svg": lambda: free_form(letter_down),
+    "preferences-desktop-icons.svg": lambda: free_form(icon_shapes),
+    "preferences-security-firewall.svg": lambda: free_form(shield_check),
+    "preferences-desktop-touchpad.svg": lambda: free_form(touchpad),
+    "preferences-desktop-cursors.svg": lambda: free_form(arrow_cursor),
+    "xorg.svg": lambda: free_form(x_mark),
+    "preferences-system-network-connection.svg": lambda: free_form(two_arrows),
+    "preferences-desktop-baloo.svg": lambda: free_form(page_search),
+    "plasma-search.svg": lambda: free_form(magnifier),
+    "preferences-desktop-feedback.svg": lambda: free_form(bubble),
+    "preferences-system-network-proxy.svg": lambda: free_form(relay),
+    "preferences-system-session-services.svg": lambda: free_form(two_gears),
+    "preferences-desktop-theme-applications.svg": lambda: free_form(app_window),
+    "preferences-desktop-plasma-theme.svg": lambda: free_form(desktop_panel),
+    "preferences-system-tabbox.svg": lambda: free_form(stacked_windows),
+    "preferences-desktop-tablet.svg": lambda: free_form(drawing_tablet),
+    "preferences-desktop-thunderbolt.svg": lambda: free_form(bolt),
+    "preferences-desktop-theme-global.svg": lambda: free_form(paint_roller),
+    "preferences-desktop-user-password.svg": lambda: free_form(padlock),
+    "ktip.svg": lambda: free_form(info),
+    "preferences-system-login.svg": lambda: free_form(person_frame),
+    "preferences-system-splash.svg": lambda: free_form(splash_screen),
+    "preferences-desktop-touchscreen.svg": lambda: free_form(touch_screen),
+    "preferences-system-power-management.svg": lambda: free_form(battery),
+}
+DESIGNS.update(SETTINGS_PAGES)
+# Pages whose icon names the tray, the logout and the lock screens use too: their tiles live in a
+# theme of their own, Teal-Settings, that only System Settings uses (systemsettingsrc).
+SETTINGS_ONLY = {
+    "input-keyboard-virtual.svg": lambda: free_form(virtual_keyboard),
+    "preferences-desktop-display-randr.svg": lambda: free_form(two_screens),
+    "preferences-desktop-notification-bell.svg": lambda: free_form(bell),
+    "system-log-out.svg": lambda: free_form(leave),
+    # the sidebar's categories, and the pages named like an app or the launcher's menu
+    "applications-all.svg": lambda: free_form(app_grid),
+    "kwalletmanager.svg": lambda: free_form(wallet),
+    "preferences-desktop-gestures-screenedges.svg": lambda: free_form(screen_edges),
+    "preferences-desktop-gestures-touch.svg": lambda: free_form(swipe),
+    "preferences-desktop-multimedia.svg": lambda: free_form(media_frame),
+    "preferences-desktop-peripherals.svg": lambda: free_form(plug),
+    "preferences-desktop-search.svg": lambda: free_form(magnifier),
+    "preferences-security.svg": lambda: free_form(shield),
+    "preferences-system.svg": lambda: free_form(plain_gear),
+    "preferences-system-disks.svg": lambda: free_form(hard_drive),
+}
+DESIGNS["softwarecenter.svg"] = (lambda: on_mocha(shopping_bag), ["plasmadiscover", "software-properties"])
 
 
 def write_all(designs, out):
@@ -843,6 +1404,7 @@ def main():
     write_all(DESIGNS, HERE / "apps")
     write_all(PLACES, HERE / "places")
     write_all(DEVICES, HERE / "devices")
+    write_all(SETTINGS_ONLY, HERE / "settings")
     print(f"{len(DESIGNS)} icons in {HERE / 'apps'}, {len(PLACES)} in {HERE / 'places'}")
 
 

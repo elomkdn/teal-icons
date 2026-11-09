@@ -48,6 +48,7 @@ TEAL = {"dolphin.svg", "system-file-manager.svg", "file-manager.svg", "preferenc
 DRAWN = Path(__file__).resolve().parent / "teal/apps"
 DRAWN_PLACES = Path(__file__).resolve().parent / "teal/places"
 DRAWN_DEVICES = Path(__file__).resolve().parent / "teal/devices"
+DRAWN_SETTINGS = Path(__file__).resolve().parent / "teal/settings"
 # Adwair's logos that spill over their tile, brought inside it
 FIT_IN_TILE = {"krita.svg": .82, "transmission.svg": .84}
 INHERITS = "{papirus},Adwaita,AdwaitaLegacy,hicolor,breeze"
@@ -286,6 +287,143 @@ def draw_small_folders(theme):
     return dirs
 
 
+# The file types seen every day, at the sizes of Dolphin's details view: a page on the pixel
+# grid and one sign of its kind, in Catppuccin colors. The other types keep their large drawing.
+SMALL_FILES = {16: {"l": 3, "r": 13, "t": 1, "b": 15, "fold": 3, "rad": 1},
+               22: {"l": 4, "r": 18, "t": 2, "b": 20, "fold": 4, "rad": 1.5}}
+FILE_KINDS = {
+    "text": "text-plain text-x-generic text-x-log text-csv text-markdown text-x-markdown text-richtext",
+    "code": "text-html text-css text-javascript text-json text-x-c text-x-csrc text-x-cpp text-x-c++src text-x-chdr "
+            "text-x-c++hdr text-rust text-x-go text-x-java text-x-lua text-xml application-json application-xml "
+            "application-javascript text-x-python text-x-cmake text-x-makefile",
+    "script": "text-x-script application-x-shellscript text-x-shellscript",
+    "pdf": "application-pdf",
+    "image": "image image-generic image-x-generic image-png image-jpeg image-gif image-webp image-svg+xml image-bmp image-tiff",
+    "video": "video-x-generic",
+    "audio": "audio-x-generic",
+    "archive": "application-zip application-x-tar application-x-7z-compressed application-gzip application-x-xz application-x-bzip "
+               "application-x-compressed-tar application-x-rar application-x-archive package-x-generic",
+    "program": "application-x-executable",
+    "unknown": "unknown",
+}
+
+
+def small_file(size, kind):
+    g = SMALL_FILES[size]
+    l, r, t, b, fold, rad = g["l"], g["r"], g["t"], g["b"], g["fold"], g["rad"]
+    arc = f"a{rad} {rad} 0 0 1"
+    page = f"M{l + rad} {t}H{r - fold}L{r} {t + fold}V{b - rad}{arc} {-rad} {rad}H{l + rad}{arc} {-rad} {-rad}V{t + rad}{arc} {rad} {-rad}z"
+    x, y, w = l + 2, t + fold + 1, r - l - 4
+    h = b - y - 2
+    cx, cy = x + w // 2, y + h // 2
+    dark, paper, mocha, latte = draw.SURFACE0, draw.PAPER, draw.MOCHA, draw.LATTE
+    fill = mocha["yellow"] if kind == "archive" else paper
+    sign = ""
+    if kind == "text":
+        sign = "".join(f'<rect x="{x}" y="{y + i}" width="{w - (2 if i + 3 > h else 0)}" height="1" fill="{draw.SURFACE2}"/>'
+                       for i in range(0, h, 2))
+    elif kind in ("code", "script"):
+        color = latte["blue"] if kind == "code" else dark
+        s = max(2, w // 3)
+        sign = (f'<path d="M{x + s} {cy - s + .5}L{x + .5} {cy + .5}L{x + s} {cy + s + .5}" fill="none" stroke="{color}"/>'
+                + (f'<path d="M{x + w - s} {cy - s + .5}L{x + w - .5} {cy + .5}L{x + w - s} {cy + s + .5}" fill="none" stroke="{color}"/>'
+                   if kind == "code" else f'<rect x="{x + s + 1}" y="{y + h - 2}" width="{w - s - 1}" height="1" fill="{color}"/>'))
+    elif kind == "pdf":
+        sign = (f'<rect x="{l}" y="{b - h + 1}" width="{r - l}" height="{h - 1}" fill="{latte["red"]}"/>'
+                f'<rect x="{x}" y="{b - h + 3}" width="{w}" height="1" fill="{paper}"/>'
+                f'<rect x="{x}" y="{b - h + 5}" width="{w - 2}" height="1" fill="{paper}"/>')
+    elif kind == "image":
+        sign = (f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="{latte["mauve"]}"/>'
+                f'<path d="M{x} {y + h}L{x + w // 3} {cy}L{x + w // 2 + 1} {cy + 2}L{x + w - 2} {cy - 1}L{x + w} {cy + 1}V{y + h}Z" fill="{mocha["lavender"]}"/>'
+                f'<rect x="{x + w - 2}" y="{y + 1}" width="1" height="1" fill="{mocha["yellow"]}"/>')
+    elif kind == "video":
+        sign = (f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="{dark}"/>'
+                f'<path d="M{cx - 1} {cy - 2}v4.5l3.5 -2.25z" fill="{mocha["pink"]}"/>')
+    elif kind == "audio":
+        n = 1 if size == 16 else 1.5
+        sign = (f'<path d="M{cx + 1} {y}h{2 * n}v{n}h{-n}V{y + h - 1}a{n * 1.6} {n * 1.3} 0 1 1 {-n} {-n}z" fill="{latte["pink"]}"/>')
+    elif kind == "archive":
+        sign = "".join(f'<rect x="{cx - (i % 2)}" y="{t + i}" width="1" height="1" fill="{latte["peach"]}"/>' for i in range(b - t - 1))
+    elif kind == "program":
+        sign = f'<path d="{draw.gear(cx, cy, w / 2, w / 2 - 1, 8, 1)}" fill="{dark}" fill-rule="evenodd"/>'
+    elif kind == "unknown":
+        sign = (f'<path d="M{cx - 2} {cy - 2}a2 2 0 1 1 3 1.7c-.8 .5-1 1-1 1.8" fill="none" stroke="{dark}"/>'
+                f'<rect x="{cx - 1}" y="{cy + 3}" width="1" height="1" fill="{dark}"/>')
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 {size} {size}">'
+            f'<path d="{page}" fill="#11111b" fill-opacity=".38" transform="translate(0 1)"/>'
+            f'<path d="{page}" fill="none" stroke="#11111b" stroke-opacity=".24"/>'
+            f'<path d="{page}" fill="{fill}"/>'
+            f'<path d="M{r - fold} {t}v{fold}h{fold}z" fill="{draw.PAPER_EDGE}"/>{sign}</svg>\n')
+
+
+def draw_small_files(theme):
+    source = theme / "mimetypes/scalable"
+    dirs = {}
+    for size in SMALL_FILES:
+        out = theme / f"mimetypes/{size}"
+        out.mkdir()
+        for kind, names in FILE_KINDS.items():
+            for name in names.split():
+                if (source / f"{name}.svg").exists():
+                    (out / f"{name}.svg").write_text(small_file(size, kind))
+        dirs[f"mimetypes/{size}"] = {"Size": str(size), "Context": "MimeTypes", "Type": "Fixed"}
+    return dirs
+
+
+def write_settings_theme(theme, name):
+    """<name>-Settings, hidden: the tiles of the pages whose icon names Plasma also shows in the
+    tray and on its logout and lock screens, and the sidebar's categories. Only System Settings
+    uses it, through its own config file; every other icon comes from the theme it inherits.
+
+    KDE also tries shortened names within a theme, before going on to the next one: a page named
+    preferences-system-time would find preferences-system here, whatever its own icon. So the
+    longer names of these icons are kept here too, as they are in the themes behind."""
+    folder = theme.parent / f"{name}-Settings"
+    shutil.rmtree(folder, ignore_errors=True)
+    (folder / "apps/scalable").mkdir(parents=True)
+    drawn = {f.stem: f for f in DRAWN_SETTINGS.glob("*.svg")}
+    for f in drawn.values():
+        shutil.copyfile(f, folder / "apps/scalable" / f.name)
+    source = configparser.ConfigParser(interpolation=None, strict=False)
+    source.optionxform = str
+    source.read(theme / "index.theme")
+    prefixes = tuple(f"{stem}-" for stem in drawn)
+    sections = {"apps/scalable": {"Size": "64", "Context": "Applications", "Type": "Scalable",
+                                  "MinSize": "16", "MaxSize": "512"}}
+    for root in (theme, PAPIRUS):
+        for f in root.rglob("*.svg"):
+            if f.stem in drawn or not f.stem.startswith(prefixes) or not f.exists():
+                continue
+            rel = f.parent.relative_to(root).as_posix()
+            if root == PAPIRUS or rel not in source:
+                rel = "apps/scalable"
+            out = folder / rel / f.name
+            if not out.exists():
+                out.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(f, out)
+                sections.setdefault(rel, dict(source[rel]))
+    index = configparser.ConfigParser(interpolation=None)
+    index.optionxform = str
+    index["Icon Theme"] = {"Name": f"{name} Settings", "Comment": f"Icons for System Settings' sidebar, for {name}",
+                           "Inherits": name, "Hidden": "true", "Directories": ",".join(sections)}
+    for rel, section in sections.items():
+        index[rel] = section
+    with open(folder / "index.theme", "w") as f:
+        index.write(f, space_around_delimiters=False)
+
+
+def drop_system_copies(theme, dirs):
+    """Papirus's sized drive and settings icons would be found first, at these sizes, instead of Teal's."""
+    devices = [f.stem for f in DRAWN_DEVICES.glob("*.svg")]
+    for d in dirs:
+        for name in devices + [Path(n).stem for n in draw.SETTINGS_PAGES]:
+            (theme / d / f"{name}.svg").unlink(missing_ok=True)
+    # the apps' folder comes first: Adwair's copies of the devices would hide ours
+    for name in devices:
+        if not (DRAWN / f"{name}.svg").exists():
+            (theme / "apps/scalable" / f"{name}.svg").unlink(missing_ok=True)
+
+
 def main():
     theme, name = Path(sys.argv[1]), sys.argv[2]
     dirs = papirus_system_dirs()
@@ -296,13 +434,15 @@ def main():
     place_drawn(theme / "apps/scalable")
     place_drawn(theme / "places/scalable", drawn=DRAWN_PLACES)
     place_drawn(theme / "devices/scalable", drawn=DRAWN_DEVICES)
-    small = draw_small_folders(theme)
+    small = draw_small_folders(theme) | draw_small_files(theme)
     copy_papirus(theme, dirs)
+    drop_system_copies(theme, dirs)
     for d in OWN:  # filled on each computer by localize.py
         (theme / d).mkdir(parents=True)
     papirus_dirs = len(dirs)
     dirs |= OWN | small
     rewrite_index(theme, name, INHERITS.format(papirus=f"{name}-Papirus"), dirs)
+    write_settings_theme(theme, name)
     print(f"{name}: {n} icons recolored, {papirus_dirs} Papirus system folders")
 
 
