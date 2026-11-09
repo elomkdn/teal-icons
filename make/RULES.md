@@ -9,19 +9,11 @@ shows the icons side by side and checks the whole pack.
 the hardware are free pastel shapes, colored by family; apps, the dock and tools with a launcher keep their tiles. Teal belongs to the interface (selections,
 switches, links) and to the folders. Apps and logos keep their own colors. CachyOS's update and package tools stay teal.
 
-## What the free shapes' colors mean
+## The free shapes' colors
 
-| Color | Meaning |
-|---|---|
-| Silver | the system itself, text, motion, sound, search and the wallet |
-| Mauve | the look |
-| Pink | media |
-| Lavender | the hardware |
-| Blue | windows, apps and documents; Bluetooth; users |
-| Sky | connections and the world |
-| Yellow | light, energy and time |
-| Green | security |
-| Peach | your session and what calls for you |
+Each page or device has its own color: the hue of Papirus's icon of the same name, in its closest
+Catppuccin color (`PAGE_COLORS` in `draw.py`), so that neighbors differ. Where Papirus has no hue,
+the symbol's family applies (`FREE_FAMILIES`).
 
 ## Three families
 
@@ -35,16 +27,16 @@ switches, links) and to the folders. Apps and logos keep their own colors. Cachy
 
 - 64 px canvas, lit from above.
 - App tile: 56 px, 13 px corners, from (4, 4), with a light rim on its top edge.
-- Symbols stay within about 16 to 48 on the grid.
+- A tile's object stays within about 13 to 51 on the grid; it is drawn on the free shapes' grid (4 to 60) and brought onto the tile at .68.
 - Rounded joins and caps; lines are about 3 px on the grid, 4 for a single bold mark.
 
 ## Tiles
 
-- An app: a tile of its own color, a paper symbol.
-- A tool of the system with its own launcher: the Mocha tile, a silver symbol, details in the tile's color.
-- A page of the system or the hardware: a free pastel shape, no tile, filling the grid, in its family's color (Mocha's shade toward Latte's); its details are real holes (SVG masks, Qt 6.7 or later).
+- An app: a tile of its own color, a paper object built in planes, with its soft shadow.
+- A tool of the system with its own launcher: the Mocha tile, a silver object in planes.
+- A page of the system or the hardware: a free object, no tile, filling the grid, built in planes of its color (ink, deep, mid, main, pale), each a diagonal gradient leaning toward the neighboring hue. `pale` only ever sits on another plane, or it vanishes on a light background. A thing keeps its real colors where they are the point: a palette's paints, a window's buttons.
 - The system's two main apps may differ: Dolphin on a light tile, Settings with a silver gear on a lighter Mocha one.
-- A tile's gradient is chosen by hand, top lighter than bottom: Mocha's shade to Latte's.
+- A tile's gradient is diagonal, from its color to the neighboring hue, and stays soft: never all the way to Latte's.
 
 ## Shadow
 
