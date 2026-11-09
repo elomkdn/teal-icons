@@ -217,6 +217,75 @@ def rewrite_index(theme, name, inherits, extra):
         ini.write(f, space_around_delimiters=False)
 
 
+# Folders for the sizes where the large drawing blurs (the Places panel, lists): on the pixel
+# grid, without the back's highlights, with the same emblem larger. Only at 1x: on a scaled
+# screen, the icon loader takes the scalable drawing.
+SMALL_FOLDERS = {
+    16: {"l": 1, "r": 15, "t": 2, "b": 14, "tab": 6, "notch": 1, "front": 5, "rad": 1.5, "emblem": 8},
+    22: {"l": 2, "r": 20, "t": 3, "b": 19, "tab": 8, "notch": 2, "front": 7, "rad": 2, "emblem": 11},
+}
+EMBLEM = re.compile(r'<g transform="translate\([^)]+\) scale\(([\d.]+),[\d.]+\) translate\([^"]*">(.*?)</g></svg>\s*$', re.S)
+SHADOW_MARK = "stroke-opacity"  # the generated folders, which all have the shadow
+
+
+def small_corners(r, b, l, rad):
+    """Right and bottom sides and the left one back up, from the top right corner."""
+    arc = f"a{rad} {rad} 0 0 1"
+    return (f"{arc} {rad} {rad}V{b - rad}{arc} {-rad} {rad}H{l + rad}{arc} {-rad} {-rad}")
+
+
+def small_folder(size, svg, name):
+    g = SMALL_FOLDERS[size]
+    l, r, t, b, rad = g["l"], g["r"], g["t"], g["b"], g["rad"]
+    opened = "-open" in name or name == "folder-drag-accept"
+    front = g["front"] + (1 if opened else 0)
+    back = (f'M{l + rad} {t}H{l + g["tab"]}l{g["notch"]} {g["notch"]}H{r - rad}'
+            f'{small_corners(r, b, l, rad)}V{t + rad}a{rad} {rad} 0 0 1 {rad} {-rad}z')
+    panel = (f'M{l + rad} {front}H{r - rad}{small_corners(r, b, l, rad)}'
+             f'V{front + rad}a{rad} {rad} 0 0 1 {rad} {-rad}z')
+    # the shadow of the large folders, in whole pixels: one below, half of one around
+    body = (f'<path d="{back}" fill="#11111b" fill-opacity=".38" transform="translate(0 1)"/>'
+            f'<path d="{back}" fill="none" stroke="#11111b" stroke-opacity=".24"/>'
+            f'<path d="{back}" fill="{draw.FOLDER_BACK}"/>')
+    if opened:
+        body += f'<rect x="{l + 2}" y="{t + g["notch"] + 1}" width="{r - l - 4}" height="{front - t - g["notch"]}" fill="#eff1f5"/>'
+    body += f'<path d="{panel}" fill="{draw.FOLDER_FRONT}"/>'
+
+    cx, cy, emblem = (l + r) / 2, (front + b) / 2, g["emblem"]
+    if name == "user-desktop":  # a screen, in whole pixels
+        w, h = (6, 4) if size == 16 else (9, 5)
+        x, y = int(cx - w / 2), int(cy - (h + 2) / 2)
+        body += (f'<g fill="none" stroke="#313244"><rect x="{x + .5}" y="{y + .5}" width="{w}" height="{h}" rx="1"/>'
+                 f'<path d="M{x + 1} {y + h + 2.5}H{x + w}"/></g>')
+    else:
+        m = EMBLEM.search(svg)
+        if m:
+            # the emblem fills 20 of a 64 px canvas or 36 of a 128 px one: its own size, from its scale
+            side = (20 if 'viewBox="0 0 64' in svg else 36) / float(m.group(1))
+            body += (f'<g transform="translate({cx} {cy}) scale({emblem / side:.4f}) '
+                     f'translate({-side / 2:.4f} {-side / 2:.4f})">{m.group(2)}</g>')
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" '
+            f'width="{size}" height="{size}" viewBox="0 0 {size} {size}">{body}</svg>\n')
+
+
+def draw_small_folders(theme):
+    """Returns the new folders of the theme, for index.theme."""
+    source = theme / "places/scalable"
+    made = {f.stem: f.read_text(errors="ignore") for f in source.glob("*.svg")
+            if not f.is_symlink() and SHADOW_MARK in f.read_text(errors="ignore")}
+    dirs = {}
+    for size in SMALL_FOLDERS:
+        out = theme / f"places/{size}"
+        out.mkdir()
+        for name, svg in made.items():
+            (out / f"{name}.svg").write_text(small_folder(size, svg, name))
+        for link in source.glob("*.svg"):
+            if link.is_symlink() and Path(os.readlink(link)).stem in made:
+                (out / link.name).symlink_to(os.readlink(link))
+        dirs[f"places/{size}"] = {"Size": str(size), "Context": "Places", "Type": "Fixed"}
+    return dirs
+
+
 def main():
     theme, name = Path(sys.argv[1]), sys.argv[2]
     dirs = papirus_system_dirs()
@@ -227,12 +296,14 @@ def main():
     place_drawn(theme / "apps/scalable")
     place_drawn(theme / "places/scalable", drawn=DRAWN_PLACES)
     place_drawn(theme / "devices/scalable", drawn=DRAWN_DEVICES)
+    small = draw_small_folders(theme)
     copy_papirus(theme, dirs)
     for d in OWN:  # filled on each computer by localize.py
         (theme / d).mkdir(parents=True)
-    dirs |= OWN
+    papirus_dirs = len(dirs)
+    dirs |= OWN | small
     rewrite_index(theme, name, INHERITS.format(papirus=f"{name}-Papirus"), dirs)
-    print(f"{name}: {n} icons recolored, {len(dirs) - len(OWN)} Papirus system folders")
+    print(f"{name}: {n} icons recolored, {papirus_dirs} Papirus system folders")
 
 
 if __name__ == "__main__":
