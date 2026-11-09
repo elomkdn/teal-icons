@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #
-# install-adwair.sh — installs Adwair, the theme Teal is made from, into ~/.local/share/icons
+# install-base.sh — installs the base icons Teal is made from, into ~/.local/share/icons
 #
 # Usage:
-#   ./install-adwair.sh [OPTIONS]
+#   ./install-base.sh [OPTIONS]
 #
 # Options:
 #   -c, --color [COLOR]  Use a colored places variant. (default: blue).
@@ -13,7 +13,7 @@
 #                          s, slate    t, teal     y, yellow
 #                          m, mocha-teal (Catppuccin Mocha)
 #   -a, --apps           Also install colored app icons. Requires -c. (default: blue).
-#   -n, --name NAME      Theme folder name (default: Adwair)
+#   -n, --name NAME      Theme folder name (default: Teal-base)
 #   -p, --path PATH      Base installation path (default: ~/.local/share/icons)
 #                        The theme is installed into PATH/NAME
 #   -f, --folder-icons   After install, assign folder icons BY NAME.
@@ -41,7 +41,7 @@ AVAILABLE_COLORS=(blue green orange pink purple red slate teal yellow mocha-teal
 
 COLOR=""
 COLOR_SET=0
-THEME_NAME="Adwair"
+THEME_NAME="Teal-base"
 INSTALL_PATH="$HOME/.local/share/icons"
 RUN_FOLDER_ICONS=0
 INSTALL_APPS=0
@@ -495,7 +495,7 @@ fi
 
 if [[ -n "$INDEX_THEME" ]]; then
     cp -f "$INDEX_THEME" "$DEST_BASE/"
-    # shown name follows -n, so a renamed install is not listed as a second "Adwair"
+    # shown name follows -n, so each install is listed under its own name
     sed -i "s/^Name=.*/Name=$THEME_NAME/" "$DEST_BASE/index.theme"
 else
     warn "index.theme not found next to $SCRIPT_DIR or in $SRC_DIR — skipping."

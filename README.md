@@ -1,18 +1,17 @@
 # Teal
 
-An icon theme in the [Catppuccin](https://catppuccin.com) Mocha colors with a teal accent,
-made from [Adwair](https://github.com/kusaida/Adwair) and
-[Papirus](https://github.com/PapirusDevelopmentTeam/papirus-icon-theme). It is the companion of
+An icon theme in the [Catppuccin](https://catppuccin.com) Mocha colors with a teal accent
+and [Papirus](https://github.com/PapirusDevelopmentTeam/papirus-icon-theme)'s system icons. It is the companion of
 [Lagoon](https://github.com/elomkdn/lagoon-kde), a KDE Plasma theme, and looks at home in any
 dark desktop.
 
 ![Teal's app icons](preview/teal.png)
 
-- **Apps**: Adwair's icons, in the style of macOS's, recolored with Catppuccin: each app
+- **Apps**: icons in the style of macOS's, recolored with Catppuccin: each app
   keeps its hue, in Latte and Mocha shades. Teal is kept for the system (folders, files,
   settings, software center), so it still means something.
-- **Their own tiles**: each app keeps its colored or light tile; the apps that Adwair only
-  gives a generic or borrowed icon get one drawn for Teal, and the apps with a logo of their
+- **Their own tiles**: each app keeps its colored or light tile; the apps that would only
+  have a generic or borrowed icon get one drawn for Teal, and the apps with a logo of their
   own (KDE Connect, Gwenview, the Qt and CachyOS tools…) show that logo, in Catppuccin
   colors, on a Mocha tile. Round logos (Kate, Faugus, Micro) lose their disc, whose color becomes
   the tile.
@@ -23,13 +22,10 @@ dark desktop.
   apps keep their own, except Spotify, in monochrome. Apps that send a picture rather than an
   icon's name, like qBittorrent, cannot be themed: its monochrome icon is in its own options.
 
-Teal is an independent project: it is not made by, nor endorsed by, the Adwair, Papirus,
-Catppuccin or CachyOS teams.
-
 ## Install
 
-- **A clone of the repository**: the installer builds the theme first, from Adwair and
-  Papirus, which it then needs (`sudo pacman -S papirus-icon-theme`).
+- **A clone of the repository**: the installer builds the theme first, and needs
+  Papirus for it (`sudo pacman -S papirus-icon-theme`).
 
   ```bash
   git clone https://github.com/elomkdn/teal-icons.git
@@ -64,10 +60,10 @@ without it, Teal's drawings stay. Run the installer again after installing such 
 - `make/generator/catppuccin.py` recolors an icon: each color goes to the Catppuccin color
   of the same hue, from Latte (its dark shades) to Mocha (its light ones); grays follow one
   ramp from Mocha's crust to Latte's base.
-- `make/teal/draw.py` draws Teal's own icons into `make/teal/apps`, on Adwair's grid (a
+- `make/teal/draw.py` draws Teal's own icons into `make/teal/apps`, on a macOS-like grid (a
   56 px tile with 13 px corners on a 64 px canvas, lit from above).
-- `make/catppuccin-theme.py` builds the theme from an Adwair install (`install-adwair.sh`,
-  Adwair's own installer): recolors it, places the drawn icons, copies Papirus's system
+- `make/catppuccin-theme.py` builds the theme from its base icons (`install-base.sh`):
+  recolors them, places the drawn icons, copies Papirus's system
   icons. `dist.sh` makes the release archive with them.
 - `make/localize.py` makes it at home on each computer: the apps' logos (read from the
   system, never copied into this repository), their tray icons, Papirus as the fallback.
@@ -76,8 +72,7 @@ without it, Teal's drawings stay. Run the installer again after installing such 
 
 Teal is a derivative work of:
 
-- [Adwair](https://github.com/kusaida/Adwair) by kusaida — GPL-3.0 (its original README is
-  [README.adwair.md](README.adwair.md)), itself based on
+- [Adwair](https://github.com/kusaida/Adwair) by kusaida — GPL-3.0, itself based on
   [WhiteSur](https://github.com/vinceliuice/WhiteSur-icon-theme) by vinceliuice,
   [Hatter](https://github.com/Mibea/Hatter) by Mibea,
   [MoreWaita](https://github.com/somepaulo/MoreWaita) by somepaulo (GPL-3.0) and the
@@ -88,6 +83,9 @@ Teal is a derivative work of:
 - the [Catppuccin](https://github.com/catppuccin/palette) palette — MIT.
 
 The apps' logos belong to their projects; Teal only reads them from your system.
+
+Teal is an independent project: it is not made by, nor endorsed by, the projects above or
+CachyOS.
 
 ## License
 

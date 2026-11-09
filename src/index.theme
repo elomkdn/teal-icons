@@ -1,6 +1,6 @@
 [Icon Theme]
-Name=Adwair
-Comment=A refined WhiteSur icon theme blending its polished look with the clean, native feel of Adwaita.
+Name=Teal
+Comment=Icons in Catppuccin colors, teal accent
 Inherits=Adwaita,AdwaitaLegacy,hicolor,breeze
 Example=folder
 FollowsColorScheme=true

@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
-"""Build the Teal icon theme from an Adwair install (install-adwair.sh -c mocha-teal -a):
+"""Build the Teal icon theme from its base icons (install-base.sh -c mocha-teal -a):
 
-- full-color icons (apps, file types, devices, categories): Adwair's, recolored with
+- full-color icons (apps, file types, devices, categories): the base's, recolored with
   Catppuccin by generator/catppuccin.py, brands included. Teal is kept for what belongs to
   the system (folders, file manager, settings, software center), so the accent still means
   something; other apps take their own Catppuccin hue, leaning to the saturated Latte shades
   so they stay easy to tell apart in a dock;
 - icons drawn for Teal (teal/draw.py): the terminal, settings, LibreOffice, the KDE,
-  Qt and CachyOS tools Adwair gives a generic or borrowed icon (on each computer,
+  Qt and CachyOS tools the base gives a generic or borrowed icon (on each computer,
   localize.py puts the apps' own logos in their place, where the app is installed);
 - monochrome icons (actions, statuses, tray, symbolic icons): Papirus-Dark's system folders,
   copied with Catppuccin colors (Mocha text instead of Papirus's gray, teal instead of its
   blue, Catppuccin red, yellow and green for states). GTK apps show these colors as they are,
-  KDE apps recolor them with the color scheme. Adwair's own monochrome icons are removed, and
+  KDE apps recolor them with the color scheme. The base's own monochrome icons are removed, and
   so are its full-color icons named like a Papirus system icon (edit-find, bluetooth-active…).
   The copies sit inside the theme, not only in an inherited one: icon lookups shorten an
   unknown name inside a theme before moving on to the next one (bluetooth-active ->
@@ -44,12 +44,12 @@ KEPT = RECOLORED + ("places/scalable",)
 # the system's own apps, in the accent like the folders
 TEAL = {"dolphin.svg", "system-file-manager.svg", "file-manager.svg", "preferences-system.svg",
         "systemsettings.svg", "softwarecenter.svg", "software-properties.svg", "plasmadiscover.svg"}
-# Teal's own icons, drawn by teal/draw.py, in place of Adwair's
+# Teal's own icons, drawn by teal/draw.py, in place of the base's
 DRAWN = Path(__file__).resolve().parent / "teal/apps"
 DRAWN_PLACES = Path(__file__).resolve().parent / "teal/places"
 DRAWN_DEVICES = Path(__file__).resolve().parent / "teal/devices"
 DRAWN_SETTINGS = Path(__file__).resolve().parent / "teal/settings"
-# Adwair's logos that spill over their tile, brought inside it
+# Logos that spill over their tile, brought inside it
 FIT_IN_TILE = {"krita.svg": .82, "transmission.svg": .84}
 INHERITS = "{papirus},Adwaita,AdwaitaLegacy,hicolor,breeze"
 PAPIRUS = Path("/usr/share/icons/Papirus-Dark")
@@ -172,8 +172,8 @@ def recolor_tree(folder):
 
 
 def place_drawn(folder, drawn=DRAWN):
-    """In place of Adwair's files or links, never through them (gwenview links to shotwell).
-    Adwair's own aliases link to the base names, and follow."""
+    """In place of the base's files or links, never through them (gwenview links to shotwell).
+    Its own aliases link to the main names, and follow."""
     for f in sorted(drawn.iterdir(), key=lambda f: f.is_symlink()):
         out = folder / f.name
         if out.exists() or out.is_symlink():
@@ -185,7 +185,7 @@ def place_drawn(folder, drawn=DRAWN):
 
 
 def prune(theme):
-    """Keep only the full-color folders, drop Adwair's monochrome ones and its cursors."""
+    """Keep only the full-color folders, drop the base's monochrome ones and its cursors."""
     for child in theme.iterdir():
         if child.is_dir() and not any(k.split("/")[0] == child.name for k in KEPT):
             shutil.rmtree(child)
@@ -207,10 +207,10 @@ def rewrite_index(theme, name, inherits, extra):
         ini[d] = section
     head = ini["Icon Theme"]
     head["Name"] = name.replace("-", " ")
-    head["Comment"] = "Adwair and Papirus Dark in Catppuccin colors, teal accent"
+    head["Comment"] = "Icons in Catppuccin colors, teal accent, with Papirus Dark's system icons"
     head["Inherits"] = inherits
     head["Directories"] = ",".join(dirs)
-    head.pop("KDE-Extensions", None)  # Adwair's .svg only: the apps' own icons are often pictures
+    head.pop("KDE-Extensions", None)  # the base's .svg only: the apps' own icons are often pictures
     for section in ini.sections():
         if section != "Icon Theme" and section not in dirs:
             ini.remove_section(section)
@@ -418,7 +418,7 @@ def drop_system_copies(theme, dirs):
     for d in dirs:
         for name in devices + [Path(n).stem for n in draw.SETTINGS_PAGES]:
             (theme / d / f"{name}.svg").unlink(missing_ok=True)
-    # the apps' folder comes first: Adwair's copies of the devices would hide ours
+    # the apps' folder comes first: the base's copies of the devices would hide ours
     for name in devices:
         if not (DRAWN / f"{name}.svg").exists():
             (theme / "apps/scalable" / f"{name}.svg").unlink(missing_ok=True)

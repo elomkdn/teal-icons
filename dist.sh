@@ -11,7 +11,7 @@ OUT=dist/teal-icons
 rm -rf dist
 mkdir -p "$OUT/share/icons" "$OUT/make/teal" "$OUT/make/generator"
 
-./install-adwair.sh -c mocha-teal -a -n Teal -p "$OUT/share/icons" >/dev/null
+./install-base.sh -c mocha-teal -a -n Teal -p "$OUT/share/icons" >/dev/null
 python3 -I make/catppuccin-theme.py "$OUT/share/icons/Teal" Teal
 find "$OUT" -xtype l -delete
 

@@ -32,7 +32,7 @@ OWN = {"own/scalable": {"Size": "32", "MinSize": "8", "MaxSize": "512", "Type": 
 
 def link_own_icons(theme):
     """Links to the apps' own icons a Teal icon would hide by shortening. The icons apps
-    name in their .desktop files are left to the shortening: Adwair has their look."""
+    name in their .desktop files are left to the shortening: the theme has their look."""
     ours = {f.rsplit(".", 1)[0] for _, _, files in os.walk(theme) for f in files}
     launchers = set()
     for d in ("/usr/share/applications", os.path.expanduser("~/.local/share/applications"),

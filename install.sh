@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
-# install.sh — builds and installs the Teal icon theme (Adwair and Papirus Dark in
-# Catppuccin colors, teal accent) into ~/.local/share/icons
+# install.sh — builds and installs the Teal icon theme (in Catppuccin colors, teal
+# accent, with Papirus Dark's system icons) into ~/.local/share/icons
 #
 # Usage:
 #   ./install.sh [OPTIONS]
@@ -87,7 +87,7 @@ if [[ -d "$SCRIPT_DIR/share/icons/$NAME" ]]; then
   # a release archive: the theme is built, Papirus's system icons included
   cp -a "$SCRIPT_DIR/share/icons/$NAME" "$SCRIPT_DIR/share/icons/$NAME-Settings" "$STAGE/"
 else
-  # a clone of the repository: build it, from Adwair and Papirus
+  # a clone of the repository: build it, with Papirus
   if [[ ! -f "$PAPIRUS/index.theme" ]]; then
     echo "Building Teal needs Papirus: sudo pacman -S papirus-icon-theme" >&2
     echo "(or install it from a release archive, which needs nothing)" >&2
@@ -95,9 +95,9 @@ else
   fi
   command -v python3 >/dev/null || { echo "Building Teal needs python3." >&2; exit 1; }
   echo "Building $NAME…"
-  "$SCRIPT_DIR/install-adwair.sh" -c mocha-teal -a -n "$NAME" -p "$STAGE" >/dev/null
+  "$SCRIPT_DIR/install-base.sh" -c mocha-teal -a -n "$NAME" -p "$STAGE" >/dev/null
   python3 -I "$SCRIPT_DIR/make/catppuccin-theme.py" "$STAGE/$NAME" "$NAME"
-  # links to icons the theme leaves to Papirus, or to Adwair's removed monochrome folders
+  # links to icons the theme leaves to Papirus, or to the base's removed monochrome folders
   find "$STAGE" -xtype l -delete
 fi
 

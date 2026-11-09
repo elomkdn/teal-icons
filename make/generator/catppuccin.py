@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Recolor Adwair icons with Catppuccin shades.
+"""Recolor the base icons with Catppuccin shades.
 
 - Neutrals (whites, paper, grays, blacks) follow one continuous ramp, from Mocha's crust
   to Latte's base, so gradients and shading keep their modeling: dark parts in Mocha
   tones, light parts in Latte tones.
-- Adwair's own colors (its signature blue, the colored templates, the GNOME palette)
+- The base's own colors (its signature blue, the colored templates, the GNOME palette)
   take the Catppuccin color of the same hue: dark shades in its Latte version, light
   shades in its Mocha version.
 - Any other color is a brand color and stays as it is, except with --all (file types,
@@ -33,8 +33,8 @@ FAMILIES = ("red", "peach", "yellow", "green", "teal", "sky", "blue", "lavender"
 # neutral ramp, dark to light: Mocha's crust to overlay, then Latte's overlay to base
 RAMP = ["#11111b", "#181825", "#1e1e2e", "#313244", "#45475a", "#585b70", "#6c7086", "#7f849c",
         "#9399b2", "#9ca0b0", "#acb0be", "#bcc0cc", "#ccd0da", "#dce0e8", "#e6e9ef", "#eff1f5"]
-# Adwair's own colors: GNOME palette, its signature blue and its colored templates
-ADWAIR = {
+# The base's own colors: GNOME palette, its signature blue and its colored templates
+BASE_COLORS = {
     "#99c1f1", "#62a0ea", "#3584e4", "#1c71d8", "#1a5fb4", "#8ff0a4", "#57e389", "#33d17a",
     "#2ec27e", "#26a269", "#f9f06b", "#f8e45c", "#f6d32d", "#f5c211", "#e5a50a", "#ffbe6f",
     "#ffa348", "#ff7800", "#e66100", "#c64600", "#f66151", "#ed333b", "#e01b24", "#c01c28",
@@ -102,7 +102,7 @@ def accent(h, family=None):
     reach = 1 if family else LATTE_REACH
     family = family or min(FAMILIES, key=distance)
     dark, light = LATTE[family], MOCHA[family]
-    t = (oklab(h)[0] - 0.45) / (0.85 - 0.45)  # Adwair's dark shades sit near 0.45, its light ones near 0.85
+    t = (oklab(h)[0] - 0.45) / (0.85 - 0.45)  # the base's dark shades sit near 0.45, its light ones near 0.85
     if t < 0:  # darker than the Latte version: toward Mocha's crust, a little
         return mix(dark, "#11111b", min(0.5, -t))
     return mix(dark, light, min(t, 1) * reach)  # no lighter than the Mocha version, which would wash out
@@ -122,7 +122,7 @@ def recolor(h, everything=False, family=None):
     _, a, b = oklab(h)
     if math.hypot(a, b) < NEUTRAL_CHROMA:
         return neutral(h)
-    if everything or h in ADWAIR:
+    if everything or h in BASE_COLORS:
         return accent(h, family)
     return h
 

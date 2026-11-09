@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Draw Teal's own app icons into make/teal/apps (run it after changing a design).
 
-They follow Adwair's grid, itself that of macOS icons: a 56 px tile with 13 px corners on a
-64 px canvas, lit from above, its soft shadow below. The shadow is Adwair's own picture
+They follow the grid of macOS icons: a 56 px tile with 13 px corners on a
+64 px canvas, lit from above, its soft shadow below. The shadow is the base icons' own picture
 (Plasma's QtSvg has no blur filter), taken from one of its icons. Every color is a
 Catppuccin one: the theme builder copies these icons as they are, after the recoloring.
 
@@ -40,12 +40,12 @@ BOLD_LINE = 4.2  # a free shape has no thin lines next to the solid ones
 TILE = 'x="4" y="3.969" width="56.002" height="56.002" rx="13.002"'
 
 
-# kept beside the drawings, for the logos made on each computer, where Adwair's sources are not
+# kept beside the drawings, for the logos made on each computer, where the base's sources are not
 SHADOW = HERE / "shadow.xml"
 
 
 def shadow():
-    """Adwair's tile shadow, the first picture of its icons."""
+    """The base's tile shadow, the first picture of its icons."""
     if not (SRC / "discord.svg").is_file():
         return SHADOW.read_text()
     svg = (SRC / "discord.svg").read_text()
@@ -400,7 +400,7 @@ def media_library(c, a):
 
 
 def haruna():
-    """Haruna's logo, a film strip shaped like an H, on its dark tile (Adwair's version
+    """Haruna's logo, a film strip shaped like an H, on its dark tile (the base's version
     clips it with CSS, which Plasma ignores)."""
     holes = "".join(f"M{x} {y}h4v4h-4Z" for x in (18.5, 41.5) for y in (19, 30, 41))
     h = f"M16 15h10v12.5h12V15h10v34H38V36.5H26V49H16Z{holes}"
@@ -411,7 +411,7 @@ def haruna():
 
 
 def cachyos_hello():
-    """Adwair's CachyOS logo, in Catppuccin colors, on the Mocha tile of the system's tools."""
+    """The base's CachyOS logo, in Catppuccin colors, on the Mocha tile of the system's tools."""
     svg = catppuccin.recolor_svg((SRC / "org.cachyos.hello.svg").read_text(), everything=True)
     tile = re.search(r'<linearGradient id="d".*?</linearGradient>', svg).group(0)
     svg = svg.replace(tile, vertical("d", SURFACE0, BASE))
@@ -602,7 +602,7 @@ def okular():
                 f'stroke="{SURFACE0}" stroke-width="2.4"/></g>')
 
 
-# --- settings: the system's tools have the Mocha tile, whatever Adwair draws for them ------------
+# --- settings: the system's tools have the Mocha tile, whatever the base draws for them ----------
 
 def window_gear(c, a):
     """Window behavior, rules and scripts: a window, a gear on it."""
@@ -1166,7 +1166,7 @@ def kde(*names):
 
 DESIGNS = {
     "terminal.svg": terminal,
-    # the system's main app: the strongest tile, teal; Adwair's is a bare folder, like those it shows
+    # the system's main app: the strongest tile, teal; the base's is a bare folder, like those it shows
     # the folders it shows, teal, on the light Latte tile
     "system-file-manager.svg": (lambda: on_latte(folder),
                                 ["dolphin", "file-manager", "org.gnome.Nautilus", "nautilus", "org.gnome.Files"]),
@@ -1211,7 +1211,7 @@ DESIGNS.update({
     "preferences-desktop-theme-windowdecorations.svg": lambda: free_form(traffic_window),
     "preferences-system-windows.svg": (lambda: free_form(window_gear), ["preferences-system-windows-actions"]),
     "preferences-devices-cpu.svg": lambda: free_form(chip),
-    # Adwair links it here too, and the apps' folder comes first
+    # the base links it here too, and the apps' folder comes first
     "video-display.svg": lambda: free_form(display),
     "kmenuedit.svg": (lambda: paper_on_mocha(menu_list_pencil), kde("kmenuedit")[1:]),
     "kvantum.svg": (kvantum_logo, ["kvantummanager"]),
