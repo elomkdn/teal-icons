@@ -346,6 +346,35 @@ def load_recolored_base(base_path, main_color, light_color):
     return root
 
 
+# A folder's soft shadow, so it stands out on a selection of its own color. Stacked copies of
+# its outline, not an SVG filter, which QtSvg may not draw. Sizes are for a 64 px canvas.
+SHADOW_DROP = 1.0
+SHADOW_LAYERS = ((5.0, 0.06), (3.6, 0.09), (2.4, 0.12), (1.2, 0.16))  # outline width, opacity
+
+
+def add_folder_shadow(root):
+    """Under the folder's first shape, its back, which is also its silhouette."""
+    outline = next(e for e in root if isinstance(e.tag, str)
+                   and etree.QName(e).localname in ("path", "rect"))
+    k = get_viewbox(root)[2] / 64
+
+    shadow = etree.Element(f"{{{SVG_NS}}}g", fill="#000000", stroke="#000000",
+                           transform=f"translate(0 {SHADOW_DROP * k:g})")
+    shadow.set("stroke-linejoin", "round")
+
+    for width, opacity in SHADOW_LAYERS:
+        layer = deepcopy(outline)
+        layer.tail = None
+        for attr in ("class", "fill", "id"):
+            layer.attrib.pop(attr, None)
+        layer.set("stroke-width", f"{width * k:g}")
+        layer.set("fill-opacity", f"{opacity:g}")
+        layer.set("stroke-opacity", f"{opacity:g}")
+        shadow.append(layer)
+
+    root.insert(root.index(outline), shadow)
+
+
 PNG_DATA_PREFIX = "data:image/png;base64,"
 
 GLOW_BASE = "#62a0ea"
@@ -418,6 +447,7 @@ FAILED = []
 
 def make_plain_icon(base_key, base_name, main_color, light_color, output_dir):
     root = load_recolored_base(BASES[base_key], main_color, light_color)
+    add_folder_shadow(root)
     output_file = output_dir / f"{base_name}.svg"
     write_svg(root, output_file)
     print(f"✓ {output_file}")
@@ -441,6 +471,7 @@ def make_special_icon(base_key, short_name, symbolic_filename, suffix, main_colo
         return
 
     root = load_recolored_base(BASES[base_key], main_color, light_color)
+    add_folder_shadow(root)
 
     try:
         symbolic_group = create_symbolic(symbolic_root, symbolic_color or main_color, base_key, root)

@@ -11,7 +11,7 @@
         <rect x="8" y="18" width="112" height="92" rx="10"/>
     </clipPath>
     <!-- тонкая нижняя кромка (градиент шаблона, 1 px) -->
-    <rect x="8" y="19" width="112" height="92" rx="10" fill="url(#a)"/>
+    <g fill="#000000" stroke="#000000" transform="translate(0 2)" stroke-linejoin="round"><rect x="8" y="19" width="112" height="92" rx="10" stroke-width="10" fill-opacity="0.06" stroke-opacity="0.06"/><rect x="8" y="19" width="112" height="92" rx="10" stroke-width="7.2" fill-opacity="0.09" stroke-opacity="0.09"/><rect x="8" y="19" width="112" height="92" rx="10" stroke-width="4.8" fill-opacity="0.12" stroke-opacity="0.12"/><rect x="8" y="19" width="112" height="92" rx="10" stroke-width="2.4" fill-opacity="0.16" stroke-opacity="0.16"/></g><rect x="8" y="19" width="112" height="92" rx="10" fill="url(#a)"/>
     <!-- корпус -->
     <rect x="8" y="18" width="112" height="92" rx="10" fill="#e4b0cd"/>
     <!-- нижняя полоса рабочего стола -->
