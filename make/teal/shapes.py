@@ -420,8 +420,8 @@ def kernel(c, a):
 
 def quarter_gear(p):
     """SchedExt: the gear of its logo, its upper right quarter squared off by two arms, the hole
-    squared toward them; the gear and the arms in the two ends of its logo's colors, sky and
-    mauve, two planes instead of its gradient."""
+    squared toward them: the gear in paper on the system's teal, the arms in the mauve its
+    logo ends in."""
     cx, cy, r = 31, 33, 17
     teeth = "".join(f'<rect x="{cx - 6}" y="{cy - r - 9}" width="12" height="14" rx="2" fill="{p.main}" '
                     f'transform="rotate({a} {cx} {cy})"/>' for a in (90, 135, 180, 225, 270, 315))
@@ -430,19 +430,25 @@ def quarter_gear(p):
             f"a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H{cx}Z")
     hole = f"M{cx + 1} {cy - 6.5}H{cx + 7.5}V{cy}A6.5 6.5 0 1 1 {cx + 1} {cy - 6.5}Z"
     return (teeth + f'<path d="{body}" fill="{p.main}"/><path d="{arms}" fill="{p.real("mauve")}"/>'
-            f'<path d="{hole}" fill="{p.ink}"/>')
+            f'<path d="{hole}" fill="{p.deep}"/>')
+
+
+def rainbow_tile():
+    """Kvantum's tile: its rainbow, from the top left corner, in Catppuccin colors."""
+    hues = ("red", "peach", "yellow", "green", "sky", "blue", "mauve")
+    stops = "".join(f'<stop offset="{i / (len(hues) - 1):.3f}" stop-color="{mix(MOCHA[f], LATTE[f], .45)}"/>'
+                    for i, f in enumerate(hues))
+    return f'<radialGradient id="tile" cx="4" cy="4" r="78" gradientUnits="userSpaceOnUse">{stops}</radialGradient>'
 
 
 def kvantum_logo():
-    """Kvantum: its Kv, in the Catppuccin rainbow, on the Mocha tile of the system's tools."""
-    stops = "".join(f'<stop offset="{i / 4:g}" stop-color="{MOCHA[f]}"/>'
-                    for i, f in enumerate(("red", "peach", "green", "blue", "mauve")))
+    """Kvantum, where it is not installed: its Kv in white on its rainbow (on each computer,
+    logos.rainbow_letters puts the logo's own letters there)."""
     letters = "M19 19v26M19 33.5 31 19M24 28.5 32.5 45M36 29l5 16 5-16"
-    return icon(mocha_tile()
-                + f'<linearGradient id="rainbow" x1="17" x2="48" y1="0" y2="0" gradientUnits="userSpaceOnUse">{stops}</linearGradient>',
-                f'<rect {TILE} fill="url(#tile)"/>{rim(MOCHA_RIM)}'
-                f'<path d="{letters}" transform="translate(0 .9)" {ROUND} stroke="{CRUST}" stroke-opacity=".35" stroke-width="5"/>'
-                f'<path d="{letters}" {ROUND} stroke="url(#rainbow)" stroke-width="5"/>')
+    return icon(rainbow_tile(),
+                f'<rect {TILE} fill="url(#tile)"/>{rim(.25)}'
+                f'<path d="{letters}" transform="translate(0 1)" {ROUND} stroke="{CRUST}" stroke-opacity=".25" stroke-width="5.5"/>'
+                f'<path d="{letters}" {ROUND} stroke="{PAPER}" stroke-width="5.5"/>')
 
 
 def elisa():
@@ -1401,11 +1407,21 @@ def refresh(p):
               f'<path d="M17 47.5V35.7h11.8Z" fill="{p.deep}" stroke="{p.deep}" stroke-width="1.5" stroke-linejoin="round"/>')
 
 
-def circuit(p):
-    """Limine Snapper: its circuit, a ring and three wires."""
-    return (f'<path d="M26 32h26M23 24l6-8h23M23 40l6 8h23" {ROUND} stroke="{p.deep}" stroke-width="4.5"/>'
-            f'<circle cx="16" cy="32" r="10" fill="none" stroke="{p.main}" stroke-width="6"/>'
-            + "".join(f'<circle cx="54" cy="{y}" r="5" fill="{p.main}"/>' for y in (16, 32, 48)))
+def snapshot_back(p):
+    """Limine Snapper Restore: a snapshot, the shutter's blades, and the arrow turning back round
+    it, to the system as it was."""
+    cx, cy, r = 32, 32, 13.5
+    blades = "".join(f'<path d="M{cx + r * math.cos(math.radians(a)):.2f} {cy + r * math.sin(math.radians(a)):.2f}'
+                     f'L{cx + 5 * math.cos(math.radians(a + 60) + .9):.2f} {cy + 5 * math.sin(math.radians(a + 60) + .9):.2f}" '
+                     f'stroke="{p.mid}" stroke-width="2.6" stroke-linecap="round"/>' for a in range(0, 360, 60))
+    R, start, end = 22.5, -150, 150  # from the top left, round by the right, to the bottom left
+    sx, sy = cx + R * math.cos(math.radians(start)), cy + R * math.sin(math.radians(start))
+    ex, ey = cx + R * math.cos(math.radians(end)), cy + R * math.sin(math.radians(end))
+    return (f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="{p.main}"/>{blades}'
+            f'<circle cx="{cx}" cy="{cy}" r="4.6" fill="{p.deep}"/>'
+            f'<path d="M{sx:.2f} {sy:.2f}A{R} {R} 0 1 1 {ex:.2f} {ey:.2f}" {ROUND} stroke="{p.main}" stroke-width="5.5"/>'
+            f'<path d="M{sx - 7:.2f} {sy - 1:.2f}L{sx + 3:.2f} {sy + 9:.2f}L{sx + 5:.2f} {sy - 4:.2f}Z" fill="{p.main}" '
+            f'stroke="{p.main}" stroke-width="2.4" stroke-linejoin="round"/>')
 
 
 def usage_graph(p):

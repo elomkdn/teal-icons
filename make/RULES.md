@@ -37,7 +37,9 @@ Where an app's icon comes from, in this order:
 1. Adwair's, the base, recolored, where it is clean: it draws the right app, and Plasma's QtSvg
    draws it whole (Haruna's uses CSS, which QtSvg ignores).
 2. The app's own logo, on each computer: a logo already square becomes its own tile, cut to the
-   tile's corners (`SQUARE_LOGOS`, as a picture: QtSvg draws no clip); another one sits on its tile.
+   tile's corners (`SQUARE_LOGOS`, as a picture: QtSvg draws no clip); a rectangular one is rebuilt
+   from its parts, so nothing stretches (`REBUILT_LOGOS`: Kvantum's letters on its rainbow);
+   another one sits on its tile.
 3. A drawing of Teal's, where the logo is too free, too odd, or missing.
 
 - An app: a tile of its own color, a paper object built in planes, with its soft shadow.

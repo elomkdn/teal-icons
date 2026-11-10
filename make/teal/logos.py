@@ -78,6 +78,22 @@ def logo_tile(path, box=40, disc=None, square=False):
     return svg
 
 
+def rainbow_letters(path):
+    """Kvantum: the white letters of its logo, on its rainbow (shapes.rainbow_tile), across the
+    tile. Its logo is a rectangle: cut to the tile, its letters would stretch."""
+    import io
+    from PIL import Image
+    letters = " ".join(re.findall(r'<path\b[^>]*\bd="([^"]+)"', Path(path).read_text()))
+    probe = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="480" height="480"><path d="{letters}"/></svg>'
+    png = subprocess.run(["rsvg-convert"], input=probe.encode(), capture_output=True, check=True).stdout
+    left, top, right, bottom = (v / 10 for v in Image.open(io.BytesIO(png)).getchannel("A").getbbox())
+    scale = 38 / (right - left)
+    x, y = 32 - (left + right) / 2 * scale, 32 - (top + bottom) / 2 * scale
+    shade = f'<g transform="translate({x:.3f} {y + 1:.3f}) scale({scale:.4f})"><path d="{letters}" fill="{CRUST}" fill-opacity=".25"/></g>'
+    white = f'<g transform="translate({x:.3f} {y:.3f}) scale({scale:.4f})"><path d="{letters}" fill="{PAPER}"/></g>'
+    return icon(rainbow_tile(), f'<rect {TILE} fill="url(#tile)"/>{rim(.25)}{shade}{white}')
+
+
 def square_tile(svg):
     """A logo that is already a square (its own background, its own corners): what it covers
     fills the tile, the color by each of its corners behind them where they are rounder than
@@ -127,8 +143,7 @@ CATEGORIES = [("Game", "red"), ("AudioVideo", "pink"), ("Audio", "pink"), ("Vide
               ("Graphics", "mauve"), ("Development", "blue"), ("Office", "blue"), ("Network", "sky"),
               ("Education", "lavender"), ("Science", "lavender"), ("Utility", "peach")]
 # where the menu's categories say otherwise
-TILE_HUES = {"LimineSnapperSync": "teal",  # snapshots of the system, filed under Utility
-             "cachy-update-blue": "teal"}  # the system's updates, filed under Utility
+TILE_HUES = {"cachy-update-blue": "teal"}  # the system's updates, filed under Utility
 MENUS = [Path("/usr/share/applications"), Path.home() / ".local/share/applications",
          Path("/var/lib/flatpak/exports/share/applications"), Path.home() / ".local/share/flatpak/exports/share/applications"]
 _menu = None
@@ -264,23 +279,25 @@ def tinted(svg, names=()):
 
 # our icon -> the names its app's logo may have, in hicolor or Breeze. A gray, generic logo
 # (KDE Connect's phone, pavucontrol's knob, Gufw's shield) would only dull its tile, and a small
-# picture in a gradient (SchedExt's) would blur it into a candy one: our drawing stays.
+# picture (SchedExt's gradient, Limine Snapper's thin circuit) would blur on it: our drawing stays.
 LOGOS = {
     "assistant.svg": ["assistant", "qtassistant"], "designer.svg": ["designer", "qtdesigner"],
     "linguist.svg": ["linguist", "qtlinguistic"], "qdbusviewer.svg": ["qdbusviewer"],
     "btrfs-assistant.svg": ["btrfs-assistant"], "org.cachyos.KernelManager.svg": ["org.cachyos.KernelManager"],
     "gwenview.svg": ["gwenview", "org.kde.gwenview"], "kate.svg": ["kate", "org.kde.kate"],
     "kwalletmanager.svg": ["kwalletmanager", "kwalletmanager2"],
-    "LimineSnapperSync.svg": ["LimineSnapperSync"],
     "io.github.Faugus.faugus-launcher.svg": ["io.github.Faugus.faugus-launcher", "faugus-launcher"],
     "micro.svg": ["micro"],
     "firefox.svg": ["firefox"],
     "hypnotix.svg": ["hypnotix"], "utilities-system-monitor.svg": ["utilities-system-monitor"],
+    "kvantum.svg": ["kvantum"],
 }
 
 
 # the logos that are already a square: their own background becomes the tile
 SQUARE_LOGOS = {"hypnotix.svg", "utilities-system-monitor.svg"}
+# the logos rebuilt from their parts: how
+REBUILT_LOGOS = {"kvantum.svg": rainbow_letters}
 
 
 # the logos that are a symbol on a disc: the shapes of the disc, the tile that replaces it, and

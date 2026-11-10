@@ -88,7 +88,10 @@ def place_logos(folder):
         if logo is None:
             continue
         try:
-            svg = draw.logo_tile(logo, disc=draw.ROUND_LOGOS.get(name), square=name in draw.SQUARE_LOGOS)
+            if name in draw.REBUILT_LOGOS:
+                svg = draw.REBUILT_LOGOS[name](logo)
+            else:
+                svg = draw.logo_tile(logo, disc=draw.ROUND_LOGOS.get(name), square=name in draw.SQUARE_LOGOS)
             svg = draw.tinted(svg, candidates)
         except ImportError:  # a PNG logo, without Pillow
             missing_pillow.add(name)
