@@ -137,6 +137,8 @@ def main():
     root, name = Path(sys.argv[1]), sys.argv[2]
     theme = root / name
     logos = place_logos(theme / "apps/scalable")
+    # the apps installed here the build knew nothing of: their tiles in their color too
+    draw.tint_folder(theme / "apps/scalable", {Path(name).stem for name in draw.DESIGNS} | {Path(n).stem for n in draw.LOGOS})
     own = link_own_icons(theme)
     keep_launchers_tiles(root / f"{name}-Shell")
     papirus = root / f"{name}-Papirus"

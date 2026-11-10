@@ -14,9 +14,9 @@ dark desktop.
   have a generic or borrowed icon get one drawn for Teal, and the apps with a logo of their
   own (Gwenview, KWallet, the Qt and CachyOS tools…) show that logo, in Catppuccin
   colors. Round logos (Kate, Faugus, Micro) lose their disc, whose color becomes the tile.
-  A logo that sat on a dark tile gets a tile whose color says what the app is: teal for the
-  system's tools, black for a terminal, the app's own color for the others (pastel under a
-  colored logo, vivid under a white one).
+  A tile's color says what the app is: teal for every tool of the system, black for a
+  terminal, the app's own color for the others (pastel under a colored logo, vivid under a white
+  one, paper where its own color would not show).
 - **The system and the hardware**: System Settings' pages and the hardware (drives, cards,
   headphones, microphones, cameras, printers…) are objects without a tile, each in its own
   pastel. In Plasma's own panels and popups (Bluetooth, volume, battery, disks), the hardware

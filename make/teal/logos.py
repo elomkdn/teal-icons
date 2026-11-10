@@ -143,7 +143,8 @@ CATEGORIES = [("Game", "red"), ("AudioVideo", "pink"), ("Audio", "pink"), ("Vide
               ("Graphics", "mauve"), ("Development", "blue"), ("Office", "blue"), ("Network", "sky"),
               ("Education", "lavender"), ("Science", "lavender"), ("Utility", "peach")]
 # where the menu's categories say otherwise
-TILE_HUES = {"cachy-update-blue": "teal"}  # the system's updates, filed under Utility
+TILE_HUES = {"cachy-update-blue": "teal",  # the system's updates, filed under Utility
+             "obs": "pink"}  # in the README's picture, wherever OBS is not installed: video's color
 MENUS = [Path("/usr/share/applications"), Path.home() / ".local/share/applications",
          Path("/var/lib/flatpak/exports/share/applications"), Path.home() / ".local/share/flatpak/exports/share/applications"]
 _menu = None
@@ -193,12 +194,17 @@ def _pixels(svg):
     return [_lab(p) for p in _render(svg) if p[3] > 200]
 
 
-def _logo(svg):
-    """The pixels of the logo alone: the picture drawn on two tiles of different colors, the
-    pixels that stay the same (not the tile, nor the edges and the light blending into it)."""
-    first, second = (_render(MOCHA_STOPS.sub(rf'\1<stop offset="0" stop-color="{k}"/><stop offset="1" stop-color="{k}"/>\2', svg))
-                     for k in KEYS)
+def _logo_on(keyed):
+    """The pixels of the logo alone: the picture drawn on two tiles of different colors (keyed
+    gives it with its tile in a color), the pixels that stay the same (not the tile, nor the
+    edges and the light blending into it)."""
+    first, second = (_render(keyed(k)) for k in KEYS)
     return [_lab(p) for p, q in zip(first, second) if p[3] > 200 and max(abs(x - y) for x, y in zip(p[:3], q[:3])) < 8]
+
+
+def _logo(svg):
+    """The logo on a Mocha tile."""
+    return _logo_on(lambda k: MOCHA_STOPS.sub(rf'\1<stop offset="0" stop-color="{k}"/><stop offset="1" stop-color="{k}"/>\2', svg))
 
 
 def _hue(pixels, share=.15):
@@ -250,6 +256,20 @@ def tile_family(logo, names):
     return next((family for category, family in CATEGORIES if category in menu), None)
 
 
+def shade(logo, family):
+    """The tile under this logo in this family, (start, end), where the logo stands out in
+    lightness, which the eye reads first: pastel under a colored logo, else vivid, else paper
+    (Latte's), else the deep shade (not for a warm hue, whose deep shade is brown); None: no tile
+    keeps it clear, the Mocha tile."""
+    pastel, vivid, deep = tile_shades(family)
+    candidates = ([pastel] if _hue(logo) else []) + [vivid, (PAPER, PAPER_SHADE)] + ([] if family in WARM else [deep])
+    for start, end in candidates:
+        lightness = catppuccin.oklab(mix(start, end, .5))[0]
+        if sum(1 for p in logo if abs(p[0] - lightness) > .1) / len(logo) >= .7:
+            return start, end
+    return None
+
+
 def tinted(svg, names=()):
     """The picture with its Mocha tile in the color of its app (see above), or as it was."""
     if not MOCHA_STOPS.search(svg):
@@ -259,22 +279,94 @@ def tinted(svg, names=()):
         family = tile_family(logo, list(names)) if logo else None
     except (ImportError, OSError, ValueError, subprocess.CalledProcessError):  # no Pillow or rsvg-convert: Mocha
         return svg
-    if not family:
+    tile = family and shade(logo, family)
+    if not tile:
         return svg
-    shades = tile_shades(family)[0 if _hue(logo) else 1:]  # a white logo would vanish on pastel
-    if family in WARM:
-        shades = shades[:-1]  # their deep shade is brown, no Catppuccin color: Mocha rather
-    best, score = None, -1
-    for start, end in shades:
-        middle = catppuccin.oklab(mix(start, end, .5))
-        clear = sum(1 for p in logo if math.dist(p, middle) > .12) / len(logo)
-        if clear > score:
-            best, score = (start, end), clear
-        if clear >= .7:
+    return MOCHA_STOPS.sub(rf'\1<stop offset="0" stop-color="{tile[0]}"/><stop offset="1" stop-color="{tile[1]}"/>\2', svg)
+
+
+# The system's tools whose own tile stays: the system's two main apps, and the apps whose color is
+# their mark (Kvantum's rainbow, NVIDIA's green)
+SYSTEM_OWN = {"system-file-manager", "preferences-system", "kvantum", "nvidia"}
+
+
+def is_system(names):
+    menu = categories(names)
+    return bool(menu & SYSTEM) and "Game" not in menu and not menu & TERMINAL
+
+
+def _tile_end(svg):
+    """Where the picture's tile ends: after its first shapes that each cover the whole tile (a
+    rect or a path, a light layer, a frame), measured, since the base draws them in many ways."""
+    side = float(re.search(r'viewBox="[-\d.]+ [-\d.]+ ([\d.]+)', svg).group(1))
+    start = svg.index("</defs>") + 7 if "</defs>" in svg else re.search(r"<svg\b[^>]*>", svg).end()
+    full = sum(1 for p in _render(icon("", f'<rect {TILE}/>')) if p[3] > 128)  # the tile, on the 64 px grid
+    end = None
+    for m in re.finditer(r"<(?:rect|path)\b[^>]*/>", svg[start:]):
+        shape = re.sub(r'\s(?:style|fill|opacity|fill-opacity|stroke|class)="[^"]*"', "", m.group(0))
+        shape = shape.replace("/>", ' fill="#000"/>', 1)
+        probe = re.sub(r"<image\b[^>]*/>", "", svg[:start]) + shape + "</svg>"
+        covered = sum(1 for p in _render(probe) if p[3] > 128)
+        if covered < .9 * full:
             break
-    if score < .7 and family in WARM:
+        end = start + m.end()
+    if end is None:
+        raise ValueError("no tile")
+    return end, side / 64
+
+
+def system_tile(svg, names=()):
+    """A tool of the system on the base's tile of another color: the tile becomes teal, the
+    system's color, its drawing stays; the shade where the drawing stands out (see shade)."""
+    if 'id="teal-system"' in svg or MOCHA_STOPS.search(svg) or not is_system(list(names)):
         return svg
-    return MOCHA_STOPS.sub(rf'\1<stop offset="0" stop-color="{best[0]}"/><stop offset="1" stop-color="{best[1]}"/>\2', svg)
+    try:
+        end, scale = _tile_end(svg)
+
+        def with_tile(fill, defs=""):
+            tile = (f'<g transform="scale({scale:.6f})"><rect id="teal-system" {TILE} fill="{fill}"/>'
+                    f'{rim(.25)}</g>')
+            out = svg[:end] + tile + svg[end:]
+            if not defs:
+                return out
+            if "</defs>" in out:
+                return out.replace("</defs>", defs + "</defs>", 1)
+            root = re.search(r"<svg\b[^>]*>", out)
+            return out[:root.end()] + f"<defs>{defs}</defs>" + out[root.end():]
+        logo = _logo_on(with_tile)
+        tile = logo and shade(logo, "teal")
+    except (ImportError, OSError, ValueError, AttributeError, subprocess.CalledProcessError):
+        return svg
+    if not tile:
+        return svg
+    return with_tile("url(#teal-system-tile)", diagonal("teal-system-tile", *tile))
+
+
+def tint_folder(folder, skip=()):
+    """Every picture of an apps folder: a logo on the Mocha tile in its app's color (tinted), a
+    tool of the system on teal (system_tile), but for Teal's own drawings (skip), whose tile is
+    chosen already. In parallel; the names leading to a picture are its app's names."""
+    from concurrent.futures import ThreadPoolExecutor
+    names = {}
+    for f in folder.iterdir():
+        target = f.resolve()
+        if target.parent == folder.resolve() and target.suffix == ".svg" and target.is_file():
+            names.setdefault(target, [target.stem])
+            if f.is_symlink():
+                names[target].append(f.stem)
+
+    def tint(item):
+        path, aliases = item
+        text = path.read_text()
+        new = tinted(text, aliases)
+        if new == text and path.stem not in SYSTEM_OWN | set(skip):
+            new = system_tile(text, aliases)
+        if new != text:
+            path.write_text(new)
+            return 1
+        return 0
+    with ThreadPoolExecutor() as pool:
+        return sum(pool.map(tint, names.items()))
 
 
 # our icon -> the names its app's logo may have, in hicolor or Breeze. A gray, generic logo
@@ -289,13 +381,13 @@ LOGOS = {
     "io.github.Faugus.faugus-launcher.svg": ["io.github.Faugus.faugus-launcher", "faugus-launcher"],
     "micro.svg": ["micro"],
     "firefox.svg": ["firefox"],
-    "hypnotix.svg": ["hypnotix"], "utilities-system-monitor.svg": ["utilities-system-monitor"],
+    "hypnotix.svg": ["hypnotix"],
     "kvantum.svg": ["kvantum"],
 }
 
 
 # the logos that are already a square: their own background becomes the tile
-SQUARE_LOGOS = {"hypnotix.svg", "utilities-system-monitor.svg"}
+SQUARE_LOGOS = {"hypnotix.svg"}
 # the logos rebuilt from their parts: how
 REBUILT_LOGOS = {"kvantum.svg": rainbow_letters}
 

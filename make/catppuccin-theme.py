@@ -324,30 +324,6 @@ def place_drawn(folder, drawn=DRAWN):
             shutil.copyfile(f, out)
 
 
-def tint_tiles(folder):
-    """The logos on the Mocha tile get a tile of their own color (logos.tinted): their hue, or
-    that of Papirus's icon under one of their names. Without Pillow or rsvg-convert, Mocha stays."""
-    from concurrent.futures import ThreadPoolExecutor
-    names = {}  # each picture of the folder, and the names that lead to it
-    for f in folder.iterdir():
-        target = f.resolve()
-        if target.parent == folder.resolve() and target.suffix == ".svg" and target.is_file():
-            names.setdefault(target, [target.stem])
-            if f.is_symlink():
-                names[target].append(f.stem)
-
-    def tint(item):
-        path, aliases = item
-        text = path.read_text()
-        new = draw.tinted(text, aliases)
-        if new != text:
-            path.write_text(new)
-            return 1
-        return 0
-    with ThreadPoolExecutor() as pool:
-        return sum(pool.map(tint, names.items()))
-
-
 def prune(theme):
     """Keep only the full-color folders, drop the base's monochrome ones and its cursors."""
     for child in theme.iterdir():
@@ -637,7 +613,8 @@ def main():
     copy_app_icons(theme / "apps/scalable")
     place_drawn(theme / "apps/scalable")
     link_same_apps(theme / "apps/scalable")
-    print(f"{tint_tiles(theme / 'apps/scalable')} tiles in their logo's color")
+    own = {Path(name).stem for name in draw.DESIGNS}  # their tile chosen already, but for a Mocha one
+    print(f"{draw.tint_folder(theme / 'apps/scalable', own)} tiles in their app's color")
     place_drawn(theme / "places/scalable", drawn=DRAWN_PLACES)
     place_drawn(theme / "devices/scalable", drawn=DRAWN_DEVICES)
     small = draw_small_folders(theme) | draw_small_files(theme)
