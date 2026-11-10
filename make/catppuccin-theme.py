@@ -53,10 +53,23 @@ DRAWN = Path(__file__).resolve().parent / "teal/apps"
 DRAWN_PLACES = Path(__file__).resolve().parent / "teal/places"
 DRAWN_DEVICES = Path(__file__).resolve().parent / "teal/devices"
 DRAWN_SETTINGS = Path(__file__).resolve().parent / "teal/settings"
+DRAWN_SYMBOLS = Path(__file__).resolve().parent / "teal/symbols"
+# Apps whose base icon is under the name of a page of System Settings, which Teal draws as a free
+# shape: the app keeps a copy of the base's tile under its own name, and its other names follow
+APP_COPIES = {"kdeconnect.svg": ("preferences-kde-connect.svg", ["org.kde.kdeconnect.svg"])}
+# The base's app icons whose name Papirus uses for a system icon too, kept: the printing
+# settings (cups and system-config-printer link to it)
+APPS_KEPT = {"printer.svg"}
 # Apps the base does not know by this name, under the icon it has for them
-SAME_APP = {"brave-origin": "brave"}
+SAME_APP = {"brave-origin": "brave", "printer-settings": "printer", "hardinfo2": "hwinfo",
+            "pavucontrol-qt": "multimedia-volume-control", "cachyos-package-installer": "cachyos-pi",
+            "kdeconnect-app": "kdeconnect", "kmenuedit": "org.kde.kmenuedit", "org.kde.kwalletmanager": "kwalletmanager",
+            "kwallet": "kwalletmanager"}
 # Logos that spill over their tile, brought inside it
 FIT_IN_TILE = {"krita.svg": .82, "transmission.svg": .84}
+# Logos whose colored tile the recoloring turns into a candy gradient (Firefox's, magenta to
+# violet): they go on the Mocha tile, like the apps' own logos, where their colors stand out
+ON_MOCHA = {"firefox.svg"}
 INHERITS = "{papirus},Adwaita,AdwaitaLegacy,hicolor,breeze"
 PAPIRUS = Path("/usr/share/icons/Papirus-Dark")
 # Papirus-Dark's color scheme classes -> Catppuccin Mocha
@@ -149,7 +162,7 @@ def drop_system_names(theme, names):
     dropped = 0
     for folder in ("apps/scalable", "devices/scalable", "mimetypes/scalable"):
         for f in (theme / folder).iterdir() if (theme / folder).is_dir() else []:
-            if f.name.removesuffix(".svg") in names and f.name not in TEAL:
+            if f.name.removesuffix(".svg") in names and f.name not in TEAL | APPS_KEPT:
                 f.unlink()
                 dropped += 1
     return dropped
@@ -206,6 +219,22 @@ def mocha_tile(text):
     return text.replace(gradient.group(0), gradient.group(0).replace(gradient.group(1), body))
 
 
+def onto_mocha(text):
+    """The picture's tile, whatever its color, becomes the Mocha tile with its rim; the logo
+    stays. The tile is the first rounded rect, a 56 px square on the 64 px grid, at the scale of
+    the picture's own canvas."""
+    side = float(re.search(r'viewBox="[-\d.]+ [-\d.]+ ([\d.]+)', text).group(1))
+    scale = side / 64
+    tile = re.search(r'<rect\b[^>]*\brx="[^"]+"[^>]*/>', text[text.index("</defs>"):])
+    width = tile and re.search(r'\bwidth="([\d.]+)"', tile.group(0))
+    if not width or abs(float(width.group(1)) / scale - 56) > 1:
+        raise ValueError("no tile to replace")
+    mocha = (f'<g transform="scale({scale:.6f})"><rect {draw.TILE} fill="url(#teal-mocha)"/>'
+             f'{draw.rim(draw.MOCHA_RIM)}</g>')
+    text = text.replace(tile.group(0), mocha, 1)
+    return text.replace("</defs>", draw.diagonal("teal-mocha", draw.SURFACE0, draw.BASE) + "</defs>", 1)
+
+
 # The base's sheet of paper, and its folded corner: white at 35 % over the page's color
 SHEET = re.compile(r'(<path fill=")(#[0-9a-fA-F]{3,6})(" d="M13 4c-2\.77 0-5 2\.23-5 5v46(?:\.\d+)?c0 2\.77 2\.23 5 5 5h38c2\.77 0 '
                    r'5-2\.23 5-5V16L44 4(?:\.\d+)?z"[^>]*/>)(<path fill=")#fff(")( d="[^"]*")?( opacity="\.35")')
@@ -254,7 +283,9 @@ def recolor_tree(folder):
         text = f.read_text(errors="ignore")
         if f.name in FIT_IN_TILE:
             text = fit_in_tile(text, FIT_IN_TILE[f.name])
-        if folder.parent.name == "apps":
+        if f.name in ON_MOCHA:
+            text = onto_mocha(text)
+        elif folder.parent.name == "apps":
             text = mocha_tile(text)
         elif folder.parent.name == "mimetypes" and PAPER_TYPES.match(f.name):
             text = paper_page(text)
@@ -270,6 +301,16 @@ def link_same_apps(folder):
             out.symlink_to(f"{known}.svg")
 
 
+def copy_app_icons(folder):
+    for name, (source, others) in APP_COPIES.items():
+        if (folder / source).is_file():
+            (folder / name).unlink(missing_ok=True)
+            shutil.copyfile((folder / source).resolve(), folder / name)
+            for other in others:
+                (folder / other).unlink(missing_ok=True)
+                (folder / other).symlink_to(name)
+
+
 def place_drawn(folder, drawn=DRAWN):
     """In place of the base's files or links, never through them (gwenview links to shotwell).
     Its own aliases link to the main names, and follow."""
@@ -281,6 +322,30 @@ def place_drawn(folder, drawn=DRAWN):
             out.symlink_to(os.readlink(f))
         else:
             shutil.copyfile(f, out)
+
+
+def tint_tiles(folder):
+    """The logos on the Mocha tile get a tile of their own color (logos.tinted): their hue, or
+    that of Papirus's icon under one of their names. Without Pillow or rsvg-convert, Mocha stays."""
+    from concurrent.futures import ThreadPoolExecutor
+    names = {}  # each picture of the folder, and the names that lead to it
+    for f in folder.iterdir():
+        target = f.resolve()
+        if target.parent == folder.resolve() and target.suffix == ".svg" and target.is_file():
+            names.setdefault(target, [target.stem])
+            if f.is_symlink():
+                names[target].append(f.stem)
+
+    def tint(item):
+        path, aliases = item
+        text = path.read_text()
+        new = draw.tinted(text, aliases)
+        if new != text:
+            path.write_text(new)
+            return 1
+        return 0
+    with ThreadPoolExecutor() as pool:
+        return sum(pool.map(tint, names.items()))
 
 
 def prune(theme):
@@ -529,7 +594,8 @@ SHELL_SAME = {"preferences-desktop-keyboard": "input-keyboard", "preferences-des
 def write_shell_theme(theme, name):
     """<name>-Shell: Plasma's own. The tray's popups (Bluetooth, volume, battery, disks, KDE
     Connect) list hardware among the system's monochrome icons: there, the hardware is monochrome
-    too, Papirus's symbols under their plain names. Only plasmashell uses it; the names an
+    too, Papirus's symbols under their plain names; so are the night light and the theme in
+    Brightness and Color, drawn as symbols (draw.SYMBOLS). Only plasmashell uses it; the names an
     app's launcher uses are taken out of it on each computer (localize.py), so the dock and the
     launcher keep their tiles."""
     symbols = theme / "16x16/symbolic/devices"
@@ -541,6 +607,7 @@ def write_shell_theme(theme, name):
         if symbol:
             icons.update({n: symbol for n in names if n not in have})
     icons.update({n: have[same] for n, same in SHELL_SAME.items() if same in have and n not in icons})
+    icons.update({f.stem: f for f in DRAWN_SYMBOLS.glob("*.svg")})  # Teal's own drawings, as symbols
     write_hidden_theme(theme, theme.parent / f"{name}-Shell", f"{name} Shell",
                        f"Monochrome hardware for Plasma's panels and popups, for {name}", icons, "devices/symbolic",
                        {"Size": "16", "Context": "Devices", "Type": "Scalable", "MinSize": "8", "MaxSize": "256"})
@@ -567,8 +634,10 @@ def main():
     prune(theme)
     print(f"{drop_system_names(theme, names)} system icons left to Papirus")
     n = sum(recolor_tree(theme / d) for d in RECOLORED if (theme / d).is_dir())
+    copy_app_icons(theme / "apps/scalable")
     place_drawn(theme / "apps/scalable")
     link_same_apps(theme / "apps/scalable")
+    print(f"{tint_tiles(theme / 'apps/scalable')} tiles in their logo's color")
     place_drawn(theme / "places/scalable", drawn=DRAWN_PLACES)
     place_drawn(theme / "devices/scalable", drawn=DRAWN_DEVICES)
     small = draw_small_folders(theme) | draw_small_files(theme)

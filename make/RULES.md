@@ -21,7 +21,7 @@ the symbol's family applies (`FREE_FAMILIES`).
 |---|---|---|
 | Colored icons | apps, places, devices, file types | full color, below |
 | Monochrome | actions, tray, status | Papirus Dark's, in the text color |
-| Logos | an app's own mark | on the Mocha tile, in Catppuccin colors, recognizable first |
+| Logos | an app's own mark | on a tile of its color, in Catppuccin colors, recognizable first |
 
 ## The grid
 
@@ -32,12 +32,20 @@ the symbol's family applies (`FREE_FAMILIES`).
 
 ## Tiles
 
+Where an app's icon comes from, in this order:
+
+1. Adwair's, the base, recolored, where it is clean: it draws the right app, and Plasma's QtSvg
+   draws it whole (Haruna's uses CSS, which QtSvg ignores).
+2. The app's own logo, on each computer: a logo already square becomes its own tile, cut to the
+   tile's corners (`SQUARE_LOGOS`, as a picture: QtSvg draws no clip); another one sits on its tile.
+3. A drawing of Teal's, where the logo is too free, too odd, or missing.
+
 - An app: a tile of its own color, a paper object built in planes, with its soft shadow.
-- A tool of the system with its own launcher: the Mocha tile, a silver object in planes.
+- A tool of the system with its own launcher: a silver object in planes, on a teal tile.
 - A page of the system or the hardware: a free object, no tile, filling the grid, built in planes of its color (ink, deep, mid, main, pale), each a diagonal gradient leaning toward the neighboring hue. `pale` only ever sits on another plane, or it vanishes on a light background. A thing keeps its real colors where they are the point: a palette's paints, a window's buttons.
 - The system's two main apps may differ: Dolphin on a light tile, Settings with a silver gear on a lighter Mocha one.
 - A tile's gradient is diagonal, from its color to the neighboring hue, and stays soft: never all the way to Latte's.
-- There is one dark tile, Mocha's (surface 0 to base, a light rim on its top edge): the base's dark gray tiles become it when the theme is built (`mocha_tile` in `catppuccin-theme.py`).
+- A logo on a dark tile gets a tile whose color says what the app is, when the theme is built (`tinted` in `teal/logos.py`): a terminal stays black; a tool of the system (its menu's categories: System, Settings, Monitor, Printing…) is teal; another app has its own color, that of its installed icon, else of Papirus's, else of its logo; a white logo with none of them takes its menu category's (video pink, graphics mauve, development and office blue, internet sky, games red, utilities peach). The logo's hue goes on a pastel tile; a white logo, or one that would not stand out, on the vivid tile, then on its deep shade. Where nothing is known of the app, or no tile keeps the logo clear (a warm hue's deep shade is brown), the dark tile stays: there is one, Mocha's (surface 0 to base, a light rim on its top edge), which the base's dark gray tiles become (`mocha_tile` in `catppuccin-theme.py`).
 
 ## File types
 

@@ -26,22 +26,11 @@ DESIGNS = {
     # the folders it shows, teal, on the light Latte tile
     "system-file-manager.svg": (lambda: on_latte(folder),
                                 ["dolphin", "file-manager", "org.gnome.Nautilus", "nautilus", "org.gnome.Files"]),
-    "preferences-system.svg": settings,
-    "libreoffice-writer.svg": lambda: page(writer, "blue"),
-    "libreoffice-calc.svg": lambda: page(calc, "green"),
-    "libreoffice-impress.svg": lambda: page(impress, "peach"),
-    "libreoffice-draw.svg": lambda: page(draw, "yellow"),
-    "libreoffice-base.svg": lambda: page(base, "mauve"),
-    "libreoffice-math.svg": lambda: page(math_, "red"),
 }
 
 
 # name: design, or (design, other names linked to it)
 DESIGNS.update({
-    "accessories-calculator.svg": (lambda: on_color(calculator, "peach"),
-                                   kde("kcalc") + ["org.gnome.Calculator", "galculator"]),
-    "ark.svg": (lambda: on_color(archive, "yellow"),
-                ["org.kde.ark", "file-roller", "org.gnome.FileRoller", "xarchiver", "engrampa"]),
     "assistant.svg": (lambda: on_color(qt_badge(QT_A), "green"), ["qtassistant", "assistant-qt6", "assistant6"]),
     "designer.svg": (lambda: on_color(qt_badge(QT_D), "green"), ["qtdesigner", "designer-qt6", "designer6"]),
     "linguist.svg": (lambda: on_color(qt_badge(QT_L), "green"), ["qtlinguistic", "linguist-qt6", "linguist6"]),
@@ -49,51 +38,35 @@ DESIGNS.update({
     "btrfs-assistant.svg": lambda: on_color(btrfs, "peach"),
     "org.cachyos.hello.svg": (cachyos_hello, ["cachyos-hello"]),
     "org.cachyos.KernelManager.svg": (lambda: on_mocha(kernel), ["cachyos-kernel-manager"]),
-    "org.cachyos.scx-manager.svg": (lambda: on_mocha(scx_gear), ["scx-manager"]),
+    "org.cachyos.scx-manager.svg": (lambda: on_mocha(quarter_gear, "sky"), ["scx-manager"]),
     "cachy-update-blue.svg": (lambda: on_mocha(refresh, "teal"), ["cachy-update", "arch-update", "system-software-update"]),
-    "cachyos-pi.svg": (lambda: on_mocha(package, "teal"), ["cachyos-package-installer"]),
-    "printer.svg": (lambda: on_color(printer, "lavender"),
-                    ["cups", "system-config-printer", "preferences-devices-printer", "printer-settings"]),
     "elisa.svg": (elisa, kde("elisa")[1:]),
     "haruna.svg": (haruna, kde("haruna")[1:]),
     "qv4l2.svg": (lambda: on_color(webcam, "sky"), ["qvidcap", "kamoso", "org.kde.kamoso", "cheese", "org.gnome.Cheese"]),
     "gwenview.svg": (lambda: on_color(lens, "pink"), kde("gwenview")[1:]),
     "filelight.svg": (lambda: on_color(rings, "blue"), kde("filelight")[1:] + ["baobab", "org.gnome.baobab"]),
-    "hwinfo.svg": (lambda: on_color(magnifier, "lavender"), ["hwloc", "hardinfo", "hardinfo2"]),
     "kate.svg": (lambda: on_color(bird, "blue"), kde("kate")[1:]),
-    "kwrite.svg": (lambda: page(pencil_on_lines, "sky"), kde("kwrite")[1:]),
-    "kdeconnect.svg": (lambda: on_color(kde_phone, "sky"), kde("kdeconnect")[1:] + ["kdeconnect-app"]),
     "klassy-settings.svg": lambda: on_mocha(traffic_window),
     "preferences-desktop-theme-windowdecorations.svg": lambda: free_form(traffic_window),
     "preferences-system-windows.svg": (lambda: free_form(window_gear), ["preferences-system-windows-actions"]),
     "preferences-devices-cpu.svg": lambda: free_form(chip),
     # the base links it here too, and the apps' folder comes first
     "video-display.svg": lambda: free_form(display),
-    "kmenuedit.svg": (lambda: on_mocha(menu_list_pencil), kde("kmenuedit")[1:]),
     "kvantum.svg": (kvantum_logo, ["kvantummanager"]),
-    "kwalletmanager.svg": (lambda: on_color(wallet, "peach"), ["kwalletmanager2", "org.kde.kwalletmanager5",
-                                                            "org.kde.kwalletmanager", "kwallet"]),
     "okular.svg": (okular, kde("okular")[1:]),
     "qbittorrent.svg": lambda: on_color(qb, "blue"),
-    "multimedia-volume-control.svg": (lambda: on_color(knob, "lavender"),
-                                      ["org.pulseaudio.pavucontrol", "pavucontrol", "pavucontrol-qt"]),
-    "partitionmanager.svg": (lambda: on_mocha(partitions), kde("partitionmanager")[1:] + ["gparted", "gnome-disks",
-                                                                                     "org.gnome.DiskUtility"]),
     "preferences-desktop-emoticons.svg": (lambda: on_color(smiley, "yellow"), ["org.kde.plasma.emojier"]),
-    "spectacle.svg": (lambda: on_color(viewfinder, "sky"), kde("spectacle")[1:] + ["accessories-screenshot",
-                                                                                  "org.gnome.Screenshot"]),
-    "utilities-system-monitor.svg": (lambda: on_mocha(pulse),
+    "utilities-system-monitor.svg": (lambda: on_mocha(usage_graph),
                                      kde("plasma-systemmonitor") + ["ksysguard", "gnome-system-monitor",
                                                                     "org.gnome.SystemMonitor"]),
-    "gufw.svg": (lambda: on_color(striped_shield, "blue"), ["gufw_menu"]),
     "LimineSnapperSync.svg": (lambda: on_mocha(circuit), ["limine-snapper-restore", "limine-snapper-sync"]),
     "micro.svg": lambda: on_color(mu, "lavender"),
     "io.github.Faugus.faugus-launcher.svg": (lambda: on_color(penguin, "mauve"), ["faugus-launcher"]),
     "spotify-linux-32.svg": (spotify_tray, [f"spotify-linux-{size}" for size in (16, 22, 24, 48, 64, 128, 256, 512)]),
     # its .desktop file names a picture, not an icon: install.sh adds a local copy naming this one
-    "nuvio.svg": lambda: on_color(media_library, "pink"),
+    "nuvio.svg": nuvio,
     "zapfast.svg": lambda: on_color(zap_bubble, "green"),
-    "hypnotix.svg": lambda: on_color(television, "mauve"),
+    "hypnotix.svg": hypnotix,
     # its .desktop file names a picture too (install.sh)
     "hp-uiscan.svg": lambda: on_color(scanner, "blue"),
 })
@@ -295,10 +268,11 @@ SETTINGS_ONLY = {
     "preferences-desktop-peripherals.svg": lambda: free_form(plug),
     "preferences-desktop-search.svg": lambda: free_form(magnifier),
     "preferences-security.svg": lambda: free_form(shield),
-    "preferences-system.svg": lambda: free_form(plain_gear),
     "preferences-system-disks.svg": lambda: free_form(hard_drive),
 }
-DESIGNS["softwarecenter.svg"] = (lambda: on_mocha(shopping_bag), ["plasmadiscover", "software-properties"])
+# Plasma's popups show these pages' icons among monochrome ones (the night light and the theme, in
+# Brightness and Color): their symbols, in Teal-Shell, that only plasmashell uses.
+SYMBOLS = {"redshift-status-on.svg": moon, "lighttable.svg": day_night}
 
 
 def write_all(designs, out):
@@ -318,6 +292,7 @@ def main():
     write_all(PLACES, HERE / "places")
     write_all(DEVICES, HERE / "devices")
     write_all(SETTINGS_ONLY, HERE / "settings")
+    write_all({name: lambda glyph=glyph: symbolic(glyph) for name, glyph in SYMBOLS.items()}, HERE / "symbols")
     print(f"{len(DESIGNS)} icons in {HERE / 'apps'}, {len(PLACES)} in {HERE / 'places'}, "
           f"{len(DEVICES)} in {HERE / 'devices'}")
 

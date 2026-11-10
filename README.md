@@ -12,9 +12,11 @@ dark desktop.
   settings, software center), so it still means something.
 - **Their own tiles**: each app keeps its colored or light tile; the apps that would only
   have a generic or borrowed icon get one drawn for Teal, and the apps with a logo of their
-  own (KDE Connect, Gwenview, the Qt and CachyOS tools…) show that logo, in Catppuccin
-  colors, on a Mocha tile. Round logos (Kate, Faugus, Micro) lose their disc, whose color becomes
-  the tile. A dark tile is always the same one, Mocha's.
+  own (Gwenview, KWallet, the Qt and CachyOS tools…) show that logo, in Catppuccin
+  colors. Round logos (Kate, Faugus, Micro) lose their disc, whose color becomes the tile.
+  A logo that sat on a dark tile gets a tile whose color says what the app is: teal for the
+  system's tools, black for a terminal, the app's own color for the others (pastel under a
+  colored logo, vivid under a white one).
 - **The system and the hardware**: System Settings' pages and the hardware (drives, cards,
   headphones, microphones, cameras, printers…) are objects without a tile, each in its own
   pastel. In Plasma's own panels and popups (Bluetooth, volume, battery, disks), the hardware
@@ -70,7 +72,7 @@ without it, Teal's drawings stay. Run the installer again after installing such 
   56 px tile with 13 px corners on a 64 px canvas, lit from above): `shapes.py` holds the
   shapes, `draw.py` says which icon gets which, `logos.py` puts an app's own logo on a tile.
 - `make/catppuccin-theme.py` builds the theme from its base icons (`install-base.sh`):
-  recolors them, gives the dark tiles Mocha's and the code files their paper, places the
+  recolors them, gives the dark tiles their logo's color and the code files their paper, places the
   drawn icons, copies Papirus's system icons. `dist.sh` makes the release archive with them.
 - `make/sheet.py` checks the pack against `make/RULES.md`; `make/preview.py` draws the
   picture above from the built theme.

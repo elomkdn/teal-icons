@@ -99,46 +99,6 @@ def gear(cx, cy, outer, root, teeth, hole):
     return d + (f"M{cx + hole:.3f} {cy}a{hole} {hole} 0 1 0 {-2 * hole} 0a{hole} {hole} 0 1 0 {2 * hole} 0Z")
 
 
-def lines(color, widths, top=25.5):
-    return "".join(f'<rect x="24" y="{top + 5 * i}" width="{w}" height="2.2" rx="1.1" fill="{color}"/>'
-                   for i, w in enumerate(widths))
-
-
-def writer(c):
-    return f'<rect x="24" y="18" width="10" height="3" rx="1.5" fill="{c}"/>' + lines(c, (16, 16, 13, 16, 9))
-
-
-def calc(c):
-    cells = "".join(f'<rect x="{24 + 6 * col}" y="{24 + 5 * row}" width="4.6" height="3.6" rx=".9" fill="{c}" '
-                    f'fill-opacity="{1 if row == 0 else .45}"/>'
-                    for row in range(5) for col in range(3))
-    return cells
-
-
-def impress(c):
-    return (f'<rect x="24" y="22" width="16" height="11" rx="1.6" fill="{c}"/>'
-            f'<path d="M27 30.5l3.5-4 3 3 2-2 2.5 3Z" fill="{PAPER}"/>' + lines(c, (16, 11), 37.5))
-
-
-def draw(c):
-    return (f'<circle cx="29" cy="30" r="5.5" fill="{c}"/>'
-            f'<path d="M30.5 44.5 37 33l6.5 11.5Z" fill="{c}" fill-opacity=".55"/>'
-            f'<rect x="24" y="37" width="8" height="8" rx="1.6" fill="{c}" fill-opacity=".8"/>')
-
-
-def base(c):
-    disk = lambda y, o: (f'<path d="M24 {y}v3.6c0 1.6 3.6 2.9 8 2.9s8-1.3 8-2.9V{y}" fill="{c}" fill-opacity="{o}"/>')
-    return (disk(30.5, .55) + disk(36.6, .8) + disk(42.7, 1)
-            + f'<ellipse cx="32" cy="26.6" rx="8" ry="2.9" fill="{c}"/>'
-            + f'<ellipse cx="32" cy="30.5" rx="8" ry="2.9" fill="{c}" fill-opacity=".55"/>')
-
-
-def math_(c):
-    return (f'<path d="M24.5 26.5h5l3.2 12 4.3-17H40" fill="none" stroke="{c}" stroke-width="2.4" '
-            f'stroke-linecap="round" stroke-linejoin="round"/>' + lines(c, (16, 10), 41.5))
-
-
-
 # --- symbols: glyph(c, a) draws with c, details in a (the tile's color shows through) -----
 
 ROUND = 'fill="none" stroke-linecap="round" stroke-linejoin="round"'
@@ -185,23 +145,6 @@ def on_mocha(glyph, family=None):
 def on_latte(glyph, family="teal"):
     """An object in its color on the light Latte tile."""
     return icon(diagonal("tile", PAPER, PAPER_SHADE) + planes(family), f'<rect {TILE} fill="url(#tile)"/>' + symbol(glyph))
-
-
-def page(content, family):
-    """A sheet of paper with a folded corner on a tile of the app's color."""
-    sheet = "M22 12.5h15l8 8v29a2.5 2.5 0 0 1-2.5 2.5h-20.5a2.5 2.5 0 0 1-2.5-2.5v-34.5a2.5 2.5 0 0 1 2.5-2.5Z"
-    fold = "M37 12.5l8 8h-5.5a2.5 2.5 0 0 1-2.5-2.5Z"
-    return icon(colored_tile(family) + paper_planes(family),
-                f'<rect {TILE} fill="url(#tile)"/>{rim(.25)}'
-                + at(-3.84, -3.84, 1.12, f'<path d="{sheet}" transform="translate(0 1.4)" fill="{CRUST}" fill-opacity=".2"/>'
-                                         f'<path d="{sheet}" fill="url(#main)"/><path d="{fold}" fill="url(#deep)"/>'
-                                         + content(LATTE[family])))
-
-
-def settings():
-    """The settings: a silver gear on a lighter tile than the other tools'."""
-    return icon(diagonal("tile", SURFACE2, SURFACE0) + planes("silver"),
-                f'<rect {TILE} fill="url(#tile)"/>{rim(.3)}' + symbol(plain_gear, .72))
 
 
 def mix(a, b, t):
@@ -384,6 +327,24 @@ class Silhouette:
         return CRUST
 
 
+class Symbol:
+    """The same glyph in the text color, for Plasma's monochrome icons."""
+    ink = deep = mid = main = pale = metal = "currentColor"
+
+    @staticmethod
+    def real(name):
+        return "currentColor"
+
+
+def symbolic(glyph):
+    """A free shape as a symbol, for Plasma's popups (in Teal-Shell): one color, the text's,
+    which Plasma gives through the color scheme's class. Its planes merge, as in Papirus's."""
+    body = re.sub(r"<(\w+)(?=[^>]*currentColor)", r'<\1 class="ColorScheme-Text"', glyph(Symbol))
+    return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="16" height="16">'
+            '<defs><style id="current-color-scheme" type="text/css">'
+            f'.ColorScheme-Text {{ color:{TEXT}; }}</style></defs>{body}</svg>\n')
+
+
 def free_form(glyph):
     """The system's pages and hardware: an object without a tile, filling the grid, built in
     planes of its color (PAGE_COLORS, FREE_FAMILIES). A shadow one pixel below keeps it apart
@@ -393,19 +354,6 @@ def free_form(glyph):
             '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">'
             f'<defs>{planes(family)}</defs>'
             f'<g opacity=".28" transform="translate(0 1)">{glyph(Silhouette)}</g>{glyph(Planes)}</svg>\n')
-
-
-def pencil_on_lines(c):
-    return (lines(c, (16, 16, 12), 19)
-            + f'<path d="M27 46.5l1.2-5.2 12.6-12.6 4 4-12.6 12.6Z" fill="{c}"/>'
-            f'<path d="M40.8 28.7l1.7-1.7a1.4 1.4 0 0 1 2 0l2 2a1.4 1.4 0 0 1 0 2l-1.7 1.7Z" fill="{c}" fill-opacity=".6"/>')
-
-
-@enlarged
-def partitions(c, a):
-    """The partition manager: its disk as a pie of colored partitions."""
-    return "".join(f'<path d="{d}" fill="{MOCHA[f] if c != CRUST else CRUST}"/>' for d, f in PARTITIONS) + \
-        f'<circle cx="32" cy="32" r="5" fill="{SURFACE0 if c != CRUST else CRUST}"/>'
 
 
 PARTITIONS = [('M32 32L32.00 15.00A17 17 0 0 1 42.93 45.02Z', 'blue'), ('M32 32L42.47 45.40A17 17 0 0 1 18.98 42.93Z', 'green'), ('M32 32L18.60 42.47A17 17 0 0 1 17.28 23.50Z', 'yellow'), ('M32 32L17.58 22.99A17 17 0 0 1 31.41 15.01Z', 'red')]
@@ -463,20 +411,6 @@ QT_L = "M28 24v16h9"
 QT_DV = "M21.5 26v12h2.5a6 6 0 0 0 0-12ZM32.5 26l4.5 12 4.5-12"
 
 
-def gear_sector(cx, cy, outer, root, teeth, start, end):
-    """The part of a gear between two angles (degrees, clockwise from the top), to its center."""
-    pitch = 360 / teeth
-    points = [(cx, cy)]
-    a = start
-    while a <= end + 0.01:
-        phase = ((a % pitch) + pitch) % pitch / pitch
-        r = outer if 0.2 <= phase <= 0.55 else root
-        rad = math.radians(a - 90)
-        points.append((cx + r * math.cos(rad), cy + r * math.sin(rad)))
-        a += pitch / 20
-    return "M" + " ".join(f"{x:.2f} {y:.2f}" for x, y in points) + "Z"
-
-
 @enlarged
 def kernel(c, a):
     """CachyOS Kernel Manager: its K, and the dot beside it."""
@@ -484,13 +418,19 @@ def kernel(c, a):
             f'<circle cx="43.5" cy="32" r="4" fill="{c}"/>')
 
 
-@enlarged
-def scx_gear(c, a):
-    """scx-manager: its gear of four colored pieces, in Mocha colors."""
-    colors = [LATTE[f] for f in ("mauve", "blue", "pink", "peach")] if c != CRUST else [CRUST] * 4
-    return ("".join(f'<path d="{gear_sector(32, 32, 19, 15.2, 12, 90 * i + 2, 90 * i + 88)}" fill="{col}"/>'
-                    for i, col in enumerate(colors))
-            + f'<circle cx="32" cy="32" r="6.5" fill="{PAPER if c != CRUST else CRUST}"/>')
+def quarter_gear(p):
+    """SchedExt: the gear of its logo, its upper right quarter squared off by two arms, the hole
+    squared toward them; the gear and the arms in the two ends of its logo's colors, sky and
+    mauve, two planes instead of its gradient."""
+    cx, cy, r = 31, 33, 17
+    teeth = "".join(f'<rect x="{cx - 6}" y="{cy - r - 9}" width="12" height="14" rx="2" fill="{p.main}" '
+                    f'transform="rotate({a} {cx} {cy})"/>' for a in (90, 135, 180, 225, 270, 315))
+    body = f"M{cx} {cy}V{cy - r}A{r} {r} 0 1 0 {cx + r} {cy}Z"  # three quarters, from the top round the left
+    arms = (f"M{cx - 6} {cy}V{cy - r - 7}a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2V{cy - 6}H{cx + r + 7}"
+            f"a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H{cx}Z")
+    hole = f"M{cx + 1} {cy - 6.5}H{cx + 7.5}V{cy}A6.5 6.5 0 1 1 {cx + 1} {cy - 6.5}Z"
+    return (teeth + f'<path d="{body}" fill="{p.main}"/><path d="{arms}" fill="{p.real("mauve")}"/>'
+            f'<path d="{hole}" fill="{p.ink}"/>')
 
 
 def kvantum_logo():
@@ -521,11 +461,61 @@ def elisa():
                 + "".join(f'<circle cx="{x}" cy="51.6" r="2" fill="{CRUST}"/>' for x in (25.5, 38.5)))
 
 
-@enlarged
-def striped_shield(c, a):
-    """Gufw: its shield crossed by a band."""
-    return (f'<path d="M32 14 47 19.5v11.3c0 9.2-6.4 16-15 19.2-8.6-3.2-15-10-15-19.2V19.5Z" fill="{c}"/>'
-            f'<path d="M37.6 16 47 19.5v5.2L22.4 46c-1.8-1.6-3.3-3.4-4.4-5.4Z" fill="{a}"/>')
+def hypnotix():
+    """Hypnotix: the spiral of its logo, blades turning around the play button, in its blues
+    on paper."""
+    r0, r1, width, twist, steps = 9, 24.5, 21, 62, 14
+
+    def edge(start):
+        return [(32 + r * math.cos(math.radians(start + twist * (r - r0) / (r1 - r0))),
+                 32 + r * math.sin(math.radians(start + twist * (r - r0) / (r1 - r0))))
+                for r in (r0 + (r1 - r0) * k / steps for k in range(steps + 1))]
+    blades = ""
+    for i in range(10):
+        a, b = edge(i * 36 + 8), edge(i * 36 + 8 + width)
+        d = ("M" + "L".join(f"{x:.2f} {y:.2f}" for x, y in a) + f"A{r1} {r1} 0 0 1 {b[-1][0]:.2f} {b[-1][1]:.2f}"
+             + "".join(f"L{x:.2f} {y:.2f}" for x, y in reversed(b[:-1])) + "Z")
+        blades += f'<path d="{d}" fill="url(#{"main" if i % 2 else "deep"})"/>'
+    return icon(diagonal("tile", PAPER, PAPER_SHADE) + planes("sky"),
+                f'<rect {TILE} fill="url(#tile)"/>{blades}'
+                f'<circle cx="32" cy="32" r="12.8" fill="{CRUST}" fill-opacity=".12"/>'
+                f'<circle cx="32" cy="32" r="11.3" fill="{PAPER}"/>'
+                f'<path d="M28.4 25.6v12.8l10.6-6.4Z" fill="url(#deep)" stroke="url(#deep)" stroke-width="3" '
+                f'stroke-linejoin="round"/>')
+
+
+def facets(corners, center, t=.28):
+    """A triangle with rounded corners, cut into one plane per side, the planes meeting at center."""
+    def half(p0, p1, p2):  # a quadratic curve cut at its middle
+        m01, m12 = [(a + b) / 2 for a, b in zip(p0, p1)], [(a + b) / 2 for a, b in zip(p1, p2)]
+        mid = [(a + b) / 2 for a, b in zip(m01, m12)]
+        return (p0, m01, mid), (mid, m12, p2)
+
+    def xy(q):
+        return f"{q[0]:.2f} {q[1]:.2f}"
+    rounded = []
+    for i, v in enumerate(corners):
+        before, after = corners[i - 1], corners[(i + 1) % 3]
+        rounded.append(half([v[k] + (before[k] - v[k]) * t for k in (0, 1)], v,
+                            [v[k] + (after[k] - v[k]) * t for k in (0, 1)]))
+    return [f"M{xy(center)}L{xy(rounded[i][1][0])}Q{xy(rounded[i][1][1])} {xy(rounded[i][1][2])}"
+            f"L{xy(rounded[(i + 1) % 3][0][0])}Q{xy(rounded[(i + 1) % 3][0][1])} {xy(rounded[(i + 1) % 3][0][2])}Z"
+            for i in range(3)]
+
+
+def nuvio():
+    """Nuvio: its play button folded in planes, sky, pink and blue, the dark screen in it and its
+    own play button, on the Mocha tile, like the apps' logos."""
+    top, right, left = facets([(13, 9), (55, 32), (13, 55)], (27, 30))
+    return icon(mocha_tile() + diagonal("top", MOCHA["sky"], mix(MOCHA["sky"], MOCHA["blue"], .5))
+                + diagonal("right", MOCHA["pink"], MOCHA["mauve"]) + diagonal("left", LATTE["blue"], LATTE["lavender"]),
+                f'<rect {TILE} fill="url(#tile)"/>{rim(MOCHA_RIM)}'
+                + at(4.48, 4.48, .86,
+                     f'<path d="{top}" fill="url(#top)"/><path d="{right}" fill="url(#right)"/>'
+                     f'<path d="{left}" fill="url(#left)"/>'
+                     f'<rect x="20.5" y="23" width="18" height="18" rx="5" transform="rotate(-8 29.5 32)" fill="{CRUST}"/>'
+                     f'<path d="M26.6 27.6v8.8l7.2-4.4Z" fill="{PAPER}" stroke="{PAPER}" stroke-width="2.4" '
+                     f'stroke-linejoin="round"/>'))
 
 
 @enlarged
@@ -579,7 +569,7 @@ def okular():
                 f'stroke="{SURFACE0}" stroke-width="2.4"/></g>')
 
 
-# --- settings: the system's tools have the Mocha tile, whatever the base draws for them ----------
+# --- a four-pointed star, for the effects and the sparkles -------------------------------------
 
 def star(cx, cy, r):
     k = .22 * r
@@ -1352,23 +1342,6 @@ def person(p):
 # --- the apps' symbols: objects in planes, on the same 64 px grid as the free shapes ----------
 # On a colored tile, main is the paper, mid its tint, deep and pale the tile's color.
 
-def calculator(p):
-    """A calculator: its display, its keys, the operations in color."""
-    cells = "".join(f'<rect x="{18 + 11 * col}" y="{28 + 9.5 * row}" width="6.5" height="6.5" rx="2" '
-                    f'fill="{p.pale if col == 2 else p.mid}"/>' for row in range(3) for col in range(3))
-    return (f'<rect x="12" y="4" width="40" height="56" rx="9" fill="{p.main}"/>'
-            f'<rect x="18" y="10" width="28" height="13" rx="3.5" fill="{p.deep}"/>'
-            f'<rect x="33" y="14.5" width="9" height="4.5" rx="2.25" fill="{p.main}"/>' + cells)
-
-
-def archive(p):
-    """An archive: a box, its lid zipped."""
-    teeth = "".join(f'<rect x="30" y="{y}" width="4" height="3" rx="1" fill="{p.main}"/>' for y in (12, 18))
-    return (f'<path d="M10 25h44v24a7 7 0 0 1-7 7H17a7 7 0 0 1-7-7Z" fill="{p.main}"/>'
-            f'<rect x="6" y="8" width="52" height="19" rx="6" fill="{p.deep}"/>{teeth}'
-            f'<rect x="22" y="34" width="20" height="11" rx="3.5" fill="{p.pale}"/>')
-
-
 def btrfs(p):
     """btrfs-assistant: a gear around a tree of snapshots."""
     nodes = "".join(f'<circle cx="{x}" cy="{y}" r="3.2" fill="{p.main}"/>' for x, y in ((32, 21.5), (23.5, 42), (40.5, 42)))
@@ -1378,13 +1351,17 @@ def btrfs(p):
 
 
 def printer(p):
-    """A printer: the sheet going in, the page coming out."""
-    return (f'<rect x="18" y="4" width="28" height="22" rx="3.5" fill="{p.main}"/>'
-            f'<rect x="5" y="18" width="54" height="28" rx="9" fill="{p.deep}"/>'
-            f'<circle cx="49.5" cy="27.5" r="3" fill="{p.main}"/>'
-            f'<rect x="15" y="35.5" width="34" height="5" rx="2.5" fill="{p.ink}"/>'
-            f'<path d="M17 38h30v18.500a3.500 3.5 0 0 1-3.5 3.5h-23a3.500 3.5 0 0 1-3.5-3.5Z" fill="{p.main}"/>'
-            f'<rect x="22.5" y="45" width="19" height="3.2" rx="1.6" fill="{p.mid}"/><rect x="22.5" y="51" width="13" height="3.2" rx="1.6" fill="{p.mid}"/>')
+    """A printer: the sheet going in, the page coming out printed with its three inks."""
+    inks = "".join(f'<rect x="{x}" y="45.5" width="7" height="7" rx="1.8" fill="{p.real(ink)}"/>'
+                   for x, ink in ((21, "sky"), (28.5, "pink"), (36, "yellow")))
+    return (f'<path d="M20 22V8a3 3 0 0 1 3-3h13l8 8v9Z" fill="{p.pale}"/>'
+            f'<path d="M36 5v5a3 3 0 0 0 3 3h5Z" fill="{p.mid}"/>'
+            f'<rect x="5" y="18" width="54" height="29" rx="8" fill="{p.main}"/>'
+            f'<path d="M5 34h54v5a8 8 0 0 1-8 8H13a8 8 0 0 1-8-8Z" fill="{p.deep}"/>'
+            f'<rect x="43" y="24" width="9" height="3.6" rx="1.8" fill="{p.mid}"/>'
+            f'<circle cx="13" cy="25.8" r="2.2" fill="{p.real("green")}"/>'
+            f'<rect x="12" y="36.5" width="40" height="4.5" rx="2.25" fill="{p.ink}"/>'
+            f'<path d="M16 39h32v18a3 3 0 0 1-3 3H19a3 3 0 0 1-3-3Z" fill="{p.pale}"/>' + inks)
 
 
 def webcam(p):
@@ -1407,55 +1384,12 @@ def rings(p):
             + arc(26.5, 7, -90, 40, p.ink) + arc(26.5, 7, 46, 104, p.main) + arc(26.5, 7, 110, 200, p.mid) + arc(26.5, 7, 206, 264, p.main))
 
 
-def kde_phone(p):
-    """KDE Connect: its phone, KDE's gear on the screen."""
-    return (f'<rect x="15.5" y="4" width="33" height="56" rx="8.5" fill="{p.main}"/>'
-            f'<rect x="19.5" y="9" width="25" height="42" rx="4" fill="{p.deep}"/>'
-            f'<path d="{gear(32, 30, 10.5, 8.4, 8, 1)}" fill="{p.main}" stroke="{p.main}" stroke-width="1.2" stroke-linejoin="round"/>'
-            f'<circle cx="32" cy="30" r="3.8" fill="{p.deep}"/>'
-            f'<rect x="28" y="54.2" width="8" height="2.4" rx="1.2" fill="{p.mid}"/>')
-
-
-def knob(p):
-    """pavucontrol: its volume knob and how far it is turned."""
-    def arc(start, sweep):
-        r = 26.5
-        x1, y1 = 32 + r * math.cos(math.radians(start)), 32 + r * math.sin(math.radians(start))
-        x2, y2 = 32 + r * math.cos(math.radians(start + sweep)), 32 + r * math.sin(math.radians(start + sweep))
-        return f"M{x1:.2f} {y1:.2f}A{r} {r} 0 {1 if sweep > 180 else 0} 1 {x2:.2f} {y2:.2f}"
-    return (f'<path d="{arc(135, 270)}" {ROUND} stroke="{p.mid}" stroke-width="6"/>'
-            f'<path d="{arc(135, 185)}" {ROUND} stroke="{p.main}" stroke-width="6"/>'
-            f'<circle cx="32" cy="32" r="17.5" fill="{p.main}"/>'
-            f'<path d="M32 32 41.5 24" {ROUND} stroke="{p.deep}" stroke-width="5.5"/>')
-
-
 def smiley(p):
     """The emoji picker: a face."""
     return (f'<circle cx="32" cy="32" r="27" fill="{p.main}"/>'
             f'<circle cx="15.5" cy="37" r="4.6" fill="{p.pale}" fill-opacity=".35"/><circle cx="48.5" cy="37" r="4.6" fill="{p.pale}" fill-opacity=".35"/>'
             f'<ellipse cx="23" cy="25.5" rx="3.8" ry="5.2" fill="{p.ink}"/><ellipse cx="41" cy="25.5" rx="3.8" ry="5.2" fill="{p.ink}"/>'
             f'<path d="M20 38c6.500 9.5 17.5 9.5 24 0" {ROUND} stroke="{p.ink}" stroke-width="5"/>')
-
-
-def viewfinder(p):
-    """Spectacle: the frame of the shot, the lens in it."""
-    return (f'<path d="M8 22v-7a7 7 0 0 1 7-7h7M42 8h7a7 7 0 0 1 7 7v7M56 42v7a7 7 0 0 1-7 7h-7M22 56h-7a7 7 0 0 1-7-7v-7" {ROUND} stroke="{p.main}" stroke-width="6.5"/>'
-            f'<circle cx="32" cy="32" r="13" fill="{p.main}"/><circle cx="32" cy="32" r="6" fill="{p.deep}"/>')
-
-
-def media_library(p):
-    """Nuvio: a library of films, one of them playing."""
-    return (f'<rect x="15" y="5" width="34" height="10" rx="4" fill="{p.mid}" fill-opacity=".65"/>'
-            f'<rect x="10" y="11" width="44" height="12" rx="4.5" fill="{p.mid}"/>'
-            f'<rect x="5" y="19" width="54" height="40" rx="8.5" fill="{p.main}"/>'
-            f'<path d="M26 30v18l16-9Z" fill="{p.deep}" stroke="{p.deep}" stroke-width="4" stroke-linejoin="round"/>')
-
-
-def package(p):
-    """The package installer: a parcel, its tape."""
-    return (f'<path d="M32 6 56 18 32 30 8 18Z" fill="{p.main}"/><path d="M8 18 32 30v28L8 46Z" fill="{p.mid}"/>'
-            f'<path d="M56 18 32 30v28l24-12Z" fill="{p.deep}"/>'
-            f'<path d="M20 12 44 24v9" fill="none" stroke="{p.pale}" stroke-width="5" stroke-linejoin="round"/>')
 
 
 def refresh(p):
@@ -1467,23 +1401,6 @@ def refresh(p):
               f'<path d="M17 47.5V35.7h11.8Z" fill="{p.deep}" stroke="{p.deep}" stroke-width="1.5" stroke-linejoin="round"/>')
 
 
-def shopping_bag(p):
-    """The software center: a bag, its handles."""
-    return (f'<path d="M21 26V16a11 11 0 0 1 22 0v10" {ROUND} stroke="{p.deep}" stroke-width="5"/>'
-            f'<path d="M13 22h38a3 3 0 0 1 3 2.7l3 30a5 5 0 0 1-5 5.3H12a5 5 0 0 1-5-5.3l3-30a3 3 0 0 1 3-2.7Z" fill="{p.main}"/>'
-            f'<path d="M21 22v7M43 22v7" {ROUND} stroke="{p.ink}" stroke-width="5"/>')
-
-
-def menu_list_pencil(p):
-    """The menu editor: its list, one row selected, and a pencil on it."""
-    rows = "".join(f'<rect x="13" y="{y}" width="6" height="6" rx="1.8" fill="{p.ink}"/>'
-                   f'<rect x="23" y="{y + 1.2}" width="{w}" height="3.6" rx="1.8" fill="{p.deep}"/>'
-                   for y, w in ((13, 22), (26, 17), (39, 12)))
-    return (f'<rect x="7" y="6" width="46" height="52" rx="9" fill="{p.main}"/>'
-            f'<rect x="10.5" y="23" width="39" height="12" rx="3.5" fill="{p.mid}"/>{rows}'
-            f'<path d="M30 60l2.400-9.6L52 30.8l7.200 7.2L39.600 57.6Z" fill="{p.real("peach")}" stroke="{p.ink}" stroke-width="2.2" stroke-linejoin="round"/>')
-
-
 def circuit(p):
     """Limine Snapper: its circuit, a ring and three wires."""
     return (f'<path d="M26 32h26M23 24l6-8h23M23 40l6 8h23" {ROUND} stroke="{p.deep}" stroke-width="4.5"/>'
@@ -1491,11 +1408,17 @@ def circuit(p):
             + "".join(f'<circle cx="54" cy="{y}" r="5" fill="{p.main}"/>' for y in (16, 32, 48)))
 
 
-def pulse(p):
-    """The system monitor: its pulse on its screen."""
-    line = "M10 35h9l6-15 10 26 8-20 4 9h7"
-    return (f'<rect x="4" y="9" width="56" height="46" rx="10" fill="{p.ink}"/>'
-            f'<path d="{line}" {ROUND} stroke="{p.main}" stroke-width="5.5"/>')
+def usage_graph(p):
+    """The system monitor: a screen in its frame, the processor's history filled in green over
+    the grid, the last value marked."""
+    grid = "".join(f'<path d="M11 {y}h42" stroke="{p.metal}" stroke-opacity=".16" stroke-width="1.2"/>'
+                   for y in (21, 31, 41))
+    curve = "c4 0 5-8 9-8s5 6 9 6 5-14 9.5-14 5 9 8.5 9 3.5-4 6.5-4"
+    return (f'<rect x="4" y="8" width="56" height="48" rx="9" fill="{p.main}"/>'
+            f'<rect x="8.5" y="12.5" width="47" height="39" rx="5" fill="{CRUST}"/>' + grid
+            + f'<path d="M11 51.5V38{curve}V51.5Z" fill="{p.real("green")}" fill-opacity=".35"/>'
+            f'<path d="M11 38{curve}" {ROUND} stroke="{p.real("green")}" stroke-width="3.4"/>'
+            f'<circle cx="53.5" cy="27" r="3" fill="{p.real("green")}"/>')
 
 
 def folder(p):
