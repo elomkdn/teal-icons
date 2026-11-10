@@ -6,8 +6,9 @@ from above, its soft shadow below. The shadow is the base icons' own picture (Pl
 has no blur filter), taken from one of its icons. Every color is a Catppuccin one.
 
 The rule that keeps them together: everything is an object built in planes. An app has a tile
-of its own color with a paper object; a tool of the system with its own launcher has the Mocha
-tile with a silver one, and the system's pages and hardware are objects without a tile: the
+of its own color with a paper object, a tool of the system the teal tile (some start on the
+Mocha tile, which logos.tint_folder colors), and the system's pages and hardware are objects
+without a tile: the
 icons stay light and the accent gives the theme its character (see ../RULES.md). Each symbol
 is drawn on the 64 px grid, within about 16 to 48.
 
@@ -137,7 +138,8 @@ def on_color(glyph, family):
 
 
 def on_mocha(glyph, family=None):
-    """The system's tools: an object in silver, or in a family's color, on the Mocha tile."""
+    """An object in silver, or in a family's color, on the Mocha tile; the tile then takes the
+    color of its app (logos.tint_folder): teal for the system's tools, black for the terminal."""
     return icon(mocha_tile() + planes(family or "silver"),
                 f'<rect {TILE} fill="url(#tile)"/>{rim(MOCHA_RIM)}' + symbol(glyph))
 
@@ -356,9 +358,6 @@ def free_form(glyph):
             f'<g opacity=".28" transform="translate(0 1)">{glyph(Silhouette)}</g>{glyph(Planes)}</svg>\n')
 
 
-PARTITIONS = [('M32 32L32.00 15.00A17 17 0 0 1 42.93 45.02Z', 'blue'), ('M32 32L42.47 45.40A17 17 0 0 1 18.98 42.93Z', 'green'), ('M32 32L18.60 42.47A17 17 0 0 1 17.28 23.50Z', 'yellow'), ('M32 32L17.58 22.99A17 17 0 0 1 31.41 15.01Z', 'red')]
-
-
 @enlarged
 def zap_bubble(c, a):
     """ZapFast: the speech bubble of its logo, its tail down on the left, and a zap in it."""
@@ -386,7 +385,8 @@ def haruna():
 
 
 def cachyos_hello():
-    """The base's CachyOS logo, in Catppuccin colors, on the Mocha tile of the system's tools."""
+    """The base's CachyOS logo, in Catppuccin colors, on the Mocha tile, which becomes the
+    system's teal (logos.tint_folder)."""
     svg = catppuccin.recolor_svg((SRC / "org.cachyos.hello.svg").read_text(), everything=True)
     tile = re.search(r'<linearGradient id="d".*?</linearGradient>', svg).group(0)
     svg = svg.replace(tile, vertical("d", SURFACE0, BASE))
@@ -511,7 +511,7 @@ def facets(corners, center, t=.28):
 
 def nuvio():
     """Nuvio: its play button folded in planes, sky, pink and blue, the dark screen in it and its
-    own play button, on the Mocha tile, like the apps' logos."""
+    own play button, on the Mocha tile, which takes its color (logos.tint_folder)."""
     top, right, left = facets([(13, 9), (55, 32), (13, 55)], (27, 30))
     return icon(mocha_tile() + diagonal("top", MOCHA["sky"], mix(MOCHA["sky"], MOCHA["blue"], .5))
                 + diagonal("right", MOCHA["pink"], MOCHA["mauve"]) + diagonal("left", LATTE["blue"], LATTE["lavender"]),

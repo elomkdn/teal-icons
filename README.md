@@ -72,7 +72,7 @@ without it, Teal's drawings stay. Run the installer again after installing such 
   56 px tile with 13 px corners on a 64 px canvas, lit from above): `shapes.py` holds the
   shapes, `draw.py` says which icon gets which, `logos.py` puts an app's own logo on a tile.
 - `make/catppuccin-theme.py` builds the theme from its base icons (`install-base.sh`):
-  recolors them, gives the dark tiles their logo's color and the code files their paper, places the
+  recolors them, gives every tile its app's color and the code files their paper, places the
   drawn icons, copies Papirus's system icons. `dist.sh` makes the release archive with them.
 - `make/sheet.py` checks the pack against `make/RULES.md`; `make/preview.py` draws the
   picture above from the built theme.

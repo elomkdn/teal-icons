@@ -20,17 +20,13 @@ def kde(*names):
     return [n for name in names for n in (name, f"org.kde.{name}")]
 
 
+# name: design, or (design, other names linked to it)
 DESIGNS = {
     "terminal.svg": terminal,
-    # the system's main app: the strongest tile, teal; the base's is a bare folder, like those it shows
-    # the folders it shows, teal, on the light Latte tile
+    # the system's main app: the folders it shows, teal, on the light Latte tile (the base's is a
+    # bare folder, like those it shows)
     "system-file-manager.svg": (lambda: on_latte(folder),
                                 ["dolphin", "file-manager", "org.gnome.Nautilus", "nautilus", "org.gnome.Files"]),
-}
-
-
-# name: design, or (design, other names linked to it)
-DESIGNS.update({
     "assistant.svg": (lambda: on_color(qt_badge(QT_A), "green"), ["qtassistant", "assistant-qt6", "assistant6"]),
     "designer.svg": (lambda: on_color(qt_badge(QT_D), "green"), ["qtdesigner", "designer-qt6", "designer6"]),
     "linguist.svg": (lambda: on_color(qt_badge(QT_L), "green"), ["qtlinguistic", "linguist-qt6", "linguist6"]),
@@ -69,7 +65,7 @@ DESIGNS.update({
     "hypnotix.svg": hypnotix,
     # its .desktop file names a picture too (install.sh)
     "hp-uiscan.svg": lambda: on_color(scanner, "blue"),
-})
+}
 
 
 PLACES = {

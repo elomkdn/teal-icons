@@ -6,12 +6,13 @@
   the system (folders, file manager, settings, software center), so the accent still means
   something; other apps take their own Catppuccin hue, leaning to the saturated Latte shades
   so they stay easy to tell apart in a dock;
-- the base's dark tiles (two grays, lighter than Mocha's) become the Mocha tile of Teal's own
-  drawings, with its lit rim: one dark tile in the whole pack;
+- the base's dark tiles (two grays, lighter than Mocha's) become the Mocha tile, with its lit
+  rim; then every tile takes the color of its app (teal/logos.py, tint_folder): teal for the
+  system's tools, black for a terminal, the app's own color for the others;
 - code and text files are sheets of paper, their mark in the language's color, where the base
   colors the whole page: the icons stay light, like the everyday file types;
-- icons drawn for Teal (teal/draw.py): the terminal, settings, LibreOffice, the KDE,
-  Qt and CachyOS tools the base gives a generic or borrowed icon (on each computer,
+- icons drawn for Teal (teal/draw.py) where the base's are missing, wrong or not clean: the
+  terminal, Dolphin, the KDE, Qt and CachyOS tools the base gives a generic or borrowed icon (on each computer,
   localize.py puts the apps' own logos in their place, where the app is installed);
 - monochrome icons (actions, statuses, tray, symbolic icons): Papirus-Dark's system folders,
   copied with Catppuccin colors (Mocha text instead of Papirus's gray, teal instead of its
