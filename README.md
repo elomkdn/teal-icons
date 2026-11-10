@@ -5,7 +5,7 @@ and [Papirus](https://github.com/PapirusDevelopmentTeam/papirus-icon-theme)'s sy
 [Lagoon](https://github.com/elomkdn/lagoon-kde), a KDE Plasma theme, and looks at home in any
 dark desktop.
 
-![Teal's app icons](preview/teal.png)
+![Teal: apps, folders and hardware, System Settings' pages and file types](preview/teal.png)
 
 - **Apps**: icons in the style of macOS's, recolored with Catppuccin: each app
   keeps its hue, in Latte and Mocha shades. Teal is kept for the system (folders, files,
@@ -14,7 +14,13 @@ dark desktop.
   have a generic or borrowed icon get one drawn for Teal, and the apps with a logo of their
   own (KDE Connect, Gwenview, the Qt and CachyOS tools…) show that logo, in Catppuccin
   colors, on a Mocha tile. Round logos (Kate, Faugus, Micro) lose their disc, whose color becomes
-  the tile.
+  the tile. A dark tile is always the same one, Mocha's.
+- **The system and the hardware**: System Settings' pages and the hardware (drives, cards,
+  headphones, microphones, cameras, printers…) are objects without a tile, each in its own
+  pastel. In Plasma's own panels and popups (Bluetooth, volume, battery, disks), the hardware
+  is monochrome, like the system's icons around it.
+- **File types**: text and code files are sheets of paper, with the language's mark in its
+  color; pictures, music, videos and archives keep a page of their own color.
 - **System icons**: Papirus Dark's action, status and tray icons, in Mocha colors (Mocha text
   instead of Papirus's gray, teal instead of its blue, Catppuccin red, yellow and green for
   states).
@@ -60,11 +66,14 @@ without it, Teal's drawings stay. Run the installer again after installing such 
 - `make/generator/catppuccin.py` recolors an icon: each color goes to the Catppuccin color
   of the same hue, from Latte (its dark shades) to Mocha (its light ones); grays follow one
   ramp from Mocha's crust to Latte's base.
-- `make/teal/draw.py` draws Teal's own icons into `make/teal/apps`, on a macOS-like grid (a
-  56 px tile with 13 px corners on a 64 px canvas, lit from above).
+- `make/teal/draw.py` draws Teal's own icons when the theme is built, on a macOS-like grid (a
+  56 px tile with 13 px corners on a 64 px canvas, lit from above): `shapes.py` holds the
+  shapes, `draw.py` says which icon gets which, `logos.py` puts an app's own logo on a tile.
 - `make/catppuccin-theme.py` builds the theme from its base icons (`install-base.sh`):
-  recolors them, places the drawn icons, copies Papirus's system
-  icons. `dist.sh` makes the release archive with them.
+  recolors them, gives the dark tiles Mocha's and the code files their paper, places the
+  drawn icons, copies Papirus's system icons. `dist.sh` makes the release archive with them.
+- `make/sheet.py` checks the pack against `make/RULES.md`; `make/preview.py` draws the
+  picture above from the built theme.
 - `make/localize.py` makes it at home on each computer: the apps' logos (read from the
   system, never copied into this repository), their tray icons, Papirus as the fallback.
 

@@ -37,13 +37,21 @@ the symbol's family applies (`FREE_FAMILIES`).
 - A page of the system or the hardware: a free object, no tile, filling the grid, built in planes of its color (ink, deep, mid, main, pale), each a diagonal gradient leaning toward the neighboring hue. `pale` only ever sits on another plane, or it vanishes on a light background. A thing keeps its real colors where they are the point: a palette's paints, a window's buttons.
 - The system's two main apps may differ: Dolphin on a light tile, Settings with a silver gear on a lighter Mocha one.
 - A tile's gradient is diagonal, from its color to the neighboring hue, and stays soft: never all the way to Latte's.
+- There is one dark tile, Mocha's (surface 0 to base, a light rim on its top edge): the base's dark gray tiles become it when the theme is built (`mocha_tile` in `catppuccin-theme.py`).
+
+## File types
+
+A text or code file is a sheet of paper, and its mark carries the language's color: where the
+base colors the whole page, the page and the mark trade their colors when the theme is built
+(`paper_page` in `catppuccin-theme.py`). A colored page is for what is not text: pictures,
+music, videos, archives. The icons stay light there too.
 
 ## Shadow
 
 | Shape | Shadow |
 |---|---|
 | Tile | the soft picture below it (`shadow.xml`) |
-| Folder, trash | stacked copies of its outline, offset by 1 px (`colors.py`, `draw.py`) |
+| Folder, trash | stacked copies of its outline, offset by 1 px, the last one thin and darker: on a selection, which has the folders' own color, the edge still shows (`colors.py`, `draw.py`) |
 | Page (a file type) | none, except at small sizes |
 
 No SVG filters: Plasma's QtSvg may not draw them.
@@ -53,6 +61,13 @@ No SVG filters: Plasma's QtSvg may not draw them.
 Four of System Settings' pages use icon names that the tray and the logout and lock screens use
 too. Their tiles live in the hidden `Teal-Settings` theme, which only System Settings uses, so
 Plasma keeps its monochrome icons.
+
+## Plasma's own icons
+
+In the tray's popups, the hardware sits among monochrome system icons: there it is monochrome
+too, Papirus's symbols under their plain names, in the hidden `Teal-Shell` theme that only
+`plasmashell` uses (`plasmashellrc`). A name an app's launcher uses leaves that theme on each
+computer, so the dock and the launcher keep their tiles.
 
 ## Small sizes
 

@@ -21,14 +21,15 @@ from PIL import Image
 
 QML = "/usr/lib/qt6/bin/qml"
 SIZES = (16, 22, 32, 48)
-BACKGROUNDS = ("#181825", "#eff1f5", "#61b6a9")
+BACKGROUNDS = ("#181825", "#eff1f5", "#94e2d5")
 COLORED = ("apps/scalable", "mimetypes/scalable", "devices/scalable", "places/scalable")
 
 DAILY = """
 folder folder-open folder-documents folder-download folder-music folder-pictures folder-videos
 user-desktop user-home user-trash user-trash-full folder-favorites folder-network folder-development
 folder-recent folder-remote folder-templates folder-publicshare drive-harddisk drive-removable-media
-media-optical computer phone
+media-optical computer phone computer-laptop audio-headphones audio-input-microphone camera-web
+printer-network media-flash input-mouse battery
 system-file-manager preferences-system utilities-terminal org.kde.konsole firefox zen-browser
 spotify nuvio systemsettings plasmadiscover kate okular
 gwenview ark spectacle org.kde.kcalc utilities-system-monitor
