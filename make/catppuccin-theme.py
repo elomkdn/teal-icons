@@ -6,6 +6,10 @@
   the system (folders, file manager, settings, software center), so the accent still means
   something; other apps take their own Catppuccin hue, leaning to the saturated Latte shades
   so they stay easy to tell apart in a dock;
+- the base's dark tiles (two grays, lighter than Mocha's) become the Mocha tile of Teal's own
+  drawings, with its lit rim: one dark tile in the whole pack;
+- code and text files are sheets of paper, their mark in the language's color, where the base
+  colors the whole page: the icons stay light, like the everyday file types;
 - icons drawn for Teal (teal/draw.py): the terminal, settings, LibreOffice, the KDE,
   Qt and CachyOS tools the base gives a generic or borrowed icon (on each computer,
   localize.py puts the apps' own logos in their place, where the app is installed);
@@ -49,6 +53,8 @@ DRAWN = Path(__file__).resolve().parent / "teal/apps"
 DRAWN_PLACES = Path(__file__).resolve().parent / "teal/places"
 DRAWN_DEVICES = Path(__file__).resolve().parent / "teal/devices"
 DRAWN_SETTINGS = Path(__file__).resolve().parent / "teal/settings"
+# Apps the base does not know by this name, under the icon it has for them
+SAME_APP = {"brave-origin": "brave"}
 # Logos that spill over their tile, brought inside it
 FIT_IN_TILE = {"krita.svg": .82, "transmission.svg": .84}
 INHERITS = "{papirus},Adwaita,AdwaitaLegacy,hicolor,breeze"
@@ -157,6 +163,88 @@ def fit_in_tile(text, scale):
             f'{text[end:close]}</g>{text[close:]}')
 
 
+# The base's tile: a rounded square of 56 px, a rect or the same outline as a path
+TILE = re.compile(r'<(?:rect|path)\b[^>]*?(?:width="56(?:\.\d+)?"[^>]*?height="56(?:\.\d+)?"|id="plate-tile"'
+                  r'|d="m17 4h30c7\.18)[^>]*?>')
+STOP_COLOR = re.compile(r'stop-color(?::\s*|=")(#[0-9a-fA-F]{3,6})')
+DARK_TILE = 0.5  # OKLab lightness under which a neutral tile is a dark one
+
+
+def mocha_tile(text):
+    """A dark neutral tile (the base has two, #171717 to #2c2c2c and #363636 to #525252, which the
+    recoloring would turn into two more grays) becomes Teal's Mocha tile: surface 0 to base, on
+    the diagonal, with the light on its top edge. Where the picture is not on the 64 px grid, or
+    the gradient serves something else too, only its colors change."""
+    tile = TILE.search(text)
+    fill = tile and re.search(r'fill="url\(#([^)]+)\)"', tile.group(0))
+    if not fill:
+        return text
+    name = re.escape(fill.group(1))
+    gradient = re.search(rf'<linearGradient\b[^>]*\bid="{name}"[^>]*>(.*?)</linearGradient>', text, re.S)
+    if not gradient:
+        return text
+    stops = re.findall(r"<stop\b[^>]*>", gradient.group(1))
+    colors = [(STOP_COLOR.findall(stop) or [None])[-1] for stop in stops]  # a style wins over the attribute
+    if len(colors) < 2 or None in colors:
+        return text
+    lab = [catppuccin.oklab(c if len(c) == 7 else "#" + "".join(ch * 2 for ch in c[1:])) for c in colors]
+    if any((a * a + b * b) ** .5 >= catppuccin.NEUTRAL_CHROMA or light >= DARK_TILE for light, a, b in lab):
+        return text
+    on_grid = ('viewBox="0 0 64 64"' in text and "transform=" not in tile.group(0)
+               and text.count(f"#{fill.group(1)})") == 1 and "xlink:href" not in gradient.group(0).split(">")[0])
+    if on_grid:
+        new = draw.diagonal(fill.group(1), draw.SURFACE0, draw.BASE)
+        text = text.replace(gradient.group(0), new)
+        end = text.index(tile.group(0)) + len(tile.group(0))
+        return text[:end] + draw.rim(draw.MOCHA_RIM) + text[end:]
+    low, high = min(l[0] for l in lab), max(l[0] for l in lab)
+    body = gradient.group(1)
+    for stop, color, (light, _, _) in zip(stops, colors, lab):
+        t = (light - low) / (high - low) if high > low else 0
+        body = body.replace(stop, STOP_COLOR.sub(lambda m: m.group(0).replace(m.group(1), draw.mix(draw.BASE, draw.SURFACE0, t)),
+                                                 stop), 1)
+    return text.replace(gradient.group(0), gradient.group(0).replace(gradient.group(1), body))
+
+
+# The base's sheet of paper, and its folded corner: white at 35 % over the page's color
+SHEET = re.compile(r'(<path fill=")(#[0-9a-fA-F]{3,6})(" d="M13 4c-2\.77 0-5 2\.23-5 5v46(?:\.\d+)?c0 2\.77 2\.23 5 5 5h38c2\.77 0 '
+                   r'5-2\.23 5-5V16L44 4(?:\.\d+)?z"[^>]*/>)(<path fill=")#fff(")( d="[^"]*")?( opacity="\.35")')
+PAPER_TYPES = re.compile(r"text-|application-(json|toml|xml|javascript|typescript|sql|x-(yaml|perl|php|ruby|java|python))")
+
+
+def long_hex(color):
+    color = color.lower()
+    return color if len(color) == 7 else "#" + "".join(c * 2 for c in color[1:])
+
+
+def paper_page(text):
+    """A code or text file whose whole page has the language's color: the page becomes paper and
+    its mark takes the color (what was white on the page takes the page's color, what had the
+    page's color in the mark becomes paper). A page already neutral, or a mark with no white in
+    it, stays as the base draws it."""
+    sheet = SHEET.search(text)
+    if not sheet:
+        return text
+    color = long_hex(sheet.group(2))
+    _, a, b = catppuccin.oklab(color)
+    if (a * a + b * b) ** .5 < catppuccin.NEUTRAL_CHROMA:
+        return text
+
+    def swap(m):
+        found = long_hex(m.group(0))
+        light, a, b = catppuccin.oklab(found)
+        if (a * a + b * b) ** .5 < catppuccin.NEUTRAL_CHROMA and light > .93:
+            return color
+        return draw.PAPER if found == color else m.group(0)
+
+    # the mark, and the gradients it may paint with, before the sheet
+    before, mark = catppuccin.HEX.sub(swap, text[:sheet.start()]), catppuccin.HEX.sub(swap, text[sheet.end():])
+    if (before, mark) == (text[:sheet.start()], text[sheet.end():]) or color not in before + mark:
+        return text
+    return (f"{before}{sheet.group(1)}{draw.PAPER}{sheet.group(3)}{sheet.group(4)}{draw.PAPER_EDGE}"
+            f"{sheet.group(5)}{sheet.group(6) or ''}{mark}")
+
+
 def recolor_tree(folder):
     count = 0
     for f in folder.rglob("*.svg"):
@@ -166,9 +254,20 @@ def recolor_tree(folder):
         text = f.read_text(errors="ignore")
         if f.name in FIT_IN_TILE:
             text = fit_in_tile(text, FIT_IN_TILE[f.name])
+        if folder.parent.name == "apps":
+            text = mocha_tile(text)
+        elif folder.parent.name == "mimetypes" and PAPER_TYPES.match(f.name):
+            text = paper_page(text)
         f.write_text(catppuccin.recolor_svg(text, everything=True, family=family))
         count += 1
     return count
+
+
+def link_same_apps(folder):
+    for name, known in SAME_APP.items():
+        out = folder / f"{name}.svg"
+        if (folder / f"{known}.svg").exists() and not (out.exists() or out.is_symlink()):
+            out.symlink_to(f"{known}.svg")
 
 
 def place_drawn(folder, drawn=DRAWN):
@@ -370,46 +469,81 @@ def draw_small_files(theme):
     return dirs
 
 
-def write_settings_theme(theme, name):
-    """<name>-Settings, hidden: the tiles of the pages whose icon names Plasma also shows in the
-    tray and on its logout and lock screens, and the sidebar's categories. Only System Settings
-    uses it, through its own config file; every other icon comes from the theme it inherits.
+def write_hidden_theme(theme, folder, title, comment, icons, rel, section):
+    """A hidden theme beside Teal, that one app uses through its own config file ([Icons] Theme):
+    its own icons (name -> file) in the folder rel, every other icon from Teal, which it inherits.
 
     KDE also tries shortened names within a theme, before going on to the next one: a page named
     preferences-system-time would find preferences-system here, whatever its own icon. So the
     longer names of these icons are kept here too, as they are in the themes behind."""
-    folder = theme.parent / f"{name}-Settings"
     shutil.rmtree(folder, ignore_errors=True)
-    (folder / "apps/scalable").mkdir(parents=True)
-    drawn = {f.stem: f for f in DRAWN_SETTINGS.glob("*.svg")}
-    for f in drawn.values():
-        shutil.copyfile(f, folder / "apps/scalable" / f.name)
+    (folder / rel).mkdir(parents=True)
+    for stem, f in icons.items():
+        shutil.copyfile(f, folder / rel / f"{stem}.svg")
     source = configparser.ConfigParser(interpolation=None, strict=False)
     source.optionxform = str
     source.read(theme / "index.theme")
-    prefixes = tuple(f"{stem}-" for stem in drawn)
-    sections = {"apps/scalable": {"Size": "64", "Context": "Applications", "Type": "Scalable",
-                                  "MinSize": "16", "MaxSize": "512"}}
+    prefixes = tuple(f"{stem}-" for stem in icons)
+    sections = {rel: section}
     for root in (theme, PAPIRUS):
         for f in root.rglob("*.svg"):
-            if f.stem in drawn or not f.stem.startswith(prefixes) or not f.exists():
+            if f.stem in icons or not f.stem.startswith(prefixes) or not f.exists():
                 continue
-            rel = f.parent.relative_to(root).as_posix()
-            if root == PAPIRUS or rel not in source:
-                rel = "apps/scalable"
-            out = folder / rel / f.name
+            there = f.parent.relative_to(root).as_posix()
+            if root == PAPIRUS or there not in source:
+                there = "apps/scalable"
+            out = folder / there / f.name
             if not out.exists():
                 out.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(f, out)
-                sections.setdefault(rel, dict(source[rel]))
+                sections.setdefault(there, dict(source[there]) if there in source else
+                                    {"Size": "64", "Context": "Applications", "Type": "Scalable",
+                                     "MinSize": "16", "MaxSize": "512"})
     index = configparser.ConfigParser(interpolation=None)
     index.optionxform = str
-    index["Icon Theme"] = {"Name": f"{name} Settings", "Comment": f"Icons for System Settings' sidebar, for {name}",
-                           "Inherits": name, "Hidden": "true", "Directories": ",".join(sections)}
-    for rel, section in sections.items():
-        index[rel] = section
+    index["Icon Theme"] = {"Name": title, "Comment": comment, "Inherits": theme.name, "Hidden": "true",
+                           "FollowsColorScheme": "true", "Directories": ",".join(sections)}
+    for there, values in sections.items():
+        index[there] = values
     with open(folder / "index.theme", "w") as f:
         index.write(f, space_around_delimiters=False)
+
+
+def write_settings_theme(theme, name):
+    """<name>-Settings: the tiles of the pages whose icon names Plasma also shows in the tray and
+    on its logout and lock screens, and the sidebar's categories. Only System Settings uses it."""
+    write_hidden_theme(theme, theme.parent / f"{name}-Settings", f"{name} Settings",
+                       f"Icons for System Settings' sidebar, for {name}",
+                       {f.stem: f for f in DRAWN_SETTINGS.glob("*.svg")}, "apps/scalable",
+                       {"Size": "64", "Context": "Applications", "Type": "Scalable", "MinSize": "16", "MaxSize": "512"})
+
+
+# Hardware without a monochrome symbol of its own name in Papirus: the one that stands for it
+SHELL_SAME = {"preferences-desktop-keyboard": "input-keyboard", "preferences-desktop-mouse": "input-mouse",
+              "input-touchscreen": "tablet", "monitor": "video-display", "video-television": "tv",
+              "drive-harddisk-encrypted": "drive-harddisk", "processor": "cpu", "network-card": "network-wired",
+              "network-rj45-female": "network-wired", "gnome-dev-wavelan": "network-wireless",
+              "network_fs": "network-server", "preferences-system-bluetooth": "bluetooth"}
+
+
+def write_shell_theme(theme, name):
+    """<name>-Shell: Plasma's own. The tray's popups (Bluetooth, volume, battery, disks, KDE
+    Connect) list hardware among the system's monochrome icons: there, the hardware is monochrome
+    too, Papirus's symbols under their plain names. Only plasmashell uses it; the names an
+    app's launcher uses are taken out of it on each computer (localize.py), so the dock and the
+    launcher keep their tiles."""
+    symbols = theme / "16x16/symbolic/devices"
+    have = {f.name.removesuffix("-symbolic.svg"): f for f in symbols.glob("*-symbolic.svg") if f.exists()}
+    icons = dict(have)
+    for main, design in draw.DEVICES.items():  # a drawing's other names share its symbol
+        names = [Path(main).stem] + (design[1] if isinstance(design, tuple) else [])
+        symbol = next((have[n] for n in names if n in have), None) or have.get(SHELL_SAME.get(names[0]))
+        if symbol:
+            icons.update({n: symbol for n in names if n not in have})
+    icons.update({n: have[same] for n, same in SHELL_SAME.items() if same in have and n not in icons})
+    write_hidden_theme(theme, theme.parent / f"{name}-Shell", f"{name} Shell",
+                       f"Monochrome hardware for Plasma's panels and popups, for {name}", icons, "devices/symbolic",
+                       {"Size": "16", "Context": "Devices", "Type": "Scalable", "MinSize": "8", "MaxSize": "256"})
 
 
 def drop_system_copies(theme, dirs):
@@ -426,12 +560,15 @@ def drop_system_copies(theme, dirs):
 
 def main():
     theme, name = Path(sys.argv[1]), sys.argv[2]
+    if not DRAWN.is_dir():  # Teal's own drawings are made, not kept in the repository
+        draw.main()
     dirs = papirus_system_dirs()
     names = system_names(dirs)
     prune(theme)
     print(f"{drop_system_names(theme, names)} system icons left to Papirus")
     n = sum(recolor_tree(theme / d) for d in RECOLORED if (theme / d).is_dir())
     place_drawn(theme / "apps/scalable")
+    link_same_apps(theme / "apps/scalable")
     place_drawn(theme / "places/scalable", drawn=DRAWN_PLACES)
     place_drawn(theme / "devices/scalable", drawn=DRAWN_DEVICES)
     small = draw_small_folders(theme) | draw_small_files(theme)
@@ -443,6 +580,7 @@ def main():
     dirs |= OWN | small
     rewrite_index(theme, name, INHERITS.format(papirus=f"{name}-Papirus"), dirs)
     write_settings_theme(theme, name)
+    write_shell_theme(theme, name)
     print(f"{name}: {n} icons recolored, {papirus_dirs} Papirus system folders")
 
 

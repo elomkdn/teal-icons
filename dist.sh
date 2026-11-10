@@ -12,12 +12,13 @@ rm -rf dist
 mkdir -p "$OUT/share/icons" "$OUT/make/teal" "$OUT/make/generator"
 
 ./install-base.sh -c mocha-teal -a -n Teal -p "$OUT/share/icons" >/dev/null
+python3 -I make/teal/draw.py >/dev/null  # Teal's own drawings, for the builder
 python3 -I make/catppuccin-theme.py "$OUT/share/icons/Teal" Teal
 find "$OUT" -xtype l -delete
 
 cp install.sh README.md LICENSE "$OUT/"
 cp make/localize.py "$OUT/make/"
-cp make/teal/draw.py make/teal/shadow.xml "$OUT/make/teal/"
+cp make/teal/draw.py make/teal/shapes.py make/teal/logos.py make/teal/shadow.xml "$OUT/make/teal/"
 cp make/generator/catppuccin.py "$OUT/make/generator/"
 tar -czf dist/teal-icons.tar.gz -C dist teal-icons
 echo dist/teal-icons.tar.gz

@@ -7,6 +7,8 @@
   before trying the next one (spotify-linux-32 -> spotify, qbittorrent-tray -> qbittorrent);
 - Papirus Dark as the fallback for icons Teal does not have, without its tray icons (apps
   keep their own), if Papirus is installed: a hidden <name>-Papirus theme.
+- in <name>-Shell, Plasma's own theme with monochrome hardware, the names an app's launcher uses
+  are taken out: the dock and the launcher keep their tiles.
 
 Nothing here is needed: without it, Teal shows its drawings and falls back to Adwaita.
 
@@ -58,6 +60,23 @@ def link_own_icons(theme):
         (folder / f"{name}{best.suffix}").symlink_to(best)
         count += 1
     return count
+
+
+def keep_launchers_tiles(shell):
+    """In Plasma's own theme, the hardware is monochrome; a name an app's launcher uses
+    (printer, scanner…) leaves it, or the dock and the launcher would show the symbol."""
+    icons = shell / "devices/symbolic"
+    if not icons.is_dir():
+        return
+    launchers = set()
+    for d in ("/usr/share/applications", os.path.expanduser("~/.local/share/applications"),
+              "/var/lib/flatpak/exports/share/applications"):
+        for f in glob.glob(f"{d}/*.desktop"):
+            lines = open(f, errors="ignore").read().splitlines()
+            if "NoDisplay=true" not in lines:  # a launcher nobody sees keeps nothing
+                launchers |= {line[5:].strip() for line in lines if line.startswith("Icon=")}
+    for name in launchers:
+        (icons / f"{name}.svg").unlink(missing_ok=True)
 
 
 def place_logos(folder):
@@ -115,6 +134,7 @@ def main():
     theme = root / name
     logos = place_logos(theme / "apps/scalable")
     own = link_own_icons(theme)
+    keep_launchers_tiles(root / f"{name}-Shell")
     papirus = root / f"{name}-Papirus"
     shutil.rmtree(papirus, ignore_errors=True)
     if (PAPIRUS / "index.theme").is_file():

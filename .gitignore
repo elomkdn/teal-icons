@@ -1,3 +1,8 @@
 test/
 __pycache__/
 dist/
+# drawn by make/teal/draw.py when the theme is built
+make/teal/apps/
+make/teal/devices/
+make/teal/places/
+make/teal/settings/

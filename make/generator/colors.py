@@ -346,10 +346,12 @@ def load_recolored_base(base_path, main_color, light_color):
     return root
 
 
-# A folder's soft shadow, so it stands out on a selection of its own color. Stacked copies of
-# its outline, not an SVG filter, which QtSvg may not draw. Sizes are for a 64 px canvas.
+# A folder's soft shadow, so it stands out on a selection of its own color: the accent itself,
+# which is the selection of Qt, GTK and Plasma. Stacked copies of its outline, not an SVG filter,
+# which QtSvg may not draw; the last, thin and darker, keeps the folder's edge where the soft
+# ones have faded. Sizes are for a 64 px canvas.
 SHADOW_DROP = 1.0
-SHADOW_LAYERS = ((5.0, 0.06), (3.6, 0.09), (2.4, 0.12), (1.2, 0.16))  # outline width, opacity
+SHADOW_LAYERS = ((5.0, 0.06), (3.6, 0.09), (2.4, 0.12), (1.4, 0.18), (0.7, 0.3))  # outline width, opacity
 
 
 def add_folder_shadow(root):

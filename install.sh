@@ -9,10 +9,10 @@
 # Options:
 #   -p, --path PATH      Base installation path (default: ~/.local/share/icons)
 #   -s, --set            After install, make it the icon theme. KDE Plasma and GNOME.
-#   -u, --uninstall      Remove PATH/Teal, PATH/Teal-Papirus and PATH/Teal-Settings.
+#   -u, --uninstall      Remove PATH/Teal and its hidden themes (Teal-Papirus, Teal-Settings, Teal-Shell).
 #   -h, --help           Show this help message
 #
-# Apps whose .desktop file names a picture instead of an icon (Nuvio) get a local copy of
+# Apps whose .desktop file names a picture instead of an icon (Nuvio, HP's tools) get a local copy of
 # it naming the icon, in ~/.local/share/applications; --uninstall removes them.
 #
 # From a release archive, nothing else is needed. From a clone of the repository, Teal is
@@ -30,7 +30,7 @@ SET=0
 UNINSTALL=0
 
 # .desktop file -> icon name, for apps that name a picture
-PICTURE_APPS=(nuvio.desktop:nuvio)
+PICTURE_APPS=(nuvio.desktop:nuvio hplip.desktop:hp-logo hp-uiscan.desktop:hp-uiscan)
 APPS="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
 
 usage() {
@@ -72,8 +72,11 @@ unname_icons() {
 }
 
 if [[ $UNINSTALL -eq 1 ]]; then
-  rm -rf "${DEST:?}/$NAME" "${DEST:?}/$NAME-Papirus" "${DEST:?}/$NAME-Settings"
-  command -v kwriteconfig6 >/dev/null && kwriteconfig6 --file systemsettingsrc --group Icons --key Theme --delete || true
+  rm -rf "${DEST:?}/$NAME" "${DEST:?}/$NAME-Papirus" "${DEST:?}/$NAME-Settings" "${DEST:?}/$NAME-Shell"
+  if command -v kwriteconfig6 >/dev/null; then
+    kwriteconfig6 --file systemsettingsrc --group Icons --key Theme --delete || true
+    kwriteconfig6 --file plasmashellrc --group Icons --key Theme --delete || true
+  fi
   unname_icons
   refresh
   echo "Removed $DEST/$NAME. Pick another icon theme if Teal was in use."
@@ -85,7 +88,7 @@ trap 'rm -rf "$STAGE"' EXIT
 
 if [[ -d "$SCRIPT_DIR/share/icons/$NAME" ]]; then
   # a release archive: the theme is built, Papirus's system icons included
-  cp -a "$SCRIPT_DIR/share/icons/$NAME" "$SCRIPT_DIR/share/icons/$NAME-Settings" "$STAGE/"
+  cp -a "$SCRIPT_DIR/share/icons/$NAME" "$SCRIPT_DIR/share/icons/$NAME-Settings" "$SCRIPT_DIR/share/icons/$NAME-Shell" "$STAGE/"
 else
   # a clone of the repository: build it, with Papirus
   if [[ ! -f "$PAPIRUS/index.theme" ]]; then
@@ -96,6 +99,7 @@ else
   command -v python3 >/dev/null || { echo "Building Teal needs python3." >&2; exit 1; }
   echo "Building $NAME…"
   "$SCRIPT_DIR/install-base.sh" -c mocha-teal -a -n "$NAME" -p "$STAGE" >/dev/null
+  python3 -I "$SCRIPT_DIR/make/teal/draw.py" >/dev/null  # Teal's own drawings, for the builder
   python3 -I "$SCRIPT_DIR/make/catppuccin-theme.py" "$STAGE/$NAME" "$NAME"
   # links to icons the theme leaves to Papirus, or to the base's removed monochrome folders
   find "$STAGE" -xtype l -delete
@@ -110,7 +114,7 @@ fi
 
 # the old version stays in place until the new one is complete
 mkdir -p "$DEST"
-for t in "$NAME" "$NAME-Papirus" "$NAME-Settings"; do
+for t in "$NAME" "$NAME-Papirus" "$NAME-Settings" "$NAME-Shell"; do
   rm -rf "${DEST:?}/$t"
   [[ -d "$STAGE/$t" ]] || continue
   mv "$STAGE/$t" "$DEST/$t"
@@ -123,6 +127,8 @@ refresh
 # System Settings alone uses the theme with its pages' tiles
 if [[ "$DEST" == "${XDG_DATA_HOME:-$HOME/.local/share}/icons" ]] && command -v kwriteconfig6 >/dev/null; then
   kwriteconfig6 --file systemsettingsrc --group Icons --key Theme "$NAME-Settings"
+  # and Plasma itself the one with monochrome hardware, for its tray's popups (after its next start)
+  kwriteconfig6 --file plasmashellrc --group Icons --key Theme "$NAME-Shell"
 fi
 echo "Installed $DEST/$NAME."
 
