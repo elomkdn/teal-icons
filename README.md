@@ -56,7 +56,7 @@ dark desktop.
 |---|---|
 | `./install.sh` | installs `Teal` into `~/.local/share/icons` |
 | `./install.sh --set` | and selects it |
-| `./install.sh --uninstall` | removes it |
+| `./uninstall.sh` | removes it, and goes back to Breeze Dark if Teal was in use |
 
 Either way, with Python (there on CachyOS), Teal is made at home on your computer: the
 apps you have installed show their own logos and tray icons, and Papirus, if installed,

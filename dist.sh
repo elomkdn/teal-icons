@@ -2,7 +2,8 @@
 #
 # dist.sh — builds the release archive, dist/teal-icons.tar.gz: the theme built,
 # Papirus's system icons included, and what installs it and makes it at home on each
-# computer. It installs with ./install.sh, offline, with nothing else needed.
+# computer. It installs with ./install.sh, offline, with nothing else needed, and
+# ./uninstall.sh removes it.
 
 set -euo pipefail
 
@@ -16,7 +17,7 @@ python3 -I make/teal/draw.py >/dev/null  # Teal's own drawings, for the builder
 python3 -I make/catppuccin-theme.py "$OUT/share/icons/Teal" Teal
 find "$OUT" -xtype l -delete
 
-cp install.sh README.md LICENSE "$OUT/"
+cp install.sh uninstall.sh README.md LICENSE "$OUT/"
 cp make/localize.py "$OUT/make/"
 cp make/teal/draw.py make/teal/shapes.py make/teal/logos.py make/teal/shadow.xml "$OUT/make/teal/"
 cp make/generator/catppuccin.py "$OUT/make/generator/"

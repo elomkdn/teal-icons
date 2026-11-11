@@ -9,11 +9,11 @@
 # Options:
 #   -p, --path PATH      Base installation path (default: ~/.local/share/icons)
 #   -s, --set            After install, make it the icon theme. KDE Plasma and GNOME.
-#   -u, --uninstall      Remove PATH/Teal and its hidden themes (Teal-Papirus, Teal-Settings, Teal-Shell).
+#   -u, --uninstall      The same as ./uninstall.sh: remove PATH/Teal and its hidden themes.
 #   -h, --help           Show this help message
 #
 # Apps whose .desktop file names a picture instead of an icon (Nuvio, HP's tools) get a local copy of
-# it naming the icon, in ~/.local/share/applications; --uninstall removes them.
+# it naming the icon, in ~/.local/share/applications; ./uninstall.sh removes them.
 #
 # From a release archive, nothing else is needed. From a clone of the repository, Teal is
 # built first, which needs Papirus (papirus-icon-theme) and python3. With python3, it is made
@@ -63,24 +63,8 @@ name_icons() {
   done
 }
 
-unname_icons() {
-  local entry file
-  for entry in "${PICTURE_APPS[@]}"; do
-    file="${entry%%:*}"
-    if grep -q '^X-Teal-Icon=true' "$APPS/$file" 2>/dev/null; then rm -f "$APPS/$file"; fi
-  done
-}
-
 if [[ $UNINSTALL -eq 1 ]]; then
-  rm -rf "${DEST:?}/$NAME" "${DEST:?}/$NAME-Papirus" "${DEST:?}/$NAME-Settings" "${DEST:?}/$NAME-Shell"
-  if command -v kwriteconfig6 >/dev/null; then
-    kwriteconfig6 --file systemsettingsrc --group Icons --key Theme --delete || true
-    kwriteconfig6 --file plasmashellrc --group Icons --key Theme --delete || true
-  fi
-  unname_icons
-  refresh
-  echo "Removed $DEST/$NAME. Pick another icon theme if Teal was in use."
-  exit 0
+  exec "$SCRIPT_DIR/uninstall.sh" -p "$DEST"
 fi
 
 STAGE="$(mktemp -d)"
