@@ -88,6 +88,11 @@ if command -v kiconfinder6 >/dev/null; then
   [[ $(find_icon audio-headphones) == */Teal-Shell/devices/symbolic/audio-headphones.svg ]] && ok "hardware is monochrome there" || bad "audio-headphones: $(find_icon audio-headphones)"
   [[ $(find_icon battery-080-charging) == */battery-080-charging.svg ]] && ok "longer names keep their own icon" || bad "battery-080-charging: $(find_icon battery-080-charging)"
   [[ $(find_icon folder-documents) == */Teal/places/scalable/folder-documents.svg ]] && ok "the rest comes from Teal" || bad "folder-documents: $(find_icon folder-documents)"
+  # the tray in pure white, its arrow too; apps keep the text color
+  white() { [[ $1 == */Teal-Shell/* ]] && grep -q '#ffffff' "$1" && ! grep -q 'ColorScheme-Text"' "$1"; }
+  tray=$(find_icon network-wireless-100) arrow=$(find_icon arrow-down-symbolic)
+  white "$tray" && white "$arrow" && ok "the tray is white" || bad "not white: $tray $arrow"
+  ! grep -q '#ffffff' "$WORK/data/icons/Teal/22x22/panel/network-wireless-100.svg" && ok "apps keep the text color" || bad "Teal's own tray icons turned white"
 else
   echo "  (kiconfinder6 is not installed: skipped)"
 fi

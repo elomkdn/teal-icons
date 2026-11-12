@@ -24,7 +24,8 @@
   bluetooth), and would land on a full-color app icon of ours.
 - tray: Papirus's tray icons for the system (network, battery, sound, notifications…) only;
   apps keep their own (Discord, Steam, KeePassXC…), except those in TRAY_PAPIRUS; localize.py
-  links them, and Papirus as the fallback, on each computer.
+  links them, and Papirus as the fallback, on each computer. In <name>-Shell, Plasma's own,
+  they and the tray's arrow are pure white, like the apps' tray icons beside them.
 
 The theme built needs nothing installed: Papirus's system icons are copied into it.
 
@@ -76,6 +77,7 @@ PAPIRUS = Path("/usr/share/icons/Papirus-Dark")
 # Papirus-Dark's color scheme classes -> Catppuccin Mocha
 PAPIRUS_COLORS = {"#dfdfdf": "#cdd6f4", "#4285f4": "#94e2d5", "#ff9800": "#f9e2af",
                   "#f44336": "#f38ba8", "#4caf50": "#a6e3a1", "#444444": "#1e1e2e"}
+PAPIRUS_COLORS_TEXT = PAPIRUS_COLORS["#dfdfdf"]  # Mocha's text, in place of Papirus's gray
 
 
 # tray icons of the system, by their first word
@@ -588,6 +590,58 @@ def write_shell_theme(theme, name):
     write_hidden_theme(theme, theme.parent / f"{name}-Shell", f"{name} Shell",
                        f"Monochrome hardware for Plasma's panels and popups, for {name}", icons, "devices/symbolic",
                        {"Size": "16", "Context": "Devices", "Type": "Scalable", "MinSize": "8", "MaxSize": "256"})
+    white_tray(theme, theme.parent / f"{name}-Shell")
+
+
+# the tray's expander arrow; arrow-down is a link to pan-down in the theme, which every app uses
+TRAY_ARROWS = {"arrow-down": "pan-down", "arrow-up": "pan-up", "arrow-left": "pan-start", "arrow-right": "pan-end"}
+SCHEME_TEXT = re.compile(r'\s*class="ColorScheme-Text"')
+
+
+def pure_white(text):
+    """White where Plasma would put the scheme's text color (class ColorScheme-Text, currentColor)
+    and where Mocha's text is written; the states (red, yellow, green) keep their classes."""
+    def tag(m):
+        t = m.group(0)
+        if "ColorScheme-Text" in t:
+            t = SCHEME_TEXT.sub("", t.replace("currentColor", "#ffffff"))
+        return t
+    return re.sub(PAPIRUS_COLORS_TEXT, "#ffffff", re.sub(r"<[^>]+>", tag, text), flags=re.I)
+
+
+def white_tray(theme, shell):
+    """In the tray, Papirus's icons in pure white, like the apps' own tray icons beside them,
+    rather than in the text color. Only Plasma reads <name>-Shell: apps keep the text color."""
+    source = configparser.ConfigParser(interpolation=None, strict=False)
+    source.optionxform = str
+    source.read(theme / "index.theme")
+    index = configparser.ConfigParser(interpolation=None, strict=False)
+    index.optionxform = str
+    index.read(shell / "index.theme")
+    dirs = index["Icon Theme"]["Directories"].split(",")
+    for size in ("16x16", "22x22", "24x24"):
+        made = {}
+        for rel in (f"{size}/panel", f"{size}/symbolic/status"):
+            for f in (theme / rel).iterdir() if (theme / rel).is_dir() else []:
+                out = shell / rel / f.name
+                if f.suffix == ".svg" and f.exists():
+                    made[out] = (out if out.exists() else f).read_text(errors="ignore")
+        for arrow, pan in TRAY_ARROWS.items():
+            f = theme / size / "actions" / f"{pan}.svg"
+            if f.exists():
+                made[shell / size / "symbolic/actions" / f"{arrow}-symbolic.svg"] = f.read_text(errors="ignore")
+        for out, text in made.items():
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.unlink(missing_ok=True)
+            out.write_text(pure_white(text))
+            rel = out.parent.relative_to(shell).as_posix()
+            if rel not in dirs:
+                dirs.append(rel)
+                index[rel] = dict(source[rel]) if rel in source else {
+                    "Size": size.split("x")[0], "Context": "Status", "Type": "Fixed"}
+    index["Icon Theme"]["Directories"] = ",".join(dirs)
+    with open(shell / "index.theme", "w") as f:
+        index.write(f, space_around_delimiters=False)
 
 
 def drop_system_copies(theme, dirs):

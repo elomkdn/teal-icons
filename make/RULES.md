@@ -20,7 +20,7 @@ the symbol's family applies (`FREE_FAMILIES`).
 | Family | What | Drawing |
 |---|---|---|
 | Colored icons | apps, places, devices, file types | full color, below |
-| Monochrome | actions, tray, status | Papirus Dark's, in the text color |
+| Monochrome | actions, tray, status | Papirus Dark's, in the text color; in Plasma's tray, pure white |
 | Logos | an app's own mark | on a tile of its color, in Catppuccin colors, recognizable first |
 
 ## The grid
