@@ -7,7 +7,7 @@ dark desktop.
 
 ![Teal: apps, folders and hardware, System Settings' pages and file types](preview/teal.png)
 
-- **Apps**: icons in the style of macOS's, recolored with Catppuccin: each app
+- **Apps**: rounded tiles, recolored with Catppuccin: each app
   keeps its hue, in Latte and Mocha shades. Teal is kept for the system (folders, files,
   settings, software center), so it still means something.
 - **Their own tiles**: each app keeps its colored or light tile; the apps that would only
@@ -68,7 +68,7 @@ without it, Teal's drawings stay. Run the installer again after installing such 
 - `make/generator/catppuccin.py` recolors an icon: each color goes to the Catppuccin color
   of the same hue, from Latte (its dark shades) to Mocha (its light ones); grays follow one
   ramp from Mocha's crust to Latte's base.
-- `make/teal/draw.py` draws Teal's own icons when the theme is built, on a macOS-like grid (a
+- `make/teal/draw.py` draws Teal's own icons when the theme is built, on Teal's tile grid (a
   56 px tile with 13 px corners on a 64 px canvas, lit from above): `shapes.py` holds the
   shapes, `draw.py` says which icon gets which, `logos.py` puts an app's own logo on a tile.
 - `make/catppuccin-theme.py` builds the theme from its base icons (`install-base.sh`):

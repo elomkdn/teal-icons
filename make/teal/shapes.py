@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """What Teal's own icons are drawn with: the palette, the tiles and the planes, and every shape.
 
-They follow the grid of macOS icons: a 56 px tile with 13 px corners on a 64 px canvas, lit
+They follow Teal's grid: a 56 px tile with 13 px corners on a 64 px canvas, lit
 from above, its soft shadow below. The shadow is the base icons' own picture (Plasma's QtSvg
 has no blur filter), taken from one of its icons. Every color is a Catppuccin one.
 
