@@ -129,17 +129,8 @@ def get_area(base_key):
 
 
 COLORS = {
-    "blue": {"main": "#3a87e5", "light": "#93c0ea"},
-    "teal": {"main": "#2190a4", "light": "#53c6d0"},
-    "green": {"main": "#3a944a", "light": "#72ba79"},
-    "yellow": {"main": "#c88800", "light": "#f5a831"},
-    "orange": {"main": "#ed5b00", "light": "#f78754"},
-    "red": {"main": "#e62d42", "light": "#e9879a"},
-    "pink": {"main": "#d56199", "light": "#e4b0cd"},
-    "purple": {"main": "#9141ac", "light": "#b185c6"},
-    "slate": {"main": "#6f8396", "light": "#acb2b6"},
     # Catppuccin Mocha teal, as in Catppuccin's papirus-folders: teal front, deeper back,
-    # emblems in surface0
+    # emblems in surface0. The base's other colors are not used by Teal.
     "mocha-teal": {"main": "#80cec1", "light": "#94e2d5", "symbolic": "#313244"},
 }
 

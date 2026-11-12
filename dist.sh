@@ -12,7 +12,7 @@ OUT=dist/teal-icons
 rm -rf dist
 mkdir -p "$OUT/share/icons" "$OUT/make/teal" "$OUT/make/generator"
 
-./install-base.sh -c mocha-teal -a -n Teal -p "$OUT/share/icons" >/dev/null
+make/install-base.sh "$OUT/share/icons" Teal
 python3 -I make/teal/draw.py >/dev/null  # Teal's own drawings, for the builder
 python3 -I make/catppuccin-theme.py "$OUT/share/icons/Teal" Teal
 find "$OUT" -xtype l -delete

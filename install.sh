@@ -82,7 +82,7 @@ else
   fi
   command -v python3 >/dev/null || { echo "Building Teal needs python3." >&2; exit 1; }
   echo "Building $NAME…"
-  "$SCRIPT_DIR/install-base.sh" -c mocha-teal -a -n "$NAME" -p "$STAGE" >/dev/null
+  "$SCRIPT_DIR/make/install-base.sh" "$STAGE" "$NAME"
   python3 -I "$SCRIPT_DIR/make/teal/draw.py" >/dev/null  # Teal's own drawings, for the builder
   python3 -I "$SCRIPT_DIR/make/catppuccin-theme.py" "$STAGE/$NAME" "$NAME"
   # links to icons the theme leaves to Papirus, or to the base's removed monochrome folders

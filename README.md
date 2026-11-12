@@ -66,13 +66,17 @@ without it, Teal's drawings stay. Run the installer again after installing such 
 
 ## How it is made
 
+- `src/` holds the base's full-color icons (apps, places, devices, file types, categories)
+  and `links/` their other names, in the same layout; `make/install-base.sh` lays them out
+  with the folders and apps that `make/generator/colors.py` draws in Mocha teal. Everything
+  monochrome comes from Papirus when the theme is built.
 - `make/generator/catppuccin.py` recolors an icon: each color goes to the Catppuccin color
   of the same hue, from Latte (its dark shades) to Mocha (its light ones); grays follow one
   ramp from Mocha's crust to Latte's base.
 - `make/teal/draw.py` draws Teal's own icons when the theme is built, on Teal's tile grid (a
   56 px tile with 13 px corners on a 64 px canvas, lit from above): `shapes.py` holds the
   shapes, `draw.py` says which icon gets which, `logos.py` puts an app's own logo on a tile.
-- `make/catppuccin-theme.py` builds the theme from its base icons (`install-base.sh`):
+- `make/catppuccin-theme.py` builds the theme from its base icons (`make/install-base.sh`):
   recolors them, gives every tile its app's color and the code files their paper, places the
   drawn icons, copies Papirus's system icons. `dist.sh` makes the release archive with them.
 - `make/sheet.py` checks the pack against `make/RULES.md`; `make/preview.py` draws the

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the Teal icon theme from its base icons (install-base.sh -c mocha-teal -a):
+"""Build the Teal icon theme from its base icons (make/install-base.sh):
 
 - full-color icons (apps, file types, devices, categories): the base's, recolored with
   Catppuccin by generator/catppuccin.py, brands included. Teal is kept for what belongs to

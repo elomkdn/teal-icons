@@ -17,7 +17,7 @@ ok() { echo "  ✓ $1"; }
 bad() { echo "  ✗ $1" >&2; failed=1; }
 
 echo "Scripts"
-for f in install.sh dist.sh install-base.sh make/check.sh; do bash -n "$f" || bad "$f"; done
+for f in install.sh dist.sh make/install-base.sh make/check.sh; do bash -n "$f" || bad "$f"; done
 python3 -I -m py_compile make/*.py make/teal/*.py make/generator/catppuccin.py && ok "they parse" || bad "a Python script does not parse"
 
 echo "Drawings"
