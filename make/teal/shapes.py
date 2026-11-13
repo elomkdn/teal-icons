@@ -1410,29 +1410,58 @@ def refresh(p):
 def shell(p):
     """Shelly: its own logo, a scallop. Five lobes fan out from a low hinge, the middle one
     tallest, the outer ones shorter and leaning far out, with two small ears under the hinge;
-    each lobe goes from white lavender at its top to blue violet at the hinge, outlined in ink."""
+    each lobe goes from white lavender at its top to blue violet at the hinge, outlined in ink.
+    In color, each lobe has volume (lit from above and the left, a sheen near its top, faint
+    ribs), casts a soft shadow on the lobes behind it, and the shell one on the tile."""
     hx, hy = 32, 49.5  # the hinge
-    if p is Planes:
-        # its outline nearly black, as in the logo
-        fill, ink = "url(#shell-lobe)", mix(CRUST, LATTE["mauve"], .14)
-        stops = ((0, mix(MOCHA["lavender"], PAPER, .75)), (.55, MOCHA["lavender"]),
+    color = p is Planes
+    if color:
+        # its outline nearly black, as in the logo, a touch of indigo in it
+        fill, ink = "url(#shell-lobe)", mix(CRUST, LATTE["lavender"], .2)
+        stops = ((0, mix(MOCHA["lavender"], PAPER, .78)), (.5, MOCHA["lavender"]),
                  (1, mix(LATTE["lavender"], LATTE["mauve"], .35)))
         defs = ('<defs><linearGradient id="shell-lobe" x1="0" y1="0" x2="0" y2="1">'
-                + "".join(f'<stop offset="{o}" stop-color="{c}"/>' for o, c in stops) + "</linearGradient></defs>")
+                + "".join(f'<stop offset="{o}" stop-color="{c}"/>' for o, c in stops) + '</linearGradient>'
+                # its right side in shade, the light coming from the left
+                f'<linearGradient id="shell-shade" x1="0" y1="0" x2="1" y2="0"><stop offset=".45" stop-color="{CRUST}" '
+                f'stop-opacity="0"/><stop offset="1" stop-color="{LATTE["mauve"]}" stop-opacity=".28"/></linearGradient>'
+                f'<linearGradient id="shell-sheen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" '
+                f'stop-opacity=".85"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>')
+        # the shell's soft shadow on the tile, under its hinge: stacked, no filter (QtSvg)
+        ground = "".join(f'<ellipse cx="{hx}" cy="{hy + 7.5}" rx="{rx}" ry="{ry}" fill="{CRUST}" fill-opacity=".07"/>'
+                         for rx, ry in ((19, 4.2), (15, 3.2), (11, 2.4)))
     else:
-        fill, ink, defs = p.main, p.ink, ""
+        fill, ink, defs, ground = p.main, p.ink, "", ""
 
-    def lobe(angle, length, width):
-        # pointed at the hinge, its sides nearly straight out to its widest, then a round top;
-        # the gradient follows the lobe (its own box, before it is turned)
+    def outline(length, width):
+        # pointed at the hinge, its sides nearly straight out to its widest, then a round top
         w, top = width, length - width * 1.1
-        d = (f"M0 0C{-w * .3:.2f} {-length * .3:.2f} {-w:.2f} {-length * .5:.2f} {-w:.2f} {-top:.2f}"
-             f"A{w} {w * 1.1:.2f} 0 0 1 {w:.2f} {-top:.2f}C{w:.2f} {-length * .5:.2f} {w * .3:.2f} {-length * .3:.2f} 0 0Z")
-        return (f'<g transform="translate({hx} {hy}) rotate({angle})"><path d="{d}" fill="{fill}" '
-                f'stroke="{ink}" stroke-width="2.4" stroke-linejoin="round"/></g>')
-    # the ears first: the outer lobes come down over them
-    return (defs + lobe(-104, 15, 4.8) + lobe(104, 15, 4.8) + lobe(-60, 30, 6.6) + lobe(60, 30, 6.6)
-            + lobe(-30, 36, 7) + lobe(30, 36, 7) + lobe(0, 39, 7.2))
+        return (f"M0 0C{-w * .3:.2f} {-length * .3:.2f} {-w:.2f} {-length * .5:.2f} {-w:.2f} {-top:.2f}"
+                f"A{w} {w * 1.1:.2f} 0 0 1 {w:.2f} {-top:.2f}C{w:.2f} {-length * .5:.2f} {w * .3:.2f} {-length * .3:.2f} 0 0Z")
+
+    def lobe(angle, length, width, ribs=True, casts=(), reach=1):
+        d = outline(length, width)
+        out = f'<g transform="translate({hx} {hy}) rotate({angle})">'
+        if color:
+            # its shadow on the lobes behind it (sides casts, -1 left, 1 right): copies of itself
+            # turned a little toward them, short enough to stay on them
+            out += "".join(f'<path d="{d}" transform="rotate({side * turn}) scale({reach})" fill="{CRUST}" '
+                           f'fill-opacity=".11"/>' for side in casts for turn in (3.5, 7))
+        out += f'<path d="{d}" fill="{fill}"/>'
+        if color:
+            top = length - width * 1.1
+            out += f'<path d="{d}" fill="url(#shell-shade)"/>'
+            if ribs:  # the grooves of a scallop, faint
+                out += "".join(f'<path d="M0 -3L{x * width:.2f} {-top * .82:.2f}" fill="none" stroke="{ink}" '
+                               f'stroke-opacity=".16" stroke-width=".9" stroke-linecap="round"/>' for x in (-.42, .42))
+            out += (f'<ellipse cx="{-width * .3:.2f}" cy="{-top + width * .1:.2f}" rx="{width * .42:.2f}" '
+                    f'ry="{width * .75:.2f}" fill="url(#shell-sheen)"/>')
+        return out + f'<path d="{d}" fill="none" stroke="{ink}" stroke-width="2.2" stroke-linejoin="round"/></g>'
+    # the ears first, the outer lobes come down over them; then each row in front of the last
+    return (defs + ground + lobe(-104, 15, 4.8, ribs=False) + lobe(104, 15, 4.8, ribs=False)
+            + lobe(-60, 30, 6.6) + lobe(60, 30, 6.6)
+            + lobe(-30, 36, 7, casts=(-1,), reach=.8) + lobe(30, 36, 7, casts=(1,), reach=.8)
+            + lobe(0, 39, 7.2, casts=(-1, 1), reach=.88))
 
 
 def snapshot_back(p):
