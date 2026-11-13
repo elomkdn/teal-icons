@@ -1417,24 +1417,26 @@ def snapshot_back(p):
     R, start, end = 22.5, -150, 150  # from the top left, round by the right, to the bottom left
     sx, sy = cx + R * math.cos(math.radians(start)), cy + R * math.sin(math.radians(start))
     ex, ey = cx + R * math.cos(math.radians(end)), cy + R * math.sin(math.radians(end))
+
+    def on(radius, angle):
+        return f"{cx + radius * math.cos(math.radians(angle)):.2f} {cy + radius * math.sin(math.radians(angle)):.2f}"
+    # the head: its base across the arc where it starts, its tip further back on the circle
+    head = f"M{on(R + 6, start)}L{on(R, start - 22)}L{on(R - 6, start)}Z"
     return (f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="{p.main}"/>{blades}'
             f'<circle cx="{cx}" cy="{cy}" r="4.6" fill="{p.deep}"/>'
             f'<path d="M{sx:.2f} {sy:.2f}A{R} {R} 0 1 1 {ex:.2f} {ey:.2f}" {ROUND} stroke="{p.main}" stroke-width="5.5"/>'
-            f'<path d="M{sx - 7:.2f} {sy - 1:.2f}L{sx + 3:.2f} {sy + 9:.2f}L{sx + 5:.2f} {sy - 4:.2f}Z" fill="{p.main}" '
-            f'stroke="{p.main}" stroke-width="2.4" stroke-linejoin="round"/>')
+            f'<path d="{head}" fill="{p.main}" stroke="{p.main}" stroke-width="2.4" stroke-linejoin="round"/>')
 
 
-def usage_graph(p):
-    """The system monitor: a screen in its frame, the processor's history filled in green over
-    the grid, the last value marked."""
-    grid = "".join(f'<path d="M11 {y}h42" stroke="{p.metal}" stroke-opacity=".16" stroke-width="1.2"/>'
-                   for y in (21, 31, 41))
-    curve = "c4 0 5-8 9-8s5 6 9 6 5-14 9.5-14 5 9 8.5 9 3.5-4 6.5-4"
-    return (f'<rect x="4" y="8" width="56" height="48" rx="9" fill="{p.main}"/>'
-            f'<rect x="8.5" y="12.5" width="47" height="39" rx="5" fill="{CRUST}"/>' + grid
-            + f'<path d="M11 51.5V38{curve}V51.5Z" fill="{p.real("green")}" fill-opacity=".35"/>'
-            f'<path d="M11 38{curve}" {ROUND} stroke="{p.real("green")}" stroke-width="3.4"/>'
-            f'<circle cx="53.5" cy="27" r="3" fill="{p.real("green")}"/>')
+def pulse():
+    """The system monitor: the system's pulse, in green on the dark tile, as on a monitor's screen."""
+    line = "M11 34H20.5L24 28L29 45L35 15.5L40 40L42.5 34H53"
+    stroke = 'fill="none" stroke-linecap="round" stroke-linejoin="round"'
+    return icon(mocha_tile(),
+                f'<rect {TILE} fill="url(#tile)"/>{rim(MOCHA_RIM)}'
+                # a faint glow, then the line
+                f'<path d="{line}" {stroke} stroke="{MOCHA["green"]}" stroke-opacity=".14" stroke-width="9"/>'
+                f'<path d="{line}" {stroke} stroke="{MOCHA["green"]}" stroke-width="4.4"/>')
 
 
 def folder(p):

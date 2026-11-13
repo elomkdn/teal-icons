@@ -132,7 +132,10 @@ def copy_papirus(theme, dirs):
         src, dst = PAPIRUS / d, theme / d
         dst.mkdir(parents=True, exist_ok=True)
         for f in src.iterdir():
-            if d.endswith("/panel") and not is_system_tray(f.name.removesuffix(".svg"), statuses):
+            # an app's name (printer: Print Settings) stays its tile: at the menu's sizes, the
+            # tray's copy would be found first
+            if d.endswith("/panel") and (f.name in APPS_KEPT
+                                         or not is_system_tray(f.name.removesuffix(".svg"), statuses)):
                 continue
             out = dst / f.name
             if f.is_symlink() and "/" not in os.readlink(f):

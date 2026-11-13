@@ -93,6 +93,9 @@ if command -v kiconfinder6 >/dev/null; then
   tray=$(find_icon network-wireless-100) arrow=$(find_icon arrow-down-symbolic)
   white "$tray" && white "$arrow" && ok "the tray is white" || bad "not white: $tray $arrow"
   ! grep -q '#ffffff' "$WORK/data/icons/Teal/22x22/panel/network-wireless-100.svg" && ok "apps keep the text color" || bad "Teal's own tray icons turned white"
+  # at the menu's sizes, a tray copy under an app's name would be found before its tile
+  kept=$(find "$WORK/data/icons/Teal" "$WORK/data/icons/Teal-Shell" -path '*/panel/printer.svg')
+  [[ -z $kept ]] && ok "the printing settings keep their tile" || bad "printer in the tray folders: $kept"
 else
   echo "  (kiconfinder6 is not installed: skipped)"
 fi

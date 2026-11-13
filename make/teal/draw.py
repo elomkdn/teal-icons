@@ -52,7 +52,7 @@ DESIGNS = {
     "okular.svg": (okular, kde("okular")[1:]),
     "qbittorrent.svg": lambda: on_color(qb, "blue"),
     "preferences-desktop-emoticons.svg": (lambda: on_color(smiley, "yellow"), ["org.kde.plasma.emojier"]),
-    "utilities-system-monitor.svg": (lambda: on_color(usage_graph, "teal"),
+    "utilities-system-monitor.svg": (pulse,
                                      kde("plasma-systemmonitor") + ["ksysguard", "gnome-system-monitor",
                                                                     "org.gnome.SystemMonitor"]),
     "LimineSnapperSync.svg": (lambda: on_color(snapshot_back, "teal"), ["limine-snapper-restore", "limine-snapper-sync"]),

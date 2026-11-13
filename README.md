@@ -15,7 +15,7 @@ dark desktop.
   own (Gwenview, KWallet, the Qt and CachyOS tools…) show that logo, in Catppuccin
   colors. Round logos (Kate, Faugus, Micro) lose their disc, whose color becomes the tile.
   A tile's color says what the app is: teal for every tool of the system, black for a
-  terminal, the app's own color for the others (pastel under a colored logo, vivid under a white
+  terminal and for the system monitor's green pulse, the app's own color for the others (pastel under a colored logo, vivid under a white
   one, paper where its own color would not show).
 - **The system and the hardware**: System Settings' pages and the hardware (drives, cards,
   headphones, microphones, cameras, printers…) are objects without a tile, each in its own

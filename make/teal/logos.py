@@ -144,6 +144,7 @@ CATEGORIES = [("Game", "red"), ("AudioVideo", "pink"), ("Audio", "pink"), ("Vide
               ("Education", "lavender"), ("Science", "lavender"), ("Utility", "peach")]
 # where the menu's categories say otherwise
 TILE_HUES = {"cachy-update-blue": "teal",  # the system's updates, filed under Utility
+             "utilities-system-monitor": None,  # its green pulse on the dark tile, a monitor's screen
              "obs": "pink"}  # in the README's picture, wherever OBS is not installed: video's color
 MENUS = [Path("/usr/share/applications"), Path.home() / ".local/share/applications",
          Path("/var/lib/flatpak/exports/share/applications"), Path.home() / ".local/share/flatpak/exports/share/applications"]
@@ -285,9 +286,9 @@ def tinted(svg, names=()):
     return MOCHA_STOPS.sub(rf'\1<stop offset="0" stop-color="{tile[0]}"/><stop offset="1" stop-color="{tile[1]}"/>\2', svg)
 
 
-# The system's tools whose own tile stays: the system's two main apps, and the apps whose color is
-# their mark (Kvantum's rainbow, NVIDIA's green)
-SYSTEM_OWN = {"system-file-manager", "preferences-system", "kvantum", "nvidia"}
+# The system's tools whose own tile stays: the system's two main apps, the apps whose color is
+# their mark (Kvantum's rainbow, NVIDIA's green), and the menu editor, whose tile is a white sheet
+SYSTEM_OWN = {"system-file-manager", "preferences-system", "kvantum", "nvidia", "menu-editor"}
 
 
 def is_system(names):
