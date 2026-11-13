@@ -67,6 +67,9 @@ SAME_APP = {"brave-origin": "brave", "printer-settings": "printer", "hardinfo2":
             "pavucontrol-qt": "multimedia-volume-control", "cachyos-package-installer": "cachyos-pi",
             "kdeconnect-app": "kdeconnect", "kmenuedit": "org.kde.kmenuedit", "org.kde.kwalletmanager": "kwalletmanager",
             "kwallet": "kwalletmanager"}
+# The base's colors that are not the app's, put back before the recoloring: Gufw's shield is
+# blue round its white band, not green and red (an Italian flag)
+OWN_COLORS = {"gufw.svg": {"#25a125": "#1e3fb4", "#6ddb1b": "#3d6ef0", "#c82a2a": "#1e3fb4", "#eb5151": "#3d6ef0"}}
 # Logos that spill over their tile, brought inside it
 FIT_IN_TILE = {"krita.svg": .82, "transmission.svg": .84}
 # Logos whose colored tile the recoloring turns into a candy gradient (Firefox's, magenta to
@@ -287,6 +290,8 @@ def recolor_tree(folder):
             continue
         family = "teal" if f.name in TEAL else None
         text = f.read_text(errors="ignore")
+        for old, new in OWN_COLORS.get(f.name, {}).items():
+            text = text.replace(old, new)
         if f.name in FIT_IN_TILE:
             text = fit_in_tile(text, FIT_IN_TILE[f.name])
         if f.name in ON_MOCHA:
