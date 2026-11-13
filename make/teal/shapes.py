@@ -1407,6 +1407,34 @@ def refresh(p):
               f'<path d="M17 47.5V35.7h11.8Z" fill="{p.deep}" stroke="{p.deep}" stroke-width="1.5" stroke-linejoin="round"/>')
 
 
+def shell(p):
+    """Shelly: its own logo, a scallop. Five lobes fan out from a low hinge, the middle one
+    tallest, the outer ones shorter and leaning far out, with two small ears under the hinge;
+    each lobe goes from white lavender at its top to blue violet at the hinge, outlined in ink."""
+    hx, hy = 32, 49.5  # the hinge
+    if p is Planes:
+        # its outline nearly black, as in the logo
+        fill, ink = "url(#shell-lobe)", mix(CRUST, LATTE["mauve"], .14)
+        stops = ((0, mix(MOCHA["lavender"], PAPER, .75)), (.55, MOCHA["lavender"]),
+                 (1, mix(LATTE["lavender"], LATTE["mauve"], .35)))
+        defs = ('<defs><linearGradient id="shell-lobe" x1="0" y1="0" x2="0" y2="1">'
+                + "".join(f'<stop offset="{o}" stop-color="{c}"/>' for o, c in stops) + "</linearGradient></defs>")
+    else:
+        fill, ink, defs = p.main, p.ink, ""
+
+    def lobe(angle, length, width):
+        # pointed at the hinge, its sides nearly straight out to its widest, then a round top;
+        # the gradient follows the lobe (its own box, before it is turned)
+        w, top = width, length - width * 1.1
+        d = (f"M0 0C{-w * .3:.2f} {-length * .3:.2f} {-w:.2f} {-length * .5:.2f} {-w:.2f} {-top:.2f}"
+             f"A{w} {w * 1.1:.2f} 0 0 1 {w:.2f} {-top:.2f}C{w:.2f} {-length * .5:.2f} {w * .3:.2f} {-length * .3:.2f} 0 0Z")
+        return (f'<g transform="translate({hx} {hy}) rotate({angle})"><path d="{d}" fill="{fill}" '
+                f'stroke="{ink}" stroke-width="2.4" stroke-linejoin="round"/></g>')
+    # the ears first: the outer lobes come down over them
+    return (defs + lobe(-104, 15, 4.8) + lobe(104, 15, 4.8) + lobe(-60, 30, 6.6) + lobe(60, 30, 6.6)
+            + lobe(-30, 36, 7) + lobe(30, 36, 7) + lobe(0, 39, 7.2))
+
+
 def snapshot_back(p):
     """Limine Snapper Restore: a snapshot, the shutter's blades, and the arrow turning back round
     it, to the system as it was."""

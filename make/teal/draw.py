@@ -36,6 +36,8 @@ DESIGNS = {
     "org.cachyos.KernelManager.svg": (lambda: on_mocha(kernel), ["cachyos-kernel-manager"]),
     "org.cachyos.scx-manager.svg": (lambda: on_color(quarter_gear, "teal"), ["scx-manager"]),
     "cachy-update-blue.svg": (lambda: on_mocha(refresh, "teal"), ["cachy-update", "arch-update", "system-software-update"]),
+    # Shelly, the package manager: its own scallop, in its colors, on the light Latte tile
+    "shelly.svg": lambda: on_latte(shell, "lavender"),
     "elisa.svg": (elisa, kde("elisa")[1:]),
     "haruna.svg": (haruna, kde("haruna")[1:]),
     "qv4l2.svg": (lambda: on_color(webcam, "sky"), ["qvidcap", "kamoso", "org.kde.kamoso", "cheese", "org.gnome.Cheese"]),
