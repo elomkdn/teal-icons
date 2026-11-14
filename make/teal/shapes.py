@@ -1408,102 +1408,75 @@ def refresh(p):
 
 
 def shell(p):
-    """Shelly: its own logo, a scallop rising out of an open cardboard box. Five lobes fan out
-    from a low hinge inside the box, the middle one tallest, the outer ones shorter and leaning
-    far out, with two small ears over the box's front edges; each lobe goes from white lavender at
-    its top to blue violet at the hinge, outlined in ink. The box is seen from above its front
-    corner, its four flaps open: the back two behind the shell, the front two folded down over
-    its sides. In color, each lobe has volume (lit from above and the left, a sheen near its top,
-    faint ribs) and casts a soft shadow on the lobes behind it; the box's left side is lit, its
-    right in shade, its inside dark, and the whole casts its shadow on the tile."""
-    hx, hy, k = 32, 33.5, .77  # the hinge, and the lobes' size
+    """Shelly: its own logo, redrawn: a scallop rising out of an open cardboard box, outlined in
+    planes, each outlined in a deep shade of its own color rather than the logo's black. Seven
+    lobes fan out from a hinge at the box's mouth, the middle one tallest, with two ears lying
+    flat at the hinge: the further out, the darker. The box is seen from above
+    its front corner, its four flaps open: the back two behind the shell, the front two folded out
+    and down. Drawn on the logo's own 256 px canvas, a touch wider, then brought onto the grid. In
+    Catppuccin colors: the shell lavender, from white lavender at the top to blue violet at the
+    hinge, the box peach, its left side lit, its back flaps in shade, its inside dark."""
     color = p is Planes
-    # the box: its open top (left, back, right and front corners), then its sides down to its floor
-    top, depth = 34.5, 15
-    L, B, R, F = (17.5, top), (32, top - 4.5), (46.5, top), (32, top + 8.5)
+    s = 56 / 239  # the logo's drawing, 239 px tall from its top at 4, onto the grid's 56
+    hx, hy = 122, 128  # the hinge
+    L, B, R, F = (64, 137), (122, 113), (181, 137), (122, 161)  # the box's mouth
+    Lb, Fb, Rb = (64, 207), (122, 236), (181, 207)  # its floor's corners
+    if color:
+        lavender = mix(MOCHA["lavender"], LATTE["lavender"], .55)
+        peach, shade = mix(MOCHA["peach"], PAPER, .08), mix(MOCHA["peach"], mix(LATTE["peach"], LATTE["red"], .5), .3)
+        rims = {"shell": mix(LATTE["lavender"], CRUST, .4), "box": mix(LATTE["peach"], CRUST, .55)}
+        paint = {"lobe": "url(#shelly-lobe)", "ear": MOCHA["lavender"], "flap": mix(peach, PAPER, .25),
+                 "back": mix(peach, shade, .55),
+                 "lit": "url(#shelly-lit)", "shade": "url(#shelly-shade)",
+                 "inside-l": mix(LATTE["peach"], CRUST, .5), "inside-r": mix(LATTE["peach"], CRUST, .64)}
 
-    def down(pt, dy=depth):
-        return pt[0], pt[1] + dy
+        def vertical(id, y1, y2, stops):  # on the logo's canvas; without y1, along each shape, top to bottom
+            units = f'gradientUnits="userSpaceOnUse" x1="0" y1="{y1}" x2="0" y2="{y2}"' if y1 is not None else 'x1="0" y1="0" x2="0" y2="1"'
+            return (f'<linearGradient id="{id}" {units}>'
+                    + "".join(f'<stop offset="{o}" stop-color="{c}"/>' for o, c in stops) + "</linearGradient>")
+        defs = ("<defs>"
+                + vertical("shelly-lobe", None, None, ((0, mix(MOCHA["lavender"], PAPER, .5)), (.45, lavender),
+                                                   (.8, mix(MOCHA["lavender"], LATTE["lavender"], .3)), (1, MOCHA["lavender"])))
+                + vertical("shelly-lit", 161, 236, ((0, peach), (1, mix(peach, shade, .45))))
+                + vertical("shelly-shade", 137, 236, ((0, mix(shade, peach, .25)), (1, mix(shade, CRUST, .08))))
+                + "</defs>")
+    else:
+        defs = ""
+        rims = {"shell": p.ink, "box": p.ink}
+        paint = dict.fromkeys(("lobe", "ear", "flap", "back", "lit", "shade", "inside-l", "inside-r"), p.main)
+
+    def poly(kind, *pts):
+        return (f'<path d="M{"L".join(f"{x:g} {y:g}" for x, y in pts)}Z" fill="{paint[kind]}" '
+                f'stroke="{rims["box"]}" stroke-width="5" stroke-linejoin="round"/>')
 
     def shift(pt, dx, dy):
         return pt[0] + dx, pt[1] + dy
 
-    def poly(*pts):
-        return "M" + "L".join(f"{x:g} {y:g}" for x, y in pts) + "Z"
-    if color:
-        # its outline nearly black, as in the logo, a touch of indigo in it
-        fill, ink = "url(#shell-lobe)", mix(CRUST, LATTE["lavender"], .2)
-        stops = ((0, mix(MOCHA["lavender"], PAPER, .78)), (.5, MOCHA["lavender"]),
-                 (1, mix(LATTE["lavender"], LATTE["mauve"], .35)))
-        # cardboard: Mocha's peach dulled toward its surfaces, lighter on the lit side
-        card = mix(MOCHA["peach"], SURFACE2, .32)
-        lit, shade = mix(card, PAPER, .12), mix(card, SURFACE1, .3)
-        flap, inside = mix(card, PAPER, .22), mix(mix(LATTE["peach"], CRUST, .66), card, .15)
-
-        def vertical(id, a, b):
-            return (f'<linearGradient id="{id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{a}"/>'
-                    f'<stop offset="1" stop-color="{b}"/></linearGradient>')
-        defs = ('<defs><linearGradient id="shell-lobe" x1="0" y1="0" x2="0" y2="1">'
-                + "".join(f'<stop offset="{o}" stop-color="{c}"/>' for o, c in stops) + '</linearGradient>'
-                # its right side in shade, the light coming from the left
-                f'<linearGradient id="shell-shade" x1="0" y1="0" x2="1" y2="0"><stop offset=".45" stop-color="{CRUST}" '
-                f'stop-opacity="0"/><stop offset="1" stop-color="{LATTE["mauve"]}" stop-opacity=".28"/></linearGradient>'
-                f'<linearGradient id="shell-sheen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" '
-                f'stop-opacity=".85"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>'
-                + vertical("box-lit", lit, mix(lit, shade, .35)) + vertical("box-shade", shade, mix(shade, CRUST, .12))
-                + vertical("box-flap", flap, lit) + vertical("box-inside", mix(inside, CRUST, .2), inside)
-                + '</defs>')
-        faces = {"lit": "url(#box-lit)", "shade": "url(#box-shade)", "flap": "url(#box-flap)", "inside": "url(#box-inside)"}
-        # the box's soft shadow on the tile, under its front corner: stacked, no filter (QtSvg)
-        ground = "".join(f'<ellipse cx="32" cy="{top + depth + 5}" rx="{rx}" ry="{ry}" fill="{CRUST}" fill-opacity=".07"/>'
-                         for rx, ry in ((18, 6), (14.5, 4.8), (11, 3.6)))
-    else:
-        fill, ink, defs, ground = p.main, p.ink, "", ""
-        faces = dict.fromkeys(("lit", "shade", "flap", "inside"), p.main)
-
-    def face(d, paint):
-        return (f'<path d="{d}" fill="{faces[paint]}" stroke="{ink}" stroke-width="2.2" '
-                f'stroke-linejoin="round"/>')
-
-    def outline(length, width):
-        # pointed at the hinge, its sides nearly straight out to its widest, then a round top
-        w, top = width, length - width * 1.1
-        return (f"M0 0C{-w * .3:.2f} {-length * .3:.2f} {-w:.2f} {-length * .5:.2f} {-w:.2f} {-top:.2f}"
-                f"A{w} {w * 1.1:.2f} 0 0 1 {w:.2f} {-top:.2f}C{w:.2f} {-length * .5:.2f} {w * .3:.2f} {-length * .3:.2f} 0 0Z")
-
-    def lobe(angle, length, width, ribs=True, casts=(), reach=1):
-        length, width = length * k, width * k
-        d = outline(length, width)
-        out = f'<g transform="translate({hx} {hy}) rotate({angle})">'
-        if color:
-            # its shadow on the lobes behind it (sides casts, -1 left, 1 right): copies of itself
-            # turned a little toward them, short enough to stay on them
-            out += "".join(f'<path d="{d}" transform="rotate({side * turn}) scale({reach})" fill="{CRUST}" '
-                           f'fill-opacity=".11"/>' for side in casts for turn in (3.5, 7))
-        out += f'<path d="{d}" fill="{fill}"/>'
-        if color:
-            top = length - width * 1.1
-            out += f'<path d="{d}" fill="url(#shell-shade)"/>'
-            if ribs:  # the grooves of a scallop, faint
-                out += "".join(f'<path d="M0 -3L{x * width:.2f} {-top * .82:.2f}" fill="none" stroke="{ink}" '
-                               f'stroke-opacity=".16" stroke-width=".9" stroke-linecap="round"/>' for x in (-.42, .42))
-            out += (f'<ellipse cx="{-width * .3:.2f}" cy="{-top + width * .1:.2f}" rx="{width * .42:.2f}" '
-                    f'ry="{width * .75:.2f}" fill="url(#shell-sheen)"/>')
-        return out + f'<path d="{d}" fill="none" stroke="{ink}" stroke-width="2.2" stroke-linejoin="round"/></g>'
-    # behind the shell: the back flaps, folded out, and the box's dark inside
-    back = (face(poly(L, B, shift(B, -5, -4.5), shift(L, -5, -4.5)), "flap")
-            + face(poly(R, B, shift(B, 5, -4.5), shift(R, 5, -4.5)), "flap")
-            + face(poly(L, B, R, F), "inside"))
-    # the ears first, the outer lobes come down over them; then each row in front of the last
-    scallop = (lobe(-97, 15, 4.8, ribs=False) + lobe(97, 15, 4.8, ribs=False)
-               + lobe(-60, 30, 6.6) + lobe(60, 30, 6.6)
-               + lobe(-30, 36, 7, casts=(-1,), reach=.8) + lobe(30, 36, 7, casts=(1,), reach=.8)
-               + lobe(0, 39, 7.2, casts=(-1, 1), reach=.88))
-    # in front of it: the box's two sides, then the front flaps folded down over them
-    front = (face(poly(L, F, down(F), down(L)), "lit") + face(poly(F, R, down(R), down(F)), "shade")
-             + face(poly(L, F, shift(F, -4.5, 4.5), shift(L, -4.5, 4.5)), "flap")
-             + face(poly(R, F, shift(F, 4.5, 4.5), shift(R, 4.5, 4.5)), "flap"))
-    return defs + ground + back + scallop + front
+    def lobe(angle, length, w, kind="lobe", dim=0):
+        # pointed at the hinge, widest high up, then a round top
+        top = length - w
+        d = (f"M0 0C{-w * .4:.2f} {-length * .2:.2f} {-w:.2f} {-length * .42:.2f} {-w:.2f} {-top:.2f}"
+             f"A{w} {w} 0 0 1 {w:.2f} {-top:.2f}C{w:.2f} {-length * .42:.2f} {w * .4:.2f} {-length * .2:.2f} 0 0Z")
+        out = f'<g transform="translate({hx} {hy}) rotate({angle})"><path d="{d}" fill="{paint[kind]}"/>'
+        if color and dim:  # further out, darker
+            out += f'<path d="{d}" fill="{LATTE["lavender"]}" fill-opacity="{dim}"/>'
+        return out + f'<path d="{d}" fill="none" stroke="{rims["shell"]}" stroke-width="5" stroke-linejoin="round"/></g>'
+    back = (poly("back", L, B, shift(B, -19, -21), shift(L, -19, -21))
+            + poly("back", R, B, shift(B, 19, -21), shift(R, 19, -21))
+            # the mouth: the far walls inside, the left one in the light, and their corner
+            + poly("inside-l", L, B, F) + poly("inside-r", B, R, F)
+            + f'<path d="M{B[0]} {B[1]}V{F[1]}" stroke="{rims["box"]}" stroke-width="3.6"/>')
+    # the outer lobes first, each one further in over the last; the ears over their feet
+    scallop = "".join(lobe(side * angle, length, w, dim=dim)
+                      for angle, length, w, dim in ((48, 97, 16.5, .3), (31, 109, 17.5, .2), (15, 118, 18, .1))
+                      for side in (-1, 1))
+    scallop += lobe(0, 122, 19) + lobe(-93, 38, 9.5, "ear", .15) + lobe(93, 38, 9.5, "ear", .15)
+    front = (poly("lit", L, F, Fb, Lb) + poly("shade", F, R, Rb, Fb)
+             + poly("flap", L, F, shift(F, -18, 23), shift(L, -19, 19))
+             + poly("flap", F, R, shift(R, 19, 19), shift(F, 18, 23)))
+    stretch = 1.1
+    return (f'{defs}<g transform="translate({32 - hx * s * stretch:.3f} {4 - 4 * s:.3f}) scale({s * stretch:.5f} {s:.5f})">'
+            f"{back}{scallop}{front}</g>")
 
 
 def snapshot_back(p):
