@@ -56,6 +56,14 @@ base colors the whole page, the page and the mark trade their colors when the th
 (`paper_page` in `catppuccin-theme.py`). A colored page is for what is not text: pictures,
 music, videos, archives. The icons stay light there too.
 
+## Folders
+
+A folder's emblem (`generator/symbolics/`) is drawn in lines, like its neighbors: 2 px on its
+16 px grid, round caps and joins, its parts apart by at least 1.5 px so that they stay apart at
+Dolphin's sizes; only dots are filled. A thing is drawn as an object (a set square, a gamepad
+with its grips), not as a diagram. A brand keeps its logo, and a mark made of letters (`#!`) its
+letters.
+
 ## Shadow
 
 | Shape | Shadow |
