@@ -25,7 +25,8 @@ dark desktop.
   color; pictures, music, videos and archives keep a page of their own color.
 - **System icons**: Papirus Dark's action, status and tray icons, in Mocha colors (Mocha text
   instead of Papirus's gray, teal instead of its blue, Catppuccin red, yellow and green for
-  states).
+  states). The window buttons' glyphs are Teal's own, bold and centered for round colored
+  buttons: a cross, a dash, two corners pulled apart to maximize.
 - **The tray**: Papirus's icons for the system (network, battery, sound, notifications…),
   in pure white in Plasma's tray and popups, like the apps' icons beside them; apps keep their
   own, except Spotify, in monochrome. Apps that send a picture rather than an

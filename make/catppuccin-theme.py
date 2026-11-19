@@ -652,6 +652,51 @@ def white_tray(theme, shell):
         index.write(f, space_around_delimiters=False)
 
 
+# The window buttons' glyphs, drawn by Teal on Papirus's 16 px grid: bold, centered, for round
+# colored buttons (Klassy's system icon style, the GTK themes' title buttons). Close is a cross,
+# minimize a dash, maximize two corners pulled apart, restore the same corners pushed back.
+# Filled shapes only: GTK recolors a symbolic icon's fill, not its strokes.
+WINDOW_STROKE = 2
+
+
+def window_bar(x, w, angle=None):
+    turn = f' transform="rotate({angle} 8 8)"' if angle is not None else ""
+    return (f'<rect x="{x:g}" y="{8 - WINDOW_STROKE / 2:g}" width="{w:g}" height="{WINDOW_STROKE:g}"'
+            f' rx="{WINDOW_STROKE / 2:g}"{turn}/>')
+
+
+WINDOW_GLYPHS = {
+    "close": window_bar(2.5, 11, 45) + window_bar(2.5, 11, -45),
+    "minimize": window_bar(3, 10),
+    "maximize": '<path d="M6.25 3.5H12.5V9.75Z"/><path d="M3.5 6.25V12.5H9.75Z"/>',
+    "restore": '<path d="M9 2.5V7H13.5Z"/><path d="M7 13.5V9H2.5Z"/>',
+}
+
+
+def window_glyph(name, size):
+    shapes = WINDOW_GLYPHS[name].replace("/>", ' class="ColorScheme-Text" style="fill:currentColor"/>')
+    if size != 16:
+        shapes = f'<g transform="translate({(size - 16) / 2:g} {(size - 16) / 2:g})">{shapes}</g>'
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 {size} {size}">\n'
+            f' <defs><style id="current-color-scheme" type="text/css">.ColorScheme-Text {{ color:{PAPIRUS_COLORS_TEXT}; }}</style></defs>\n'
+            f' {shapes}\n</svg>\n')
+
+
+def draw_window_buttons(theme, dirs):
+    """Teal's window button glyphs in place of Papirus's, wherever the copy has them."""
+    n = 0
+    for d in dirs:
+        size = int(d.split("x")[0])
+        for name in WINDOW_GLYPHS:
+            for file in (f"window-{name}.svg", f"window-{name}-symbolic.svg"):
+                out = theme / d / file
+                if out.exists() or out.is_symlink():
+                    out.unlink()
+                    out.write_text(window_glyph(name, size))
+                    n += 1
+    return n
+
+
 def drop_system_copies(theme, dirs):
     """Papirus's sized drive and settings icons would be found first, at these sizes, instead of Teal's."""
     devices = [f.stem for f in DRAWN_DEVICES.glob("*.svg")]
@@ -682,6 +727,7 @@ def main():
     place_drawn(theme / "devices/scalable", drawn=DRAWN_DEVICES)
     small = draw_small_folders(theme) | draw_small_files(theme)
     copy_papirus(theme, dirs)
+    print(f"{draw_window_buttons(theme, dirs)} window button glyphs drawn")
     drop_system_copies(theme, dirs)
     for d in OWN:  # filled on each computer by localize.py
         (theme / d).mkdir(parents=True)
